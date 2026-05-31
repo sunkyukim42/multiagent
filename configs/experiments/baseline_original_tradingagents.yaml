@@ -1,0 +1,21 @@
+method_id: baseline_original_tradingagents
+display_name: Original TradingAgents Baseline
+description: Live TradingAgents baseline with domain registry disabled and no macro analyst.
+runner_type: live_tradingagents
+domain: oil
+enable_domain_registry: false
+selected_analysts:
+  - market
+  - social
+  - news
+  - fundamentals
+max_debate_rounds: 1
+max_risk_discuss_rounds: 1
+model_provider: openai
+quick_think_llm: gpt-4o-mini
+deep_think_llm: gpt-4o-mini
+required_env_vars:
+  - OPENAI_API_KEY
+notes:
+  - Requires explicit --live; not used in default tests.
+

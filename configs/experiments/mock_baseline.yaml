@@ -1,0 +1,18 @@
+method_id: mock_baseline
+display_name: Mock Baseline
+description: Deterministic API-free mock runner for framework tests and dry runs.
+runner_type: mock
+domain: oil
+enable_domain_registry: true
+selected_analysts:
+  - market
+  - news
+max_debate_rounds: 1
+max_risk_discuss_rounds: 1
+model_provider: none
+quick_think_llm: mock
+deep_think_llm: mock
+mock_mode: hash
+notes:
+  - API-free deterministic baseline; not a real model.
+

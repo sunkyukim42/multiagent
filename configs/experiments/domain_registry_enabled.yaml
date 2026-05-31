@@ -1,0 +1,23 @@
+method_id: domain_registry_enabled
+display_name: Domain Registry Enabled
+description: Live TradingAgents method with domain registry enabled and macro analyst included.
+runner_type: live_tradingagents
+domain: oil
+enable_domain_registry: true
+selected_analysts:
+  - market
+  - social
+  - news
+  - fundamentals
+  - macro
+max_debate_rounds: 1
+max_risk_discuss_rounds: 1
+model_provider: openai
+quick_think_llm: gpt-4o-mini
+deep_think_llm: gpt-4o-mini
+required_env_vars:
+  - OPENAI_API_KEY
+  - FRED_API_KEY
+notes:
+  - Requires explicit --live; domain metadata is enabled.
+

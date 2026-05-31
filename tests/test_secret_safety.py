@@ -48,12 +48,11 @@ def test_dotenv_is_gitignored():
     assert ".env" in {line.strip() for line in gitignore}
 
 
-def test_no_forbidden_task2_scope_modules_added():
+def test_no_forbidden_scope_modules_added():
     forbidden_terms = [
         "rag",
         "evidence_ledger",
         "guardrail",
-        "experiment_runner",
         "llama_index",
         "llamaindex",
     ]
@@ -64,4 +63,3 @@ def test_no_forbidden_task2_scope_modules_added():
     for path in task2_paths:
         normalized = path.as_posix().lower()
         assert not any(term in normalized for term in forbidden_terms)
-

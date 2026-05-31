@@ -192,3 +192,23 @@ python scripts/validate_domains.py --check-env
 `.env` keys are optional for tests and validation. They are required only for live API-backed demos such as `python main.py`.
 
 This task does not implement RAG, Evidence Ledger, Guardrails, Experiment Runner, or new orchestration.
+
+## Task 3: Experiment Runner
+
+The Experiment Runner provides an API-free mock evaluation path by default. It runs cases x methods x seeds, writes JSONL results incrementally under `results/`, and summarizes aggregate metrics by method.
+
+Run the mock sample experiment:
+
+```bash
+python scripts/run_experiment.py --cases data/cases/energy_decision_cases_sample.csv --methods configs/experiments/mock_baseline.yaml --output results/task3_sample_results.jsonl --seeds 1,2 --dry-run
+```
+
+Summarize generated results:
+
+```bash
+python scripts/summarize_results.py --results results/task3_sample_results.jsonl --output results/task3_sample_summary.md
+```
+
+Live TradingAgents experiment configs are loadable, but execution requires the explicit `--live` flag and the required API keys in `.env`. Dry-run and mock experiments do not call external APIs or print secret values.
+
+This task does not implement RAG, LlamaIndex, Evidence Ledger, Guardrails, or workflow rewrites.

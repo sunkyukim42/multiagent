@@ -1,9 +1,11 @@
 .venv
-results
+results/*
+!results/.gitkeep
 env/
 __pycache__/
 .DS_Store
 *.csv
+!data/cases/*.csv
 src/
 eval_results/
 eval_data/

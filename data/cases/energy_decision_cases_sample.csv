@@ -1,0 +1,6 @@
+case_id,domain,ticker,company_name,decision_date,task_type,task_prompt,allowed_actions,label_action,expected_direction,future_return_1m,future_return_3m,future_return_6m,benchmark_return_1m,benchmark_return_3m,benchmark_return_6m,metadata
+energy_xom_2020_11_19,oil,XOM,Exxon Mobil,2020-11-19,investment,Assess XOM using available market and macro context.,BUY|HOLD|SELL,BUY,up,0.081,0.142,0.215,0.034,0.061,0.098,"{""source"":""sample"",""note"":""Existing demo-style case; illustrative only.""}"
+energy_cvx_2021_03_15,oil,CVX,Chevron,2021-03-15,investment,Assess CVX after oil price recovery and macro reopening signals.,BUY|HOLD|SELL,HOLD,neutral,0.012,0.028,,0.018,0.037,,"{""source"":""sample"",""note"":""Missing 6m returns test parser robustness.""}"
+energy_oxy_2022_06_15,oil,OXY,Occidental Petroleum,2022-06-15,investment,Assess OXY amid volatile crude prices and rising rates.,BUY|HOLD|SELL,SELL,down,-0.064,-0.091,-0.122,-0.025,-0.040,-0.058,"{""source"":""sample""}"
+semis_nvda_2023_05_25,semiconductor,NVDA,NVIDIA,2023-05-25,investment,Assess NVDA after AI demand acceleration and earnings surprise.,BUY|HOLD|SELL,BUY,up,0.236,,,0.051,,,"{""source"":""sample"",""domain_note"":""Future semiconductor domain fixture.""}"
+
