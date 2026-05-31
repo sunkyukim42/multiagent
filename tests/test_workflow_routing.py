@@ -58,6 +58,27 @@ def test_fail_retries_then_routes_to_human_review():
     assert route_reliability_report(_report("fail"), CONFIG, 1, 1).next_step == "human_review"
 
 
+def test_fail_after_retries_can_route_to_stop_when_human_review_disabled():
+    config = {**CONFIG, "fail_to_human_review_after_retries": False}
+
+    decision = route_reliability_report(_report("fail"), config, 1, 1)
+
+    assert decision.next_step == "stop"
+    assert "disabled" in decision.reason
+
+
+def test_threshold_failure_after_retries_honors_human_review_flag():
+    config = {
+        **CONFIG,
+        "fail_to_human_review_after_retries": False,
+        "route_thresholds": {"min_overall_score": 1.1},
+    }
+
+    decision = route_reliability_report(_report("pass", score=1.0), config, 1, 1)
+
+    assert decision.next_step == "stop"
+
+
 def test_blocked_missing_unknown_and_threshold_failure_route_safely():
     assert route_reliability_report(_report("blocked", blocking=True), CONFIG, 0, 1).next_step == "human_review"
     assert route_missing_report("missing").next_step == "human_review"

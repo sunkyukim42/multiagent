@@ -292,3 +292,5 @@ python scripts/inspect_workflow_run.py --workflow-dir results/workflows/task7_oi
 ```
 
 Routes are `final_report`, `retry`, `human_review`, or `stop`, based only on local ReliabilityReports and deterministic thresholds. Generated workflow artifacts are ignored under `results/workflows/`. Task 8 or later may integrate ReliabilityReports with live agents if needed.
+
+Workflow config files can provide safe defaults such as `domain`, `ticker`, `task_type`, `top_k`, and `max_retries`; explicit CLI or state values override those defaults. Final workflow state and artifact summaries are always persisted for inspection. `store_human_review_packet` and `store_final_report` control whether those optional generated files are written.

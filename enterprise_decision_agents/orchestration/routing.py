@@ -85,6 +85,15 @@ def route_reliability_report(
                 status=status,
                 key_metrics=metrics,
             )
+        if not bool(config.get("fail_to_human_review_after_retries", True)):
+            return RouteDecision(
+                next_step="stop",
+                reason="Route thresholds failed after retries; human review after retries is disabled.",
+                blocking=False,
+                retry_allowed=False,
+                status=status,
+                key_metrics=metrics,
+            )
         return RouteDecision(
             next_step="human_review",
             reason="Route thresholds failed after retries: " + ", ".join(thresholds_failed),
@@ -101,6 +110,15 @@ def route_reliability_report(
                 reason="Reliability status is retryable.",
                 blocking=False,
                 retry_allowed=True,
+                status=status,
+                key_metrics=metrics,
+            )
+        if not bool(config.get("fail_to_human_review_after_retries", True)):
+            return RouteDecision(
+                next_step="stop",
+                reason="Retry limit reached for failed ReliabilityReport; human review after retries is disabled.",
+                blocking=False,
+                retry_allowed=False,
                 status=status,
                 key_metrics=metrics,
             )

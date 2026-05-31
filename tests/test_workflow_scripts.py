@@ -84,3 +84,49 @@ def test_workflow_scripts_run_and_inspect_offline(tmp_path):
     assert (workflow_dir / "workflow_state.json").exists()
     assert (workflow_dir / "routing_decision.json").exists()
     assert (workflow_dir / "final_report.md").exists()
+
+
+def test_workflow_script_fail_fast_missing_input_exits_nonzero_without_traceback(tmp_path):
+    command = [
+        sys.executable,
+        "scripts/run_reliability_workflow.py",
+        "--workflow-run-id",
+        "wf_fail_fast",
+        "--run-id",
+        "wf_fail_fast",
+        "--case-id",
+        "MISSING",
+        "--method-id",
+        "mock_reliability_workflow",
+        "--domain",
+        "oil",
+        "--ticker",
+        "XOM",
+        "--decision-date",
+        "2020-11-19",
+        "--task-type",
+        "investment",
+        "--manifest",
+        "data/raw/rag_samples/documents_manifest.csv",
+        "--index-dir",
+        "data/indexes/task4_sample",
+        "--rag-config",
+        "configs/rag/default_rag.yaml",
+        "--claims",
+        str(tmp_path / "missing_claims.jsonl"),
+        "--ledger-dir",
+        str(tmp_path / "ledger"),
+        "--guardrail-config",
+        "configs/guardrails/default_guardrails.yaml",
+        "--workflow-config",
+        "configs/workflows/default_reliability_workflow.yaml",
+        "--output-dir",
+        str(tmp_path / "workflow"),
+        "--fail-fast",
+    ]
+    result = subprocess.run(command, capture_output=True, text=True, check=False)
+    output = result.stdout + result.stderr
+
+    assert result.returncode == 1
+    assert "Workflow context validation failed" in output
+    assert "Traceback" not in output

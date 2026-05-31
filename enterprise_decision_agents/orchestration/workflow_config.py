@@ -47,6 +47,20 @@ def load_workflow_config(path: str | Path | None = None) -> dict[str, Any]:
     return config
 
 
+def apply_config_defaults_to_state(config: dict[str, Any], state_data: dict[str, Any]) -> dict[str, Any]:
+    data = dict(state_data)
+    for key in ["domain", "ticker", "task_type"]:
+        if _is_missing(data.get(key)) and not _is_missing(config.get(key)):
+            data[key] = config[key]
+    for key in ["top_k", "max_retries"]:
+        if _is_missing(data.get(key)) and not _is_missing(config.get(key)):
+            data[key] = int(config[key])
+    if _is_missing(data.get("workflow_output_dir")) and not _is_missing(data.get("workflow_run_id")):
+        base_dir = config.get("output", {}).get("generated_workflow_dir", "results/workflows")
+        data["workflow_output_dir"] = str(Path(base_dir) / str(data["workflow_run_id"]))
+    return data
+
+
 def apply_state_overrides(config: dict[str, Any], state_data: dict[str, Any]) -> dict[str, Any]:
     merged = _deep_merge(config, {})
     if state_data.get("max_retries") is not None:
@@ -56,6 +70,10 @@ def apply_state_overrides(config: dict[str, Any], state_data: dict[str, Any]) ->
     if state_data.get("rebuild_index"):
         merged["rebuild_rag_index"] = True
     return merged
+
+
+def _is_missing(value: Any) -> bool:
+    return value is None or value == ""
 
 
 def _deep_merge(left: dict[str, Any], right: dict[str, Any]) -> dict[str, Any]:

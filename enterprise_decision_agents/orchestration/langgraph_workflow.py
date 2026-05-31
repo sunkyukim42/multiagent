@@ -18,6 +18,7 @@ from enterprise_decision_agents.orchestration.nodes import (
     validate_context_node,
 )
 from enterprise_decision_agents.orchestration.workflow_config import (
+    apply_config_defaults_to_state,
     apply_state_overrides,
     load_workflow_config,
 )
@@ -68,14 +69,10 @@ def run_reliability_workflow(
     config_path: str | None = None,
 ) -> ReliabilityWorkflowState:
     state_data = initial_state.to_dict() if isinstance(initial_state, ReliabilityWorkflowState) else dict(initial_state)
-    config = apply_state_overrides(load_workflow_config(config_path), state_data)
-    state_data.setdefault("max_retries", config.get("max_retries", 1))
-    state_data.setdefault("top_k", config.get("top_k", 2))
+    config = load_workflow_config(config_path)
+    state_data = apply_config_defaults_to_state(config, state_data)
+    config = apply_state_overrides(config, state_data)
     if config_path:
         state_data.setdefault("workflow_config_path", config_path)
-    state_data.setdefault(
-        "workflow_output_dir",
-        f"{config.get('output', {}).get('generated_workflow_dir', 'results/workflows')}/{state_data['workflow_run_id']}",
-    )
     result = build_reliability_workflow(config).invoke(state_data)
     return ReliabilityWorkflowState.from_dict(result)

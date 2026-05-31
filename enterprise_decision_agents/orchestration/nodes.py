@@ -21,6 +21,7 @@ from enterprise_decision_agents.orchestration.routing import (
     route_reliability_report,
 )
 from enterprise_decision_agents.orchestration.workflow_state import ReliabilityWorkflowState
+from enterprise_decision_agents.orchestration.workflow_config import apply_config_defaults_to_state
 from enterprise_decision_agents.orchestration.workflow_store import (
     save_artifacts,
     save_final_report,
@@ -43,6 +44,7 @@ DEFAULT_LEDGER_CONFIG = {
 
 
 def validate_context_node(state_data: dict[str, Any], config: dict[str, Any] | None = None) -> dict[str, Any]:
+    config = config or {}
     state = _state(state_data, config)
     required_values = {
         "workflow_run_id": state.workflow_run_id,
@@ -72,12 +74,16 @@ def validate_context_node(state_data: dict[str, Any], config: dict[str, Any] | N
         if not state.rag_config_path or not Path(state.rag_config_path).exists():
             state.add_error("validate_context", "rag_config_path is required to build a missing index", "missing_path")
     if state.errors:
+        if state.fail_fast:
+            messages = "; ".join(error["message"] for error in state.errors)
+            raise ValueError(f"Workflow context validation failed: {messages}")
         state.route_decision = "stop"
         state.route_reason = "Workflow context validation failed."
     return _finish(state)
 
 
 def ensure_rag_index_node(state_data: dict[str, Any], config: dict[str, Any] | None = None) -> dict[str, Any]:
+    config = config or {}
     state = _state(state_data, config)
     try:
         rebuild = bool(state.rebuild_index or config.get("rebuild_rag_index", False))
@@ -104,6 +110,7 @@ def ensure_rag_index_node(state_data: dict[str, Any], config: dict[str, Any] | N
 
 
 def build_evidence_ledger_node(state_data: dict[str, Any], config: dict[str, Any] | None = None) -> dict[str, Any]:
+    config = config or {}
     state = _state(state_data, config)
     try:
         ledger_config = _load_ledger_config(state.ledger_config_path)
@@ -176,6 +183,7 @@ def build_evidence_ledger_node(state_data: dict[str, Any], config: dict[str, Any
 
 
 def run_guardrails_node(state_data: dict[str, Any], config: dict[str, Any] | None = None) -> dict[str, Any]:
+    config = config or {}
     state = _state(state_data, config)
     try:
         output_dir = Path(state.workflow_output_dir) / f"reliability_attempt_{state.retry_count}"
@@ -199,6 +207,7 @@ def run_guardrails_node(state_data: dict[str, Any], config: dict[str, Any] | Non
 
 
 def route_by_reliability_node(state_data: dict[str, Any], config: dict[str, Any] | None = None) -> dict[str, Any]:
+    config = config or {}
     state = _state(state_data, config)
     try:
         report = load_report(state.reliability_report_path)
@@ -211,6 +220,7 @@ def route_by_reliability_node(state_data: dict[str, Any], config: dict[str, Any]
 
 
 def retry_plan_node(state_data: dict[str, Any], config: dict[str, Any] | None = None) -> dict[str, Any]:
+    config = config or {}
     state = _state(state_data, config)
     try:
         report = load_report(state.reliability_report_path)
@@ -225,27 +235,35 @@ def retry_plan_node(state_data: dict[str, Any], config: dict[str, Any] | None = 
 
 
 def human_review_node(state_data: dict[str, Any], config: dict[str, Any] | None = None) -> dict[str, Any]:
+    config = config or {}
     state = _state(state_data, config)
     try:
         report = _maybe_load_report(state.reliability_report_path)
         decision = _decision_from_state(state)
         packet = build_human_review_packet(state, report, decision)
-        path = save_human_review_packet(state.workflow_output_dir, packet)
-        state.set_artifact("human_review_packet_path", str(path))
+        if config.get("output", {}).get("store_human_review_packet", True):
+            path = save_human_review_packet(state.workflow_output_dir, packet)
+            state.set_artifact("human_review_packet_path", str(path))
+        else:
+            state.set_artifact("human_review_packet_suppressed", True)
     except Exception as exc:
         _handle_error(state, "human_review", exc)
     return _finish(state)
 
 
 def final_report_node(state_data: dict[str, Any], config: dict[str, Any] | None = None) -> dict[str, Any]:
+    config = config or {}
     state = _state(state_data, config)
     try:
         report = load_report(state.reliability_report_path)
         decision = _decision_from_state(state)
         ledger_summary = load_ledger(state.ledger_dir).summary()
         markdown = render_final_report(state, report, decision, ledger_summary)
-        path = save_final_report(state.workflow_output_dir, markdown)
-        state.set_artifact("final_report_path", str(path))
+        if config.get("output", {}).get("store_final_report", True):
+            path = save_final_report(state.workflow_output_dir, markdown)
+            state.set_artifact("final_report_path", str(path))
+        else:
+            state.set_artifact("final_report_suppressed", True)
     except Exception as exc:
         _handle_error(state, "final_report", exc)
     return _finish(state)
@@ -267,14 +285,7 @@ def next_after_route(state_data: dict[str, Any]) -> str:
 
 def _state(state_data: dict[str, Any], config: dict[str, Any] | None = None) -> ReliabilityWorkflowState:
     config = config or {}
-    data = dict(state_data)
-    if not data.get("workflow_output_dir"):
-        base_dir = config.get("output", {}).get("generated_workflow_dir", "results/workflows")
-        data["workflow_output_dir"] = str(Path(base_dir) / str(data.get("workflow_run_id")))
-    if data.get("max_retries") is None:
-        data["max_retries"] = config.get("max_retries", 1)
-    if data.get("top_k") is None:
-        data["top_k"] = config.get("top_k", 2)
+    data = apply_config_defaults_to_state(config, state_data)
     return ReliabilityWorkflowState.from_dict(data)
 
 
