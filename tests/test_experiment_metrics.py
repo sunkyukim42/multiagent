@@ -66,3 +66,28 @@ def test_missing_label_behavior():
 
     assert metrics["action_match"] is None
 
+
+def test_procurement_custom_action_metrics_are_preserved():
+    case = _case(
+        domain="procurement",
+        ticker="",
+        company_name="Industrial Packaging Supplier",
+        task_type="procurement",
+        allowed_actions=["BUY_EARLY", "WAIT", "RENEGOTIATE"],
+        label_action="BUY_EARLY",
+        expected_direction=None,
+        future_return_1m=None,
+        future_return_3m=None,
+        future_return_6m=None,
+        benchmark_return_1m=None,
+        benchmark_return_3m=None,
+        benchmark_return_6m=None,
+    )
+
+    normalized_action = normalize_action("BUY_EARLY")
+    metrics = compute_metrics(case, normalized_action)
+
+    assert normalized_action == "BUY_EARLY"
+    assert metrics["valid_action"] is True
+    assert metrics["action_match"] == 1.0
+    assert metrics["directional_accuracy"] is None
