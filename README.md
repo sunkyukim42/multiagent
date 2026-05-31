@@ -256,3 +256,21 @@ python scripts/inspect_evidence_ledger.py --ledger-dir results/ledgers/task5_oil
 ```
 
 Generated ledgers are ignored under `results/ledgers/`. The ledger records evidence and mappings only; it does not score groundedness, hallucination risk, citation coverage, temporal leakage, policy compliance, or reliability. Those checks belong to later tasks.
+
+## Task 6: Reliability Guardrails
+
+Task 6 evaluates offline Evidence Ledger outputs with deterministic checks for citation coverage, temporal validity, heuristic groundedness, policy compliance, numeric traceability, and simple consistency. It is not an LLM judge and does not modify the live TradingAgents graph.
+
+Build the sample ledger first, then run guardrails:
+
+```bash
+python scripts/run_guardrails.py --ledger-dir results/ledgers/task5_oil_demo --config configs/guardrails/default_guardrails.yaml --policy configs/policies/default_policy.yaml --policy configs/policies/investment_policy.yaml --output-dir results/reliability/task5_oil_demo --print-summary
+```
+
+Inspect the generated ReliabilityReport:
+
+```bash
+python scripts/inspect_reliability_report.py --report results/reliability/task5_oil_demo/reliability_report.json --show-findings --max-items 10
+```
+
+Generated reliability reports are ignored under `results/reliability/`. The checks are deterministic heuristics, not semantic entailment, legal advice, financial advice, or procurement advice. Task 7 will add LangGraph routing or human-review workflows that consume ReliabilityReports.

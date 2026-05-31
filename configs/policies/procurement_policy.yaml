@@ -1,0 +1,47 @@
+policy_id: procurement_policy
+description: Illustrative procurement policy lint rules; not legal or procurement advice.
+rules:
+  - id: switch_supplier_requires_transition_or_approval
+    description: SWITCH_SUPPLIER claims should mention transition, approval, escalation, or risk owner.
+    severity: warning
+    task_type: procurement
+    when_any_terms:
+      - switch_supplier
+      - switch supplier
+      - supplier switching
+    required_any_terms:
+      - transition
+      - approval
+      - escalation
+      - risk owner
+      - lead time
+  - id: hedge_requires_escalation
+    description: HEDGE claims should mention escalation, approval, or risk owner.
+    severity: warning
+    task_type: procurement
+    when_any_terms:
+      - hedge
+    required_any_terms:
+      - escalation
+      - approval
+      - risk owner
+  - id: renegotiation_requires_policy_or_supplier_evidence
+    description: Contract renegotiation claims should cite policy or supplier-risk evidence.
+    severity: warning
+    task_type: procurement
+    when_any_terms:
+      - renegotiation
+      - renegotiate
+    evidence_required_any_terms:
+      - policy
+      - supplier risk
+      - contract
+  - id: no_unsupported_compliance_claim
+    description: Compliance claims should cite compliance or policy evidence.
+    severity: warning
+    task_type: procurement
+    when_any_terms:
+      - compliance
+    evidence_required_any_terms:
+      - compliance
+      - policy

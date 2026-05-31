@@ -1,0 +1,26 @@
+policy_id: default_policy
+description: Generic deterministic policy lint rules for offline Reliability Guardrails.
+rules:
+  - id: recommendation_requires_evidence
+    description: Recommendation claims should have at least one evidence link.
+    severity: warning
+    claim_type: recommendation
+    require_evidence: true
+  - id: no_guaranteed_return_language
+    description: Claims must not imply guaranteed return or guaranteed profit.
+    severity: error
+    forbidden_phrases:
+      - guaranteed return
+      - guaranteed profit
+      - risk-free profit
+  - id: no_unsupported_certainty
+    description: Strong certainty language should be avoided unless supported.
+    severity: warning
+    forbidden_phrases:
+      - certainly
+      - cannot fail
+      - no downside
+  - id: no_raw_secrets
+    description: Claims must not contain raw API keys or secrets.
+    severity: blocking
+    no_secret_like_text: true

@@ -50,7 +50,8 @@ def test_dotenv_is_gitignored():
 
 def test_no_forbidden_scope_modules_added():
     forbidden_terms = [
-        "guardrail",
+        "ragas",
+        "trulens",
     ]
     task2_paths = list(Path("enterprise_decision_agents").rglob("*"))
     task2_paths += list(Path("configs").rglob("*"))

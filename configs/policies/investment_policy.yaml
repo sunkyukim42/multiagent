@@ -1,0 +1,30 @@
+policy_id: investment_policy
+description: Illustrative investment policy lint rules; not financial advice.
+rules:
+  - id: investment_recommendation_allowed_actions
+    description: Investment recommendation actions should be BUY, SELL, or HOLD.
+    severity: warning
+    task_type: investment
+    claim_type: recommendation
+    allowed_actions:
+      - BUY
+      - SELL
+      - HOLD
+  - id: investment_recommendation_mentions_risk
+    description: Investment recommendations should mention risk or uncertainty.
+    severity: warning
+    task_type: investment
+    claim_type: recommendation
+    required_any_terms:
+      - risk
+      - uncertainty
+      - volatile
+      - downside
+  - id: no_guaranteed_profit
+    description: Investment claims must not imply guaranteed profit.
+    severity: error
+    task_type: investment
+    forbidden_phrases:
+      - guaranteed profit
+      - guaranteed return
+      - sure profit

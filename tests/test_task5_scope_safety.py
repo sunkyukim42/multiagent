@@ -3,11 +3,7 @@ from pathlib import Path
 
 def test_no_forbidden_task5_scope_modules_or_paths():
     forbidden_terms = [
-        "guardrail",
-        "reliability_report",
-        "groundedness",
         "hallucination",
-        "policy_checker",
         "ragas",
         "trulens",
         "faiss",

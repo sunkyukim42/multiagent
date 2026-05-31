@@ -2,6 +2,7 @@
 results/*
 !results/.gitkeep
 results/ledgers/*
+results/reliability/*
 data/indexes/*
 !data/indexes/.gitkeep
 rag_query_outputs/*
