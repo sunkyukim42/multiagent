@@ -1,11 +1,15 @@
 .venv
 results/*
 !results/.gitkeep
+data/indexes/*
+!data/indexes/.gitkeep
+rag_query_outputs/*
 env/
 __pycache__/
 .DS_Store
 *.csv
 !data/cases/*.csv
+!data/raw/rag_samples/documents_manifest.csv
 src/
 eval_results/
 eval_data/

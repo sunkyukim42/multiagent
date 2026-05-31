@@ -8,6 +8,7 @@ feedparser
 stockstats
 eodhd
 langgraph
+llama-index-core>=0.14
 chromadb
 setuptools
 backtrader

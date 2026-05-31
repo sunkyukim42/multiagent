@@ -1,0 +1,14 @@
+chunk_size: 900
+chunk_overlap: 80
+top_k: 5
+lexical_weight: 0.7
+embedding_weight: 0.3
+temporal_filter_enabled: true
+expired_policy: exclude
+missing_date_policy: include_unknown
+allowed_doc_types:
+  - policy
+  - contract
+  - note
+  - table
+index_format: jsonl

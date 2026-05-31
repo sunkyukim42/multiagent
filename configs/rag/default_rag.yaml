@@ -1,0 +1,17 @@
+chunk_size: 800
+chunk_overlap: 100
+top_k: 5
+lexical_weight: 0.75
+embedding_weight: 0.25
+temporal_filter_enabled: true
+expired_policy: exclude
+missing_date_policy: include_unknown
+allowed_doc_types:
+  - report
+  - news
+  - note
+  - policy
+  - contract
+  - table
+  - time_series_snapshot
+index_format: jsonl

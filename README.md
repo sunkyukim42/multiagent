@@ -212,3 +212,23 @@ python scripts/summarize_results.py --results results/task3_sample_results.jsonl
 Live TradingAgents experiment configs are loadable, but execution requires the explicit `--live` flag and the required API keys in `.env`. Dry-run and mock experiments do not call external APIs or print secret values.
 
 This task does not implement RAG, LlamaIndex, Evidence Ledger, Guardrails, or workflow rewrites.
+
+## Task 4: LlamaIndex-based Chunking and Advanced RAG
+
+Task 4 adds an offline local RAG layer for synthetic, non-confidential domain documents. It builds retrievable chunk candidates with LlamaIndex core abstractions, stores generated indexes under `data/indexes/`, and supports metadata-aware and decision-date-filtered retrieval.
+
+Build the sample local index:
+
+```bash
+python scripts/build_rag_index.py --manifest data/raw/rag_samples/documents_manifest.csv --config configs/rag/default_rag.yaml --output-dir data/indexes/task4_sample --index-id task4_sample --rebuild
+```
+
+Query the sample index:
+
+```bash
+python scripts/query_rag.py --index-dir data/indexes/task4_sample --query "oil inventory demand recovery XOM" --domain oil --ticker XOM --decision-date 2020-11-19 --top-k 3
+```
+
+The build and query scripts are offline by default: they do not call external APIs, OpenAI embeddings, or live TradingAgents graph code. Generated indexes are ignored by git except `data/indexes/.gitkeep`.
+
+Task 4 is not an Evidence Ledger. It does not implement claim-evidence mapping, Guardrails, ReliabilityReport, vector databases, RAGAS/TruLens evaluation, or LangGraph workflow changes. Task 5 will add the Evidence Ledger layer.
