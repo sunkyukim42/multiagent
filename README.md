@@ -172,3 +172,23 @@ python scripts/smoke_test.py
 Run `python main.py` for the live XOM demo when the required API keys are configured in `.env`.
 
 This stabilization task does not implement Domain Registry, RAG, Evidence Ledger, or Guardrails.
+
+## Task 2: Domain Registry
+
+The Domain Registry loads lightweight YAML metadata for supported decision domains without changing the current LangGraph workflow or calling external APIs. Domain configs live in `configs/domains/` and currently include `oil`, `semiconductor`, and `procurement`.
+
+Validate domain configs:
+
+```bash
+python scripts/validate_domains.py
+```
+
+Check required environment variable presence without printing secret values:
+
+```bash
+python scripts/validate_domains.py --check-env
+```
+
+`.env` keys are optional for tests and validation. They are required only for live API-backed demos such as `python main.py`.
+
+This task does not implement RAG, Evidence Ledger, Guardrails, Experiment Runner, or new orchestration.

@@ -1,0 +1,71 @@
+name: semiconductor
+display_name: Semiconductor
+description: Public-market semiconductor investment research metadata for future domain-specific analysis.
+version: "1.0"
+aliases:
+  - semiconductor
+  - chip
+  - chips
+  - foundry
+default_analysts:
+  - market
+  - social
+  - news
+  - fundamentals
+  - macro
+decision_contexts:
+  - investment
+  - risk
+agent_roles:
+  - demand cycle analyst
+  - foundry capacity analyst
+  - export controls analyst
+  - capex cycle analyst
+decision_factors:
+  - demand_cycle
+  - capex_cycle
+  - inventory_cycle
+  - export_controls
+  - foundry_utilization
+  - ai_demand
+ticker_mappings:
+  NVDA: NVIDIA
+  AMD: Advanced Micro Devices
+  INTC: Intel
+  TSM: Taiwan Semiconductor Manufacturing
+  ASML: ASML Holding
+output_report_key: domain_report
+notes:
+  - Metadata only; no live semiconductor-specific API calls are implemented in Task 2.
+data_sources:
+  - vendor: alphavantage
+    category: market_data
+    required_env_vars:
+      - ALPHAVANTAGE_API_KEY
+    optional: true
+    rate_limit_sensitive: true
+    cache_recommended: true
+    description: Market and fundamentals metadata for public semiconductor tickers.
+  - vendor: finnhub
+    category: news_data
+    required_env_vars:
+      - FINNHUB_API_KEY
+    optional: true
+    rate_limit_sensitive: true
+    cache_recommended: true
+    description: Company news and insider metadata.
+  - vendor: local
+    category: fundamental_data
+    required_env_vars: []
+    optional: true
+    rate_limit_sensitive: false
+    cache_recommended: true
+    description: Future local filings and earnings-cycle metadata.
+  - vendor: internal
+    category: domain_data
+    required_env_vars: []
+    optional: true
+    rate_limit_sensitive: false
+    cache_recommended: true
+    description: Future industry reports for foundry utilization, demand, and inventory cycles.
+

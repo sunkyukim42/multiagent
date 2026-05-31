@@ -1,6 +1,7 @@
 import os
 
 PROJECT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "."))
+DOMAIN_CONFIG_DIR = os.path.abspath(os.path.join(PROJECT_DIR, "..", "configs", "domains"))
 
 DEFAULT_CONFIG = {
     "project_dir": PROJECT_DIR,
@@ -16,6 +17,10 @@ DEFAULT_CONFIG = {
     "max_debate_rounds": 1,
     "max_risk_discuss_rounds": 1,
     "max_recur_limit": 100,
+    # Domain registry settings
+    "domain": "oil",
+    "domain_config_dir": DOMAIN_CONFIG_DIR,
+    "enable_domain_registry": True,
     # Data vendor configuration
     # Category-level configuration (default for all tools in category)
     "data_vendors": {

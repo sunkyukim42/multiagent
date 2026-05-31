@@ -1,0 +1,67 @@
+name: procurement
+display_name: Procurement
+description: Enterprise procurement decision metadata for supplier, contract, and cost-risk analysis.
+version: "1.0"
+aliases:
+  - procurement
+  - sourcing
+  - purchasing
+  - vendor_risk
+  - supplier_risk
+default_analysts:
+  - market
+  - news
+  - fundamentals
+decision_contexts:
+  - procurement
+  - supplier_selection
+  - contract_risk
+  - cost_optimization
+agent_roles:
+  - supplier reliability analyst
+  - contract risk analyst
+  - category market analyst
+  - compliance analyst
+decision_factors:
+  - supplier_reliability
+  - price_volatility
+  - compliance_risk
+  - contract_terms
+  - switching_cost
+  - lead_time_risk
+ticker_mappings: {}
+output_report_key: domain_report
+notes:
+  - Metadata only; enterprise document ingestion is not implemented in Task 2.
+data_sources:
+  - vendor: local
+    category: policy_data
+    required_env_vars: []
+    optional: true
+    rate_limit_sensitive: false
+    cache_recommended: true
+    description: Local procurement policies and approved supplier metadata.
+  - vendor: internal
+    category: domain_data
+    required_env_vars: []
+    optional: true
+    rate_limit_sensitive: false
+    cache_recommended: true
+    description: Future contracts, supplier scorecards, and ERP metadata.
+  - vendor: thenewsapi
+    category: news_data
+    required_env_vars:
+      - THENEWSAPI_KEY
+    optional: true
+    rate_limit_sensitive: true
+    cache_recommended: true
+    description: Supplier and market news metadata.
+  - vendor: alphavantage
+    category: market_data
+    required_env_vars:
+      - ALPHAVANTAGE_API_KEY
+    optional: true
+    rate_limit_sensitive: true
+    cache_recommended: true
+    description: Commodity and public supplier market metadata.
+

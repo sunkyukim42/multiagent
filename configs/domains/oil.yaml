@@ -1,0 +1,132 @@
+name: oil
+display_name: Oil and Gas
+description: Public-market oil and gas investment research with macro, inventory, production, and policy context.
+version: "1.0"
+aliases:
+  - oil
+  - energy
+  - crude
+  - oil_and_gas
+  - petroleum
+default_analysts:
+  - market
+  - social
+  - news
+  - fundamentals
+  - macro
+decision_contexts:
+  - investment
+  - risk
+agent_roles:
+  - macro analyst
+  - energy market analyst
+  - oil inventory analyst
+  - production activity analyst
+decision_factors:
+  - crude_price_trend
+  - inventory_change
+  - production_activity
+  - macro_demand_recovery
+  - interest_rate_environment
+  - inflation_pressure
+ticker_mappings:
+  XOM: Exxon Mobil
+  CVX: Chevron
+  COP: ConocoPhillips
+  OXY: Occidental Petroleum
+  SLB: SLB
+output_report_key: macro_report
+notes:
+  - Current Task 2 metadata only; live oil-specific EIA calls are not implemented.
+data_sources:
+  - vendor: fred
+    category: macro_data
+    required_env_vars:
+      - FRED_API_KEY
+    optional: false
+    rate_limit_sensitive: true
+    cache_recommended: true
+    description: FRED macro and oil-related series used by the existing macro analyst path.
+    series:
+      - id: FEDFUNDS
+        name: Federal Funds Effective Rate
+        source: fred
+        frequency: m
+        units: percent
+        purpose: Interest-rate environment for energy equities.
+        category: interest_rates
+        required_for_domain_report: true
+      - id: UNRATE
+        name: Unemployment Rate
+        source: fred
+        frequency: m
+        units: percent
+        purpose: Labor-market signal for macro demand.
+        category: labor_market
+        required_for_domain_report: true
+      - id: CPIAUCSL
+        name: Consumer Price Index for All Urban Consumers
+        source: fred
+        frequency: m
+        units: index
+        purpose: Inflation-pressure signal.
+        category: inflation
+        required_for_domain_report: true
+      - id: GDP
+        name: Gross Domestic Product
+        source: fred
+        frequency: q
+        units: billions_usd
+        purpose: Broad economic growth signal.
+        category: growth
+        required_for_domain_report: true
+      - id: DCOILWTICO
+        name: WTI Crude Oil Price
+        source: fred
+        frequency: d
+        units: dollars_per_barrel
+        purpose: Oil price trend for energy equity context.
+        category: crude_price
+        required_for_domain_report: true
+      - id: IPG211S
+        name: Industrial Production for Oil and Gas Extraction
+        source: fred
+        frequency: m
+        units: index
+        purpose: Production activity metadata for future oil domain reporting.
+        category: production_activity
+        required_for_domain_report: false
+  - vendor: eia
+    category: domain_data
+    required_env_vars:
+      - EIA_API_KEY
+    optional: true
+    rate_limit_sensitive: true
+    cache_recommended: true
+    description: EIA petroleum inventory metadata for future oil-domain tools.
+    series:
+      - id: WCESTUS1
+        name: Weekly U.S. Commercial Crude Oil Stocks Excluding SPR
+        source: eia
+        frequency: w
+        units: thousand_barrels
+        purpose: Inventory-change signal for crude market balance.
+        category: inventory
+        required_for_domain_report: false
+  - vendor: alphavantage
+    category: market_data
+    required_env_vars:
+      - ALPHAVANTAGE_API_KEY
+    optional: true
+    rate_limit_sensitive: true
+    cache_recommended: true
+    description: Existing market and fundamentals vendor metadata.
+  - vendor: finnhub
+    category: news_data
+    required_env_vars:
+      - FINNHUB_API_KEY
+    optional: true
+    rate_limit_sensitive: true
+    cache_recommended: true
+    description: Existing insider and company news vendor metadata.
+
