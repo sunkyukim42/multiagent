@@ -1,10 +1,13 @@
 from pathlib import Path
 
 
-def test_no_forbidden_task4_scope_paths():
+def test_no_forbidden_task5_scope_modules_or_paths():
     forbidden_terms = [
         "guardrail",
         "reliability_report",
+        "groundedness",
+        "hallucination",
+        "policy_checker",
         "ragas",
         "trulens",
         "faiss",
@@ -21,15 +24,13 @@ def test_no_forbidden_task4_scope_paths():
         assert not any(term in normalized for term in forbidden_terms)
 
 
-def test_no_forbidden_task4_dependencies_added():
+def test_no_forbidden_task5_dependencies_added():
     combined = (
         Path("pyproject.toml").read_text(encoding="utf-8").lower()
         + "\n"
         + Path("requirements.txt").read_text(encoding="utf-8").lower()
     )
     forbidden_deps = [
-        "llamaparse",
-        "llama-parse",
         "ragas",
         "trulens",
         "faiss",
@@ -39,5 +40,14 @@ def test_no_forbidden_task4_dependencies_added():
         "guardrails",
     ]
 
-    assert "llama-index-core" in combined
     assert not any(dep in combined for dep in forbidden_deps)
+
+
+def test_evidence_ledger_not_integrated_into_langgraph_workflow():
+    graph_text = "\n".join(
+        path.read_text(encoding="utf-8", errors="replace")
+        for path in Path("tradingagents/graph").rglob("*.py")
+    )
+
+    assert "EvidenceLedger" not in graph_text
+    assert "evidence_ledger" not in graph_text

@@ -1,0 +1,7 @@
+store_full_text: false
+max_snippet_chars: 500
+generated_ledger_dir: results/ledgers
+default_link_type: retrieved_for
+verification_status_default: not_evaluated
+allow_unlinked_claims: true
+fail_on_missing_evidence_link: true

@@ -57,6 +57,7 @@ class RetrievalResult:
     source_path: str
     snippet: str | None = None
     text: str | None = None
+    content_hash: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)

@@ -66,6 +66,7 @@ class HybridRetriever:
                     source_path=str(node.metadata.get("source_path", "")),
                     snippet=make_snippet(node.text, query.query_text) if query.include_snippet else None,
                     text=node.text if query.include_text else None,
+                    content_hash=node.content_hash,
                 )
             )
         return rerank_results(results)[:top_k]

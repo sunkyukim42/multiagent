@@ -232,3 +232,27 @@ python scripts/query_rag.py --index-dir data/indexes/task4_sample --query "oil i
 The build and query scripts are offline by default: they do not call external APIs, OpenAI embeddings, or live TradingAgents graph code. Generated indexes are ignored by git except `data/indexes/.gitkeep`.
 
 Task 4 is not an Evidence Ledger. It does not implement claim-evidence mapping, Guardrails, ReliabilityReport, vector databases, RAGAS/TruLens evaluation, or LangGraph workflow changes. Task 5 will add the Evidence Ledger layer.
+
+## Task 5: Evidence Ledger
+
+Task 5 adds an offline Evidence Ledger for converting local RAG retrieval results and structured mock claims into auditable evidence records, claim records, and claim-evidence links. Sample claims are synthetic, illustrative, and non-confidential.
+
+Build the sample RAG index first:
+
+```bash
+python scripts/build_rag_index.py --manifest data/raw/rag_samples/documents_manifest.csv --config configs/rag/default_rag.yaml --output-dir data/indexes/task4_sample --index-id task4_sample --rebuild
+```
+
+Build an oil sample ledger:
+
+```bash
+python scripts/build_evidence_ledger.py --index-dir data/indexes/task4_sample --claims data/ledger_samples/mock_oil_agent_claims.jsonl --output-dir results/ledgers/task5_oil_demo --run-id task5_oil_demo --case-id XOM_2020_11_19 --method-id mock_rag_ledger --domain oil --ticker XOM --decision-date 2020-11-19 --task-type investment --top-k 2
+```
+
+Inspect the generated ledger:
+
+```bash
+python scripts/inspect_evidence_ledger.py --ledger-dir results/ledgers/task5_oil_demo --show-claims --show-evidence --show-links --max-items 5
+```
+
+Generated ledgers are ignored under `results/ledgers/`. The ledger records evidence and mappings only; it does not score groundedness, hallucination risk, citation coverage, temporal leakage, policy compliance, or reliability. Those checks belong to later tasks.

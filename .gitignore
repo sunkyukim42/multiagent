@@ -1,6 +1,7 @@
 .venv
 results/*
 !results/.gitkeep
+results/ledgers/*
 data/indexes/*
 !data/indexes/.gitkeep
 rag_query_outputs/*
@@ -10,6 +11,7 @@ __pycache__/
 *.csv
 !data/cases/*.csv
 !data/raw/rag_samples/documents_manifest.csv
+!data/ledger_samples/*.jsonl
 src/
 eval_results/
 eval_data/
