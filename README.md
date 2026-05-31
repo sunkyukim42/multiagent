@@ -274,3 +274,21 @@ python scripts/inspect_reliability_report.py --report results/reliability/task5_
 ```
 
 Generated reliability reports are ignored under `results/reliability/`. The checks are deterministic heuristics, not semantic entailment, legal advice, financial advice, or procurement advice. Task 7 will add LangGraph routing or human-review workflows that consume ReliabilityReports.
+
+## Task 7: Reliability-Aware LangGraph Workflow
+
+Task 7 adds an optional offline LangGraph workflow that orchestrates local RAG indexing, Evidence Ledger construction, Reliability Guardrails, and deterministic routing. It does not replace `python main.py`, modify the live TradingAgents graph, or call external APIs.
+
+Run the sample oil workflow:
+
+```bash
+python scripts/run_reliability_workflow.py --workflow-run-id task7_oil_demo --run-id task7_oil_demo --case-id XOM_2020_11_19 --method-id mock_reliability_workflow --domain oil --ticker XOM --decision-date 2020-11-19 --task-type investment --manifest data/raw/rag_samples/documents_manifest.csv --index-dir data/indexes/task4_sample --rag-config configs/rag/default_rag.yaml --claims data/ledger_samples/mock_oil_agent_claims.jsonl --ledger-dir results/ledgers/task7_workflow_oil_demo --guardrail-config configs/guardrails/default_guardrails.yaml --policy configs/policies/default_policy.yaml --policy configs/policies/investment_policy.yaml --workflow-config configs/workflows/default_reliability_workflow.yaml --output-dir results/workflows/task7_oil_demo --top-k 2 --max-retries 1
+```
+
+Inspect the workflow artifacts:
+
+```bash
+python scripts/inspect_workflow_run.py --workflow-dir results/workflows/task7_oil_demo --show-routing --show-final-report --show-human-review --max-items 10
+```
+
+Routes are `final_report`, `retry`, `human_review`, or `stop`, based only on local ReliabilityReports and deterministic thresholds. Generated workflow artifacts are ignored under `results/workflows/`. Task 8 or later may integrate ReliabilityReports with live agents if needed.

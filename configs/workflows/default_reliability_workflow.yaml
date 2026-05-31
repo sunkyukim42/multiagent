@@ -1,0 +1,27 @@
+max_retries: 1
+acceptable_statuses:
+  - pass
+  - warning
+retry_on_statuses:
+  - fail
+human_review_statuses:
+  - blocked
+fail_to_human_review_after_retries: true
+build_rag_index_if_missing: true
+rebuild_rag_index: false
+top_k: 2
+route_thresholds:
+  min_overall_score: 0.0
+  max_blocking_issues: 0
+  min_citation_coverage: 1.0
+  max_temporal_leakage_rate: 0.0
+  max_unsupported_claim_rate: 0.25
+retry_strategy:
+  expand_query_from_findings: true
+  include_unsupported_claim_terms: true
+  include_policy_terms: true
+output:
+  generated_workflow_dir: results/workflows
+  store_intermediate_state: true
+  store_human_review_packet: true
+  store_final_report: true
