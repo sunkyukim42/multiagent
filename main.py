@@ -1,33 +1,43 @@
-from tradingagents.graph.trading_graph import TradingAgentsGraph
-from tradingagents.default_config import DEFAULT_CONFIG
+import os
 
 from dotenv import load_dotenv
 
-# Load environment variables from .env file
+from tradingagents.default_config import DEFAULT_CONFIG
+from tradingagents.graph.trading_graph import TradingAgentsGraph
+
+
 load_dotenv()
 
-# Create a custom config
-config = DEFAULT_CONFIG.copy()
-config["deep_think_llm"] = "gpt-4o-mini"  # Use a different model
-config["quick_think_llm"] = "gpt-4o-mini"  # Use a different model
-config["max_debate_rounds"] = 1  # Increase debate rounds
+DEMO_TICKER = os.getenv("TRADINGAGENTS_DEMO_TICKER", "XOM")
+DEMO_TRADE_DATE = os.getenv("TRADINGAGENTS_DEMO_TRADE_DATE", "2020-11-19")
+DEMO_MODEL = os.getenv("TRADINGAGENTS_DEMO_MODEL", "gpt-4o-mini")
 
-# Configure data vendors (default uses yfinance and alpha_vantage)
-config["data_vendors"] = {
-    "core_stock_apis": "yfinance",           # Options: yfinance, alpha_vantage, local
-    "technical_indicators": "yfinance",      # Options: yfinance, alpha_vantage, local
-    "fundamental_data": "alpha_vantage",     # Options: openai, alpha_vantage, local
-    "news_data": "alpha_vantage",            # Options: openai, alpha_vantage, google, local
-    "macro_data": "fred",
-}
-#config["data_vendors"]["shipping_data"] = "marine_traffic"
 
-# Initialize with custom config
-ta = TradingAgentsGraph(debug=True, config=config)
+def build_demo_config():
+    config = DEFAULT_CONFIG.copy()
+    config["data_vendors"] = DEFAULT_CONFIG["data_vendors"].copy()
 
-# forward propagate
-_, decision = ta.propagate("XOM", "2020-11-19")
-print(decision)
+    config["deep_think_llm"] = DEMO_MODEL
+    config["quick_think_llm"] = DEMO_MODEL
+    config["max_debate_rounds"] = 1
 
-# Memorize mistakes and reflect
-# ta.reflect_and_remember(1000) # parameter is the position returns
+    config["data_vendors"].update(
+        {
+            "core_stock_apis": "yfinance",
+            "technical_indicators": "yfinance",
+            "fundamental_data": "alpha_vantage",
+            "news_data": "alpha_vantage",
+            "macro_data": "fred",
+        }
+    )
+    return config
+
+
+def main():
+    ta = TradingAgentsGraph(debug=True, config=build_demo_config())
+    _, decision = ta.propagate(DEMO_TICKER, DEMO_TRADE_DATE)
+    print(decision)
+
+
+if __name__ == "__main__":
+    main()

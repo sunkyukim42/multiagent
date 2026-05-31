@@ -40,10 +40,41 @@ from tradingagents.agents.utils.macro_data_tools import (
 )
 
 from .conditional_logic import ConditionalLogic
-from .setup import GraphSetup
+from .setup import DEFAULT_ANALYSTS, GraphSetup
 from .propagation import Propagator
 from .reflection import Reflector
 from .signal_processing import SignalProcessor
+
+
+def _get_positive_int_config(config: Dict[str, Any], key: str, default: int) -> int:
+    """Read a positive integer config value with a clear failure message."""
+    raw_value = config.get(key, default)
+
+    def raise_invalid():
+        raise ValueError(
+            f"Invalid config value for {key}: {raw_value!r}. Expected a positive integer."
+        )
+
+    if isinstance(raw_value, bool):
+        raise_invalid()
+    elif isinstance(raw_value, int):
+        value = raw_value
+    elif isinstance(raw_value, float):
+        if not raw_value.is_integer():
+            raise_invalid()
+        value = int(raw_value)
+    elif isinstance(raw_value, str):
+        stripped_value = raw_value.strip()
+        if not stripped_value.isdigit():
+            raise_invalid()
+        value = int(stripped_value)
+    else:
+        raise_invalid()
+
+    if value <= 0:
+        raise_invalid()
+
+    return value
 
 
 class TradingAgentsGraph:
@@ -51,7 +82,7 @@ class TradingAgentsGraph:
 
     def __init__(
         self,
-        selected_analysts=["market", "social", "news", "fundamentals","macro"],
+        selected_analysts=None,
         debug=False,
         config: Dict[str, Any] = None,
     ):
@@ -64,6 +95,11 @@ class TradingAgentsGraph:
         """
         self.debug = debug
         self.config = config or DEFAULT_CONFIG
+        selected_analysts = (
+            list(DEFAULT_ANALYSTS)
+            if selected_analysts is None
+            else list(selected_analysts)
+        )
 
         # Update the interface's config
         set_config(self.config)
@@ -98,7 +134,14 @@ class TradingAgentsGraph:
         self.tool_nodes = self._create_tool_nodes()
 
         # Initialize components
-        self.conditional_logic = ConditionalLogic()
+        self.conditional_logic = ConditionalLogic(
+            max_debate_rounds=_get_positive_int_config(
+                self.config, "max_debate_rounds", 1
+            ),
+            max_risk_discuss_rounds=_get_positive_int_config(
+                self.config, "max_risk_discuss_rounds", 1
+            ),
+        )
         self.graph_setup = GraphSetup(
             self.quick_thinking_llm,
             self.deep_thinking_llm,
@@ -111,7 +154,11 @@ class TradingAgentsGraph:
             self.conditional_logic,
         )
 
-        self.propagator = Propagator()
+        self.propagator = Propagator(
+            max_recur_limit=_get_positive_int_config(
+                self.config, "max_recur_limit", 100
+            )
+        )
         self.reflector = Reflector(self.quick_thinking_llm)
         self.signal_processor = SignalProcessor(self.quick_thinking_llm)
 

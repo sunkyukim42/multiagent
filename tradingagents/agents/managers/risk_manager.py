@@ -11,7 +11,7 @@ def create_risk_manager(llm, memory):
         risk_debate_state = state["risk_debate_state"]
         market_research_report = state["market_report"]
         news_report = state["news_report"]
-        fundamentals_report = state["news_report"]
+        fundamentals_report = state["fundamentals_report"]
         macro_report = state["macro_report"]
         sentiment_report = state["sentiment_report"]
         trader_plan = state["investment_plan"]
@@ -22,6 +22,13 @@ def create_risk_manager(llm, memory):
         past_memory_str = ""
         for i, rec in enumerate(past_memories, 1):
             past_memory_str += rec["recommendation"] + "\n\n"
+
+        current_report_context = f"""Current Analyst Reports:
+- Market Report: {market_research_report}
+- Sentiment Report: {sentiment_report}
+- News Report: {news_report}
+- Fundamentals Report: {fundamentals_report}
+- Macro Report: {macro_report}"""
 
         prompt = f"""As the Risk Management Judge and Debate Facilitator, your goal is to evaluate the debate between three risk analysts—Risky, Neutral, and Safe/Conservative—and determine the best course of action for the trader. Your decision must result in a clear recommendation: Buy, Sell, or Hold. Choose Hold only if strongly justified by specific arguments, not as a fallback when all sides seem valid. Strive for clarity and decisiveness.
 
@@ -34,6 +41,10 @@ Guidelines for Decision-Making:
 Deliverables:
 - A clear and actionable recommendation: Buy, Sell, or Hold.
 - Detailed reasoning anchored in the debate and past reflections.
+
+---
+
+{current_report_context}
 
 ---
 

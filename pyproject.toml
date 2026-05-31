@@ -33,3 +33,8 @@ dependencies = [
     "typing-extensions>=4.14.0",
     "yfinance>=0.2.63",
 ]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=8",
+]

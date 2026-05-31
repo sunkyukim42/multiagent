@@ -11,6 +11,9 @@ from tradingagents.agents.utils.agent_states import AgentState
 from .conditional_logic import ConditionalLogic
 
 
+DEFAULT_ANALYSTS = ["market", "social", "news", "fundamentals", "macro"]
+
+
 class GraphSetup:
     """Handles the setup and configuration of the agent graph."""
 
@@ -37,9 +40,7 @@ class GraphSetup:
         self.risk_manager_memory = risk_manager_memory
         self.conditional_logic = conditional_logic
 
-    def setup_graph(
-        self, selected_analysts=["market", "social", "news", "fundamentals","macro"]
-    ):
+    def setup_graph(self, selected_analysts=None):
         """Set up and compile the agent workflow graph.
 
         Args:
@@ -50,6 +51,11 @@ class GraphSetup:
                 - "fundamentals": Fundamentals analyst
                 - "macro": Macroeconomic (FRED) analyst
         """
+        if selected_analysts is None:
+            selected_analysts = list(DEFAULT_ANALYSTS)
+        else:
+            selected_analysts = list(selected_analysts)
+
         if len(selected_analysts) == 0:
             raise ValueError("Trading Agents Graph Setup Error: no analysts selected!")
 

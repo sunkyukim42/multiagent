@@ -155,3 +155,20 @@
 "look_back_days": { "type": "integer", "default": 30, "description": "과거 조회 일수" }  
 },  
 "response": {"type": "string","format": "포맷된 데이터프레임/리포트 문자열","schema_hint": "지표별 계산 결과와 요약(정확한 필드는 벤더 구현에 따름)"}
+## Task 1: Stabilization Checks
+
+Run the lightweight stabilization tests without live API calls:
+
+```bash
+pytest
+```
+
+Run the API-free smoke test:
+
+```bash
+python scripts/smoke_test.py
+```
+
+Run `python main.py` for the live XOM demo when the required API keys are configured in `.env`.
+
+This stabilization task does not implement Domain Registry, RAG, Evidence Ledger, or Guardrails.
