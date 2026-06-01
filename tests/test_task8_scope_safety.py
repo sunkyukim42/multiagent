@@ -63,6 +63,39 @@ TASK8_SCRIPT_READABILITY_FILES = [
     Path("scripts/generate_portfolio_summary.py"),
 ]
 
+RAW_LINE_MINIMUMS = {
+    Path(".gitattributes"): 10,
+    Path("README.md"): 80,
+    Path("docs/architecture_overview.md"): 20,
+    Path("docs/research_plan.md"): 20,
+    Path("docs/portfolio_demo.md"): 20,
+    Path("docs/evaluation_metrics.md"): 20,
+    Path("docs/release_checklist.md"): 20,
+    Path("tests/test_task8_scope_safety.py"): 80,
+    Path("enterprise_decision_agents/reporting/artifact_collector.py"): 20,
+    Path("enterprise_decision_agents/reporting/report_schema.py"): 20,
+    Path("enterprise_decision_agents/reporting/benchmark_summary.py"): 20,
+    Path("enterprise_decision_agents/reporting/ablation_summary.py"): 20,
+    Path("enterprise_decision_agents/reporting/markdown_report.py"): 20,
+    Path("enterprise_decision_agents/reporting/portfolio_summary.py"): 20,
+    Path("scripts/run_benchmark_pack.py"): 20,
+    Path("scripts/generate_research_report.py"): 20,
+    Path("scripts/generate_portfolio_summary.py"): 20,
+}
+
+EXPECTED_GITATTRIBUTES_LINES = {
+    "* text=auto",
+    "README.md text eol=lf",
+    "*.py text eol=lf",
+    "*.md text eol=lf",
+    "*.yaml text eol=lf",
+    "*.yml text eol=lf",
+    "*.json text eol=lf",
+    "*.jsonl text eol=lf",
+    "*.csv text eol=lf",
+    "*.txt text eol=lf",
+}
+
 SECRET_LIKE_PATTERNS = [
     re.compile(r"AKIA[0-9A-Z]{16}"),
     re.compile(r"AIza[0-9A-Za-z_-]{35}"),
@@ -199,9 +232,28 @@ def test_task8_readability_surface_has_no_secret_like_values():
         MARKDOWN_RENDERABILITY_FILES
         + REPORTING_READABILITY_FILES
         + TASK8_SCRIPT_READABILITY_FILES
+        + [Path(".gitattributes")]
     )
 
     for path in target_files:
         text = path.read_text(encoding="utf-8", errors="replace")
         for pattern in SECRET_LIKE_PATTERNS:
             assert not pattern.search(text), f"{path} contains a secret-like value"
+
+
+def test_task8_text_files_use_lf_bytes_not_cr_or_single_raw_lines():
+    for path, minimum_lf_count in RAW_LINE_MINIMUMS.items():
+        raw = path.read_bytes()
+
+        assert b"\n" in raw, f"{path} has no LF newline bytes"
+        assert b"\r" not in raw, f"{path} contains CR bytes"
+        assert raw.count(b"\n") >= minimum_lf_count, (
+            f"{path} has too few LF-separated raw lines"
+        )
+
+
+def test_task8_gitattributes_enforces_lf_for_text_files():
+    lines = set(Path(".gitattributes").read_text(encoding="utf-8").splitlines())
+
+    for expected_line in EXPECTED_GITATTRIBUTES_LINES:
+        assert expected_line in lines
