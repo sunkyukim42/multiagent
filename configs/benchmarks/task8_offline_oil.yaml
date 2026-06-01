@@ -1,0 +1,55 @@
+benchmark_id: task8_offline_oil
+display_name: Task 8 Offline Oil Benchmark Pack
+description: Synthetic offline oil workflow package for research and portfolio reporting.
+domain: oil
+cases:
+  - XOM_2020_11_19
+experiments:
+  - experiment_id: task8_oil_mock_experiment
+    cases: data/cases/energy_decision_cases_sample.csv
+    methods:
+      - configs/experiments/mock_baseline.yaml
+    seeds: [1, 2]
+    max_cases: 2
+workflows:
+  - workflow_run_id: task8_oil_workflow
+    run_id: task8_oil_workflow
+    case_id: XOM_2020_11_19
+    method_id: mock_reliability_workflow_oil
+    domain: oil
+    ticker: XOM
+    decision_date: "2020-11-19"
+    task_type: investment
+    manifest: data/raw/rag_samples/documents_manifest.csv
+    index_dir: data/indexes/task8_oil
+    rag_config: configs/rag/default_rag.yaml
+    claims: data/ledger_samples/mock_oil_agent_claims.jsonl
+    ledger_dir: results/ledgers/task8_oil_workflow
+    guardrail_config: configs/guardrails/default_guardrails.yaml
+    policy_paths:
+      - configs/policies/default_policy.yaml
+      - configs/policies/investment_policy.yaml
+    workflow_config: configs/workflows/oil_reliability_workflow.yaml
+    output_dir: results/workflows/task8_oil_workflow
+    top_k: 2
+    max_retries: 1
+    expected_artifacts:
+      - workflow_state
+      - routing_decision
+      - reliability_report
+      - ledger_summary
+      - human_review_packet
+method_components:
+  - method_id: mock_reliability_workflow_oil
+    domain_enabled: true
+    rag_enabled: true
+    ledger_enabled: true
+    guardrails_enabled: true
+    workflow_enabled: true
+    notes:
+      - Offline oil sample with local RAG, ledger, guardrails, and workflow routing.
+expected_artifacts:
+  - workflow_state
+  - routing_decision
+  - reliability_report
+  - ledger_summary

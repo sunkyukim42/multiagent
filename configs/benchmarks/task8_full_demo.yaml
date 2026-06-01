@@ -1,0 +1,96 @@
+benchmark_id: task8_full_demo
+display_name: Task 8 Full Offline Demo Pack
+description: Combined synthetic oil and procurement workflow package for research and portfolio reporting.
+domain: multi_domain
+cases:
+  - XOM_2020_11_19
+  - PROCUREMENT_SAMPLE
+experiments:
+  - experiment_id: task8_energy_mock_experiment
+    cases: data/cases/energy_decision_cases_sample.csv
+    methods:
+      - configs/experiments/mock_baseline.yaml
+    seeds: [1, 2]
+    max_cases: 2
+  - experiment_id: task8_procurement_mock_experiment
+    cases: data/cases/procurement_decision_cases_sample.csv
+    methods:
+      - configs/experiments/mock_baseline.yaml
+    seeds: [1]
+    max_cases: 2
+workflows:
+  - workflow_run_id: task8_full_oil_workflow
+    run_id: task8_full_oil_workflow
+    case_id: XOM_2020_11_19
+    method_id: mock_reliability_workflow_oil
+    domain: oil
+    ticker: XOM
+    decision_date: "2020-11-19"
+    task_type: investment
+    manifest: data/raw/rag_samples/documents_manifest.csv
+    index_dir: data/indexes/task8_full_demo
+    rag_config: configs/rag/default_rag.yaml
+    claims: data/ledger_samples/mock_oil_agent_claims.jsonl
+    ledger_dir: results/ledgers/task8_full_oil_workflow
+    guardrail_config: configs/guardrails/default_guardrails.yaml
+    policy_paths:
+      - configs/policies/default_policy.yaml
+      - configs/policies/investment_policy.yaml
+    workflow_config: configs/workflows/oil_reliability_workflow.yaml
+    output_dir: results/workflows/task8_full_oil_workflow
+    top_k: 2
+    max_retries: 1
+    expected_artifacts:
+      - workflow_state
+      - routing_decision
+      - reliability_report
+      - ledger_summary
+      - human_review_packet
+  - workflow_run_id: task8_full_procurement_workflow
+    run_id: task8_full_procurement_workflow
+    case_id: PROCUREMENT_SAMPLE
+    method_id: mock_reliability_workflow_procurement
+    domain: procurement
+    decision_date: "2024-01-10"
+    task_type: procurement
+    manifest: data/raw/rag_samples/documents_manifest.csv
+    index_dir: data/indexes/task8_full_demo
+    rag_config: configs/rag/default_rag.yaml
+    claims: data/ledger_samples/mock_procurement_agent_claims.jsonl
+    ledger_dir: results/ledgers/task8_full_procurement_workflow
+    guardrail_config: configs/guardrails/default_guardrails.yaml
+    policy_paths:
+      - configs/policies/default_policy.yaml
+      - configs/policies/procurement_policy.yaml
+    workflow_config: configs/workflows/procurement_reliability_workflow.yaml
+    output_dir: results/workflows/task8_full_procurement_workflow
+    top_k: 2
+    max_retries: 1
+    expected_artifacts:
+      - workflow_state
+      - routing_decision
+      - reliability_report
+      - ledger_summary
+      - final_report
+method_components:
+  - method_id: mock_reliability_workflow_oil
+    domain_enabled: true
+    rag_enabled: true
+    ledger_enabled: true
+    guardrails_enabled: true
+    workflow_enabled: true
+    notes:
+      - Oil sample uses synthetic XOM claims and local oil documents.
+  - method_id: mock_reliability_workflow_procurement
+    domain_enabled: true
+    rag_enabled: true
+    ledger_enabled: true
+    guardrails_enabled: true
+    workflow_enabled: true
+    notes:
+      - Procurement sample uses synthetic supplier-risk claims and local policy documents.
+expected_artifacts:
+  - workflow_state
+  - routing_decision
+  - reliability_report
+  - ledger_summary

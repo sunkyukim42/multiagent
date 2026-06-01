@@ -4,6 +4,8 @@ results/*
 results/ledgers/*
 results/reliability/*
 results/workflows/*
+results/benchmark_packs/*
+results/reports/*
 data/indexes/*
 !data/indexes/.gitkeep
 rag_query_outputs/*

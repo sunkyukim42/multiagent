@@ -294,3 +294,27 @@ python scripts/inspect_workflow_run.py --workflow-dir results/workflows/task7_oi
 Routes are `final_report`, `retry`, `human_review`, or `stop`, based only on local ReliabilityReports and deterministic thresholds. Generated workflow artifacts are ignored under `results/workflows/`. Task 8 or later may integrate ReliabilityReports with live agents if needed.
 
 Workflow config files can provide safe defaults such as `domain`, `ticker`, `task_type`, `top_k`, and `max_retries`; explicit CLI or state values override those defaults. Final workflow state and artifact summaries are always persisted for inspection. `store_human_review_packet` and `store_final_report` control whether those optional generated files are written.
+
+## Task 8: Offline Research Benchmark And Portfolio Demo Packaging
+
+Task 8 packages the offline pipeline into reproducible benchmark and reporting artifacts for research planning and portfolio demos. It reuses the dry-run Experiment Runner, local RAG, Evidence Ledger, Reliability Guardrails, and reliability-aware workflow. It does not call external APIs, OpenAI, embeddings, or live TradingAgents graph code.
+
+Run the combined offline demo pack:
+
+```bash
+python scripts/run_benchmark_pack.py --config configs/benchmarks/task8_full_demo.yaml --output-dir results/benchmark_packs/task8_full_demo --pack-id task8_full_demo --rebuild-index
+```
+
+Generate a research-oriented Markdown report:
+
+```bash
+python scripts/generate_research_report.py --benchmark-dir results/benchmark_packs/task8_full_demo --output-dir results/reports/task8_research --report-id task8_research
+```
+
+Generate a portfolio-oriented Markdown summary:
+
+```bash
+python scripts/generate_portfolio_summary.py --benchmark-dir results/benchmark_packs/task8_full_demo --output-dir results/reports/task8_portfolio --report-id task8_portfolio
+```
+
+Generated benchmark packs are ignored under `results/benchmark_packs/`, and generated reports are ignored under `results/reports/`. The sample outputs are synthetic and illustrative, not paper-ready benchmarks, financial advice, or procurement advice. Architecture and demo notes live under `docs/`.
