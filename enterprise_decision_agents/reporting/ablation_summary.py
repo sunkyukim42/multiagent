@@ -39,10 +39,16 @@ def build_ablation_summaries(
                 route_counts=route_counts,
                 mean_overall_score=mean_available(row.overall_score for row in rows),
                 mean_citation_coverage=mean_available(row.key_metrics.get("citation_coverage") for row in rows),
-                mean_temporal_leakage_rate=mean_available(row.key_metrics.get("temporal_leakage_rate") for row in rows),
+                mean_temporal_leakage_rate=mean_available(
+                    row.key_metrics.get("temporal_leakage_rate") for row in rows
+                ),
                 mean_grounded_claim_rate=mean_available(row.key_metrics.get("grounded_claim_rate") for row in rows),
-                mean_unsupported_claim_rate=mean_available(row.key_metrics.get("unsupported_claim_rate") for row in rows),
-                mean_policy_compliance_rate=mean_available(row.key_metrics.get("policy_compliance_rate") for row in rows),
+                mean_unsupported_claim_rate=mean_available(
+                    row.key_metrics.get("unsupported_claim_rate") for row in rows
+                ),
+                mean_policy_compliance_rate=mean_available(
+                    row.key_metrics.get("policy_compliance_rate") for row in rows
+                ),
                 notes=[
                     *[str(item) for item in component.get("notes", [])],
                     "Offline illustrative summary; no statistical significance is claimed.",

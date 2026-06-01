@@ -13,11 +13,18 @@ def render_portfolio_summary(summary: BenchmarkPackSummary, report_id: str) -> s
         "",
         "## Problem Statement",
         "",
-        "Enterprise decision agents need domain context, auditable evidence, and reliability checks before outputs are trusted.",
+        (
+            "Enterprise decision agents need domain context, auditable evidence, "
+            "and reliability checks before outputs are trusted."
+        ),
         "",
         "## Technical Architecture",
         "",
-        "The demo composes Domain Registry metadata, API-free experiments, offline RAG, Evidence Ledger records, Reliability Guardrails, and a deterministic LangGraph workflow.",
+        (
+            "The demo composes Domain Registry metadata, API-free experiments, "
+            "offline RAG, Evidence Ledger records, Reliability Guardrails, "
+            "and a deterministic LangGraph workflow."
+        ),
         "",
         "## Implemented Modules",
         "",
@@ -32,9 +39,22 @@ def render_portfolio_summary(summary: BenchmarkPackSummary, report_id: str) -> s
         "## Demo Commands",
         "",
         "```bash",
-        "python scripts/run_benchmark_pack.py --config configs/benchmarks/task8_full_demo.yaml --output-dir results/benchmark_packs/task8_full_demo --pack-id task8_full_demo --rebuild-index",
-        "python scripts/generate_research_report.py --benchmark-dir results/benchmark_packs/task8_full_demo --output-dir results/reports/task8_research --report-id task8_research",
-        "python scripts/generate_portfolio_summary.py --benchmark-dir results/benchmark_packs/task8_full_demo --output-dir results/reports/task8_portfolio --report-id task8_portfolio",
+        (
+            "python scripts/run_benchmark_pack.py --config "
+            "configs/benchmarks/task8_full_demo.yaml --output-dir "
+            "results/benchmark_packs/task8_full_demo --pack-id "
+            "task8_full_demo --rebuild-index"
+        ),
+        (
+            "python scripts/generate_research_report.py --benchmark-dir "
+            "results/benchmark_packs/task8_full_demo --output-dir "
+            "results/reports/task8_research --report-id task8_research"
+        ),
+        (
+            "python scripts/generate_portfolio_summary.py --benchmark-dir "
+            "results/benchmark_packs/task8_full_demo --output-dir "
+            "results/reports/task8_portfolio --report-id task8_portfolio"
+        ),
         "```",
         "",
         "## Reliability KPIs",

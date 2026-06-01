@@ -1,3 +1,97 @@
+# Reliability-Aware Domain-Specific Multi-Agent RAG System
+
+This repository extends TradingAgents with an offline reliability-aware
+research pipeline for domain-specific decision support. The current offline
+demo covers synthetic oil and procurement cases and packages the pipeline for
+research planning and portfolio review.
+
+The live `python main.py` TradingAgents demo remains separate. The offline demo
+does not require API keys and does not call external APIs, OpenAI, LLMs, or
+embedding services.
+
+## Quickstart: Offline Demo
+
+Run the full offline benchmark pack:
+
+```bash
+python scripts/run_benchmark_pack.py \
+  --config configs/benchmarks/task8_full_demo.yaml \
+  --output-dir results/benchmark_packs/task8_full_demo \
+  --pack-id task8_full_demo \
+  --rebuild-index
+```
+
+Generate a research-oriented Markdown report:
+
+```bash
+python scripts/generate_research_report.py \
+  --benchmark-dir results/benchmark_packs/task8_full_demo \
+  --output-dir results/reports/task8_research \
+  --report-id task8_research
+```
+
+Generate a portfolio-oriented Markdown summary:
+
+```bash
+python scripts/generate_portfolio_summary.py \
+  --benchmark-dir results/benchmark_packs/task8_full_demo \
+  --output-dir results/reports/task8_portfolio \
+  --report-id task8_portfolio
+```
+
+Generated artifacts are ignored by git under `results/` and `data/indexes/`.
+
+## Repository Map
+
+| Path | Purpose |
+| --- | --- |
+| `tradingagents/` | Original/live TradingAgents implementation and graph. |
+| `enterprise_decision_agents/core/` | Domain Registry, run context, claims, and evidence ledger schemas. |
+| `enterprise_decision_agents/evaluation/` | API-free experiment runner and metrics. |
+| `enterprise_decision_agents/ingestion/` | Offline document parsing and chunking. |
+| `enterprise_decision_agents/retrieval/` | Local RAG index and hybrid retrieval. |
+| `enterprise_decision_agents/guardrails/` | Deterministic Reliability Guardrails. |
+| `enterprise_decision_agents/orchestration/` | Optional offline reliability-aware workflow. |
+| `enterprise_decision_agents/reporting/` | Task 8 benchmark and portfolio reporting. |
+| `configs/` | Domain, RAG, ledger, guardrail, workflow, experiment, and benchmark YAML. |
+| `data/` | Synthetic sample cases, claims, and RAG sample documents. |
+| `docs/` | Architecture, research plan, demo guide, metrics, and release checklist. |
+| `scripts/` | Offline build, validation, benchmark, report, and workflow commands. |
+
+## Task Progression
+
+| Task | Summary |
+| --- | --- |
+| Task 1 | Stabilized core TradingAgents defaults and API-free smoke checks. |
+| Task 2 | Added YAML-backed Domain Registry metadata. |
+| Task 3 | Added API-free Experiment Runner and mock methods. |
+| Task 4 | Added offline LlamaIndex-based local RAG. |
+| Task 5 | Added offline Evidence Ledger. |
+| Task 6 | Added deterministic Reliability Guardrails. |
+| Task 7 | Added optional offline Reliability Workflow. |
+| Task 7.1 | Cleaned workflow config semantics and runtime behavior. |
+| Task 8 | Added benchmark/report/portfolio packaging. |
+
+## Safety Boundaries
+
+- Offline demo commands do not require API keys.
+- `.env` is ignored by git and should contain local secrets only.
+- Generated outputs are ignored under `results/` and `data/indexes/`.
+- `python main.py` is the separate live TradingAgents demo path.
+- Sample outputs are synthetic and illustrative, not paper-ready benchmarks.
+- Reports are not financial, procurement, or legal advice.
+- Heuristic groundedness is not semantic entailment.
+
+## Documentation
+
+- [Architecture Overview](docs/architecture_overview.md)
+- [Research Plan](docs/research_plan.md)
+- [Portfolio Demo](docs/portfolio_demo.md)
+- [Evaluation Metrics](docs/evaluation_metrics.md)
+- [Release Checklist](docs/release_checklist.md)
+
+## Legacy TradingAgents Notes
+
 **<!--실행 파일>**
 ./main.py 실행 (python main.py)
 **ticker 변경 및 날짜 변경 원할 시, main.py 29line 수정하기**

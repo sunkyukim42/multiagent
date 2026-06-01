@@ -79,10 +79,19 @@ def save_benchmark_outputs(
         "ablation_markdown": path / ABLATION_MARKDOWN_FILE,
     }
     write_json(outputs["benchmark_summary"], pack_summary.to_dict())
-    outputs["benchmark_markdown"].write_text(render_benchmark_markdown(pack_summary), encoding="utf-8")
-    write_jsonl(outputs["run_summaries"], [summary.to_dict() for summary in pack_summary.run_summaries])
+    outputs["benchmark_markdown"].write_text(
+        render_benchmark_markdown(pack_summary),
+        encoding="utf-8",
+    )
+    write_jsonl(
+        outputs["run_summaries"],
+        [summary.to_dict() for summary in pack_summary.run_summaries],
+    )
     write_json(outputs["artifact_manifest"], artifact_manifest)
-    write_json(outputs["ablation_summary"], {"summaries": [summary.to_dict() for summary in ablations]})
+    write_json(
+        outputs["ablation_summary"],
+        {"summaries": [summary.to_dict() for summary in ablations]},
+    )
     outputs["ablation_markdown"].write_text(render_ablation_markdown(ablations), encoding="utf-8")
     return outputs
 
@@ -98,7 +107,10 @@ def render_benchmark_markdown(summary: BenchmarkPackSummary) -> str:
     lines = [
         f"# Benchmark Summary: {summary.benchmark_id}",
         "",
-        "Synthetic illustrative outputs only. These results are not paper-ready benchmarks and are not financial or procurement advice.",
+        (
+            "Synthetic illustrative outputs only. These results are not "
+            "paper-ready benchmarks and are not financial or procurement advice."
+        ),
         "",
         "## Aggregate Metrics",
         "",
@@ -118,13 +130,19 @@ def render_benchmark_markdown(summary: BenchmarkPackSummary) -> str:
             "",
             "## Runs",
             "",
-            "| Workflow | Domain | Case | Method | Route | Status | Score | Evidence | Claims | Links |",
+        (
+            "| Workflow | Domain | Case | Method | Route | Status | Score | "
+            "Evidence | Claims | Links |"
+        ),
             "| --- | --- | --- | --- | --- | --- | ---: | ---: | ---: | ---: |",
         ]
     )
     for run in summary.run_summaries:
         lines.append(
-            "| {workflow} | {domain} | {case} | {method} | {route} | {status} | {score} | {evidence} | {claims} | {links} |".format(
+            (
+                "| {workflow} | {domain} | {case} | {method} | {route} | "
+                "{status} | {score} | {evidence} | {claims} | {links} |"
+            ).format(
                 workflow=run.workflow_run_id,
                 domain=run.domain or "",
                 case=run.case_id or "",
@@ -149,12 +167,18 @@ def render_ablation_markdown(summaries: list[AblationSummary]) -> str:
         "",
         "This is an offline illustrative component summary with no statistical significance claims.",
         "",
-        "| Method | Runs | Success | Mean Score | Citation | Temporal Leakage | Grounded | Unsupported | Policy |",
+        (
+            "| Method | Runs | Success | Mean Score | Citation | Temporal Leakage | "
+            "Grounded | Unsupported | Policy |"
+        ),
         "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
     ]
     for summary in summaries:
         lines.append(
-            "| {method} | {runs} | {success} | {score} | {citation} | {temporal} | {grounded} | {unsupported} | {policy} |".format(
+            (
+                "| {method} | {runs} | {success} | {score} | {citation} | "
+                "{temporal} | {grounded} | {unsupported} | {policy} |"
+            ).format(
                 method=summary.method_id,
                 runs=summary.run_count,
                 success=summary.success_count,

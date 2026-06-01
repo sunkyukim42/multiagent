@@ -18,11 +18,17 @@ def render_research_report(summary: BenchmarkPackSummary, report_id: str) -> str
         "",
         "## Motivation",
         "",
-        "This offline package demonstrates a reliability-aware domain-specific multi-agent RAG pipeline over synthetic sample cases.",
+        (
+            "This offline package demonstrates a reliability-aware domain-specific "
+            "multi-agent RAG pipeline over synthetic sample cases."
+        ),
         "",
         "## Architecture Summary",
         "",
-        "Domain Registry -> Experiment Runner -> Local RAG -> Evidence Ledger -> Reliability Guardrails -> Reliability Workflow -> Reporting.",
+        (
+            "Domain Registry -> Experiment Runner -> Local RAG -> Evidence Ledger "
+            "-> Reliability Guardrails -> Reliability Workflow -> Reporting."
+        ),
         "",
         "## Pipeline Stages",
         "",
@@ -39,7 +45,11 @@ def render_research_report(summary: BenchmarkPackSummary, report_id: str) -> str
     ]
     for run in summary.run_summaries:
         lines.append(
-            f"| {run.workflow_run_id} | {run.domain or ''} | {run.case_id or ''} | {run.ticker or ''} | {run.decision_date or ''} | {run.task_type or ''} |"
+            (
+                f"| {run.workflow_run_id} | {run.domain or ''} | "
+                f"{run.case_id or ''} | {run.ticker or ''} | "
+                f"{run.decision_date or ''} | {run.task_type or ''} |"
+            )
         )
     lines.extend(
         [
