@@ -1,4 +1,77 @@
+import re
 from pathlib import Path
+
+
+MARKDOWN_RENDERABILITY_FILES = [
+    Path("README.md"),
+    Path("docs/architecture_overview.md"),
+    Path("docs/research_plan.md"),
+    Path("docs/portfolio_demo.md"),
+    Path("docs/evaluation_metrics.md"),
+    Path("docs/release_checklist.md"),
+]
+
+DOC_EXPECTED_HEADINGS = {
+    Path("docs/architecture_overview.md"): [
+        "# Architecture Overview",
+        "## Pipeline",
+        "## Module Map",
+        "## Data Flow",
+        "## Offline Vs Live",
+        "## Not Implemented",
+    ],
+    Path("docs/research_plan.md"): [
+        "# Research Plan",
+        "## Motivation",
+        "## Research Direction",
+        "## Research Questions",
+        "## Planned Evaluation Design",
+        "## Limitations",
+    ],
+    Path("docs/portfolio_demo.md"): [
+        "# Portfolio Demo",
+        "## Setup Assumptions",
+        "## Demo Commands",
+        "## Expected Outputs",
+        "## Interview Explanation",
+        "## Boundaries",
+    ],
+    Path("docs/evaluation_metrics.md"): [
+        "# Evaluation Metrics",
+        "## Interpretation",
+    ],
+    Path("docs/release_checklist.md"): [
+        "# Release Checklist",
+        "## Verification Commands",
+        "## Safety Checks",
+        "## Presentation Checks",
+    ],
+}
+
+REPORTING_READABILITY_FILES = [
+    Path("enterprise_decision_agents/reporting/artifact_collector.py"),
+    Path("enterprise_decision_agents/reporting/report_schema.py"),
+    Path("enterprise_decision_agents/reporting/benchmark_summary.py"),
+    Path("enterprise_decision_agents/reporting/ablation_summary.py"),
+    Path("enterprise_decision_agents/reporting/markdown_report.py"),
+    Path("enterprise_decision_agents/reporting/portfolio_summary.py"),
+]
+
+TASK8_SCRIPT_READABILITY_FILES = [
+    Path("scripts/run_benchmark_pack.py"),
+    Path("scripts/generate_research_report.py"),
+    Path("scripts/generate_portfolio_summary.py"),
+]
+
+SECRET_LIKE_PATTERNS = [
+    re.compile(r"AKIA[0-9A-Z]{16}"),
+    re.compile(r"AIza[0-9A-Za-z_-]{35}"),
+    re.compile(r"sk-[A-Za-z0-9_-]{20,}"),
+    re.compile(
+        r"(api[_-]?key|secret|token|password)\s*[:=]\s*['\"]?[A-Za-z0-9_-]{12,}",
+        re.IGNORECASE,
+    ),
+]
 
 
 def test_task8_does_not_modify_live_graph_or_main():
@@ -83,3 +156,52 @@ def test_task8_readme_and_docs_have_release_polish_sections():
     assert "not investment advice" in docs["research_plan.md"]
     assert "API keys" in docs["portfolio_demo.md"]
     assert "not required" in docs["portfolio_demo.md"]
+
+
+def test_task8_markdown_files_are_renderable_not_minified():
+    for path in MARKDOWN_RENDERABILITY_FILES:
+        lines = path.read_text(encoding="utf-8").splitlines()
+        nonblank_lines = [line for line in lines if line.strip()]
+
+        assert len(nonblank_lines) >= 10, f"{path} looks minified"
+        for line_number, line in enumerate(lines, start=1):
+            if "http://" in line or "https://" in line:
+                continue
+            assert len(line) <= 240, f"{path}:{line_number} exceeds 240 chars"
+            assert not re.search(r"\S\s+#{1,6}\s+\S", line), (
+                f"{path}:{line_number} appears to contain an inline heading"
+            )
+            if line.strip().startswith("python scripts/"):
+                assert line.count(" --") <= 1, (
+                    f"{path}:{line_number} command should be wrapped across lines"
+                )
+
+
+def test_task8_docs_have_standalone_expected_headings():
+    for path, expected_headings in DOC_EXPECTED_HEADINGS.items():
+        lines = path.read_text(encoding="utf-8").splitlines()
+        for heading in expected_headings:
+            assert heading in lines, f"{path} is missing standalone heading {heading!r}"
+
+
+def test_task8_reporting_python_files_are_not_minified():
+    for path in REPORTING_READABILITY_FILES + TASK8_SCRIPT_READABILITY_FILES:
+        lines = path.read_text(encoding="utf-8").splitlines()
+        nonblank_lines = [line for line in lines if line.strip()]
+
+        assert len(nonblank_lines) >= 20, f"{path} looks minified"
+        for line_number, line in enumerate(lines, start=1):
+            assert len(line) <= 180, f"{path}:{line_number} exceeds 180 chars"
+
+
+def test_task8_readability_surface_has_no_secret_like_values():
+    target_files = (
+        MARKDOWN_RENDERABILITY_FILES
+        + REPORTING_READABILITY_FILES
+        + TASK8_SCRIPT_READABILITY_FILES
+    )
+
+    for path in target_files:
+        text = path.read_text(encoding="utf-8", errors="replace")
+        for pattern in SECRET_LIKE_PATTERNS:
+            assert not pattern.search(text), f"{path} contains a secret-like value"

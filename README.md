@@ -265,11 +265,15 @@ python scripts/smoke_test.py
 
 Run `python main.py` for the live XOM demo when the required API keys are configured in `.env`.
 
-This stabilization task does not implement Domain Registry, RAG, Evidence Ledger, or Guardrails.
+This stabilization task does not implement Domain Registry, RAG, Evidence Ledger,
+or Guardrails.
 
 ## Task 2: Domain Registry
 
-The Domain Registry loads lightweight YAML metadata for supported decision domains without changing the current LangGraph workflow or calling external APIs. Domain configs live in `configs/domains/` and currently include `oil`, `semiconductor`, and `procurement`.
+The Domain Registry loads lightweight YAML metadata for supported decision
+domains without changing the current LangGraph workflow or calling external APIs.
+Domain configs live in `configs/domains/` and currently include `oil`,
+`semiconductor`, and `procurement`.
 
 Validate domain configs:
 
@@ -283,132 +287,258 @@ Check required environment variable presence without printing secret values:
 python scripts/validate_domains.py --check-env
 ```
 
-`.env` keys are optional for tests and validation. They are required only for live API-backed demos such as `python main.py`.
+`.env` keys are optional for tests and validation. They are required only for
+live API-backed demos such as `python main.py`.
 
-This task does not implement RAG, Evidence Ledger, Guardrails, Experiment Runner, or new orchestration.
+This task does not implement RAG, Evidence Ledger, Guardrails, Experiment Runner,
+or new orchestration.
 
 ## Task 3: Experiment Runner
 
-The Experiment Runner provides an API-free mock evaluation path by default. It runs cases x methods x seeds, writes JSONL results incrementally under `results/`, and summarizes aggregate metrics by method.
+The Experiment Runner provides an API-free mock evaluation path by default. It
+runs cases x methods x seeds, writes JSONL results incrementally under
+`results/`, and summarizes aggregate metrics by method.
 
 Run the mock sample experiment:
 
 ```bash
-python scripts/run_experiment.py --cases data/cases/energy_decision_cases_sample.csv --methods configs/experiments/mock_baseline.yaml --output results/task3_sample_results.jsonl --seeds 1,2 --dry-run
+python scripts/run_experiment.py \
+  --cases data/cases/energy_decision_cases_sample.csv \
+  --methods configs/experiments/mock_baseline.yaml \
+  --output results/task3_sample_results.jsonl \
+  --seeds 1,2 \
+  --dry-run
 ```
 
 Summarize generated results:
 
 ```bash
-python scripts/summarize_results.py --results results/task3_sample_results.jsonl --output results/task3_sample_summary.md
+python scripts/summarize_results.py \
+  --results results/task3_sample_results.jsonl \
+  --output results/task3_sample_summary.md
 ```
 
-Live TradingAgents experiment configs are loadable, but execution requires the explicit `--live` flag and the required API keys in `.env`. Dry-run and mock experiments do not call external APIs or print secret values.
+Live TradingAgents experiment configs are loadable, but execution requires the
+explicit `--live` flag and the required API keys in `.env`. Dry-run and mock
+experiments do not call external APIs or print secret values.
 
-This task does not implement RAG, LlamaIndex, Evidence Ledger, Guardrails, or workflow rewrites.
+This task does not implement RAG, LlamaIndex, Evidence Ledger, Guardrails, or
+workflow rewrites.
 
 ## Task 4: LlamaIndex-based Chunking and Advanced RAG
 
-Task 4 adds an offline local RAG layer for synthetic, non-confidential domain documents. It builds retrievable chunk candidates with LlamaIndex core abstractions, stores generated indexes under `data/indexes/`, and supports metadata-aware and decision-date-filtered retrieval.
+Task 4 adds an offline local RAG layer for synthetic, non-confidential domain
+documents. It builds retrievable chunk candidates with LlamaIndex core
+abstractions, stores generated indexes under `data/indexes/`, and supports
+metadata-aware and decision-date-filtered retrieval.
 
 Build the sample local index:
 
 ```bash
-python scripts/build_rag_index.py --manifest data/raw/rag_samples/documents_manifest.csv --config configs/rag/default_rag.yaml --output-dir data/indexes/task4_sample --index-id task4_sample --rebuild
+python scripts/build_rag_index.py \
+  --manifest data/raw/rag_samples/documents_manifest.csv \
+  --config configs/rag/default_rag.yaml \
+  --output-dir data/indexes/task4_sample \
+  --index-id task4_sample \
+  --rebuild
 ```
 
 Query the sample index:
 
 ```bash
-python scripts/query_rag.py --index-dir data/indexes/task4_sample --query "oil inventory demand recovery XOM" --domain oil --ticker XOM --decision-date 2020-11-19 --top-k 3
+python scripts/query_rag.py \
+  --index-dir data/indexes/task4_sample \
+  --query "oil inventory demand recovery XOM" \
+  --domain oil \
+  --ticker XOM \
+  --decision-date 2020-11-19 \
+  --top-k 3
 ```
 
-The build and query scripts are offline by default: they do not call external APIs, OpenAI embeddings, or live TradingAgents graph code. Generated indexes are ignored by git except `data/indexes/.gitkeep`.
+The build and query scripts are offline by default: they do not call external
+APIs, OpenAI embeddings, or live TradingAgents graph code. Generated indexes are
+ignored by git except `data/indexes/.gitkeep`.
 
-Task 4 is not an Evidence Ledger. It does not implement claim-evidence mapping, Guardrails, ReliabilityReport, vector databases, RAGAS/TruLens evaluation, or LangGraph workflow changes. Task 5 will add the Evidence Ledger layer.
+Task 4 is not an Evidence Ledger. It does not implement claim-evidence mapping,
+Guardrails, ReliabilityReport, vector databases, RAGAS/TruLens evaluation, or
+LangGraph workflow changes. Task 5 will add the Evidence Ledger layer.
 
 ## Task 5: Evidence Ledger
 
-Task 5 adds an offline Evidence Ledger for converting local RAG retrieval results and structured mock claims into auditable evidence records, claim records, and claim-evidence links. Sample claims are synthetic, illustrative, and non-confidential.
+Task 5 adds an offline Evidence Ledger for converting local RAG retrieval results
+and structured mock claims into auditable evidence records, claim records, and
+claim-evidence links. Sample claims are synthetic, illustrative, and
+non-confidential.
 
 Build the sample RAG index first:
 
 ```bash
-python scripts/build_rag_index.py --manifest data/raw/rag_samples/documents_manifest.csv --config configs/rag/default_rag.yaml --output-dir data/indexes/task4_sample --index-id task4_sample --rebuild
+python scripts/build_rag_index.py \
+  --manifest data/raw/rag_samples/documents_manifest.csv \
+  --config configs/rag/default_rag.yaml \
+  --output-dir data/indexes/task4_sample \
+  --index-id task4_sample \
+  --rebuild
 ```
 
 Build an oil sample ledger:
 
 ```bash
-python scripts/build_evidence_ledger.py --index-dir data/indexes/task4_sample --claims data/ledger_samples/mock_oil_agent_claims.jsonl --output-dir results/ledgers/task5_oil_demo --run-id task5_oil_demo --case-id XOM_2020_11_19 --method-id mock_rag_ledger --domain oil --ticker XOM --decision-date 2020-11-19 --task-type investment --top-k 2
+python scripts/build_evidence_ledger.py \
+  --index-dir data/indexes/task4_sample \
+  --claims data/ledger_samples/mock_oil_agent_claims.jsonl \
+  --output-dir results/ledgers/task5_oil_demo \
+  --run-id task5_oil_demo \
+  --case-id XOM_2020_11_19 \
+  --method-id mock_rag_ledger \
+  --domain oil \
+  --ticker XOM \
+  --decision-date 2020-11-19 \
+  --task-type investment \
+  --top-k 2
 ```
 
 Inspect the generated ledger:
 
 ```bash
-python scripts/inspect_evidence_ledger.py --ledger-dir results/ledgers/task5_oil_demo --show-claims --show-evidence --show-links --max-items 5
+python scripts/inspect_evidence_ledger.py \
+  --ledger-dir results/ledgers/task5_oil_demo \
+  --show-claims \
+  --show-evidence \
+  --show-links \
+  --max-items 5
 ```
 
-Generated ledgers are ignored under `results/ledgers/`. The ledger records evidence and mappings only; it does not score groundedness, hallucination risk, citation coverage, temporal leakage, policy compliance, or reliability. Those checks belong to later tasks.
+Generated ledgers are ignored under `results/ledgers/`. The ledger records
+evidence and mappings only; it does not score groundedness, hallucination risk,
+citation coverage, temporal leakage, policy compliance, or reliability. Those
+checks belong to later tasks.
 
 ## Task 6: Reliability Guardrails
 
-Task 6 evaluates offline Evidence Ledger outputs with deterministic checks for citation coverage, temporal validity, heuristic groundedness, policy compliance, numeric traceability, and simple consistency. It is not an LLM judge and does not modify the live TradingAgents graph.
+Task 6 evaluates offline Evidence Ledger outputs with deterministic checks for
+citation coverage, temporal validity, heuristic groundedness, policy compliance,
+numeric traceability, and simple consistency. It is not an LLM judge and does not
+modify the live TradingAgents graph.
 
 Build the sample ledger first, then run guardrails:
 
 ```bash
-python scripts/run_guardrails.py --ledger-dir results/ledgers/task5_oil_demo --config configs/guardrails/default_guardrails.yaml --policy configs/policies/default_policy.yaml --policy configs/policies/investment_policy.yaml --output-dir results/reliability/task5_oil_demo --print-summary
+python scripts/run_guardrails.py \
+  --ledger-dir results/ledgers/task5_oil_demo \
+  --config configs/guardrails/default_guardrails.yaml \
+  --policy configs/policies/default_policy.yaml \
+  --policy configs/policies/investment_policy.yaml \
+  --output-dir results/reliability/task5_oil_demo \
+  --print-summary
 ```
 
 Inspect the generated ReliabilityReport:
 
 ```bash
-python scripts/inspect_reliability_report.py --report results/reliability/task5_oil_demo/reliability_report.json --show-findings --max-items 10
+python scripts/inspect_reliability_report.py \
+  --report results/reliability/task5_oil_demo/reliability_report.json \
+  --show-findings \
+  --max-items 10
 ```
 
-Generated reliability reports are ignored under `results/reliability/`. The checks are deterministic heuristics, not semantic entailment, legal advice, financial advice, or procurement advice. Task 7 will add LangGraph routing or human-review workflows that consume ReliabilityReports.
+Generated reliability reports are ignored under `results/reliability/`. The
+checks are deterministic heuristics, not semantic entailment, legal advice,
+financial advice, or procurement advice. Task 7 will add LangGraph routing or
+human-review workflows that consume ReliabilityReports.
 
 ## Task 7: Reliability-Aware LangGraph Workflow
 
-Task 7 adds an optional offline LangGraph workflow that orchestrates local RAG indexing, Evidence Ledger construction, Reliability Guardrails, and deterministic routing. It does not replace `python main.py`, modify the live TradingAgents graph, or call external APIs.
+Task 7 adds an optional offline LangGraph workflow that orchestrates local RAG
+indexing, Evidence Ledger construction, Reliability Guardrails, and deterministic
+routing. It does not replace `python main.py`, modify the live TradingAgents
+graph, or call external APIs.
 
 Run the sample oil workflow:
 
 ```bash
-python scripts/run_reliability_workflow.py --workflow-run-id task7_oil_demo --run-id task7_oil_demo --case-id XOM_2020_11_19 --method-id mock_reliability_workflow --domain oil --ticker XOM --decision-date 2020-11-19 --task-type investment --manifest data/raw/rag_samples/documents_manifest.csv --index-dir data/indexes/task4_sample --rag-config configs/rag/default_rag.yaml --claims data/ledger_samples/mock_oil_agent_claims.jsonl --ledger-dir results/ledgers/task7_workflow_oil_demo --guardrail-config configs/guardrails/default_guardrails.yaml --policy configs/policies/default_policy.yaml --policy configs/policies/investment_policy.yaml --workflow-config configs/workflows/default_reliability_workflow.yaml --output-dir results/workflows/task7_oil_demo --top-k 2 --max-retries 1
+python scripts/run_reliability_workflow.py \
+  --workflow-run-id task7_oil_demo \
+  --run-id task7_oil_demo \
+  --case-id XOM_2020_11_19 \
+  --method-id mock_reliability_workflow \
+  --domain oil \
+  --ticker XOM \
+  --decision-date 2020-11-19 \
+  --task-type investment \
+  --manifest data/raw/rag_samples/documents_manifest.csv \
+  --index-dir data/indexes/task4_sample \
+  --rag-config configs/rag/default_rag.yaml \
+  --claims data/ledger_samples/mock_oil_agent_claims.jsonl \
+  --ledger-dir results/ledgers/task7_workflow_oil_demo \
+  --guardrail-config configs/guardrails/default_guardrails.yaml \
+  --policy configs/policies/default_policy.yaml \
+  --policy configs/policies/investment_policy.yaml \
+  --workflow-config configs/workflows/default_reliability_workflow.yaml \
+  --output-dir results/workflows/task7_oil_demo \
+  --top-k 2 \
+  --max-retries 1
 ```
 
 Inspect the workflow artifacts:
 
 ```bash
-python scripts/inspect_workflow_run.py --workflow-dir results/workflows/task7_oil_demo --show-routing --show-final-report --show-human-review --max-items 10
+python scripts/inspect_workflow_run.py \
+  --workflow-dir results/workflows/task7_oil_demo \
+  --show-routing \
+  --show-final-report \
+  --show-human-review \
+  --max-items 10
 ```
 
-Routes are `final_report`, `retry`, `human_review`, or `stop`, based only on local ReliabilityReports and deterministic thresholds. Generated workflow artifacts are ignored under `results/workflows/`. Task 8 or later may integrate ReliabilityReports with live agents if needed.
+Routes are `final_report`, `retry`, `human_review`, or `stop`, based only on
+local ReliabilityReports and deterministic thresholds. Generated workflow
+artifacts are ignored under `results/workflows/`. Task 8 or later may integrate
+ReliabilityReports with live agents if needed.
 
-Workflow config files can provide safe defaults such as `domain`, `ticker`, `task_type`, `top_k`, and `max_retries`; explicit CLI or state values override those defaults. Final workflow state and artifact summaries are always persisted for inspection. `store_human_review_packet` and `store_final_report` control whether those optional generated files are written.
+Workflow config files can provide safe defaults such as `domain`, `ticker`,
+`task_type`, `top_k`, and `max_retries`; explicit CLI or state values override
+those defaults. Final workflow state and artifact summaries are always persisted
+for inspection. `store_human_review_packet` and `store_final_report` control
+whether those optional generated files are written.
 
 ## Task 8: Offline Research Benchmark And Portfolio Demo Packaging
 
-Task 8 packages the offline pipeline into reproducible benchmark and reporting artifacts for research planning and portfolio demos. It reuses the dry-run Experiment Runner, local RAG, Evidence Ledger, Reliability Guardrails, and reliability-aware workflow. It does not call external APIs, OpenAI, embeddings, or live TradingAgents graph code.
+Task 8 packages the offline pipeline into reproducible benchmark and reporting
+artifacts for research planning and portfolio demos. It reuses the dry-run
+Experiment Runner, local RAG, Evidence Ledger, Reliability Guardrails, and
+reliability-aware workflow. It does not call external APIs, OpenAI, embeddings,
+or live TradingAgents graph code.
 
 Run the combined offline demo pack:
 
 ```bash
-python scripts/run_benchmark_pack.py --config configs/benchmarks/task8_full_demo.yaml --output-dir results/benchmark_packs/task8_full_demo --pack-id task8_full_demo --rebuild-index
+python scripts/run_benchmark_pack.py \
+  --config configs/benchmarks/task8_full_demo.yaml \
+  --output-dir results/benchmark_packs/task8_full_demo \
+  --pack-id task8_full_demo \
+  --rebuild-index
 ```
 
 Generate a research-oriented Markdown report:
 
 ```bash
-python scripts/generate_research_report.py --benchmark-dir results/benchmark_packs/task8_full_demo --output-dir results/reports/task8_research --report-id task8_research
+python scripts/generate_research_report.py \
+  --benchmark-dir results/benchmark_packs/task8_full_demo \
+  --output-dir results/reports/task8_research \
+  --report-id task8_research
 ```
 
 Generate a portfolio-oriented Markdown summary:
 
 ```bash
-python scripts/generate_portfolio_summary.py --benchmark-dir results/benchmark_packs/task8_full_demo --output-dir results/reports/task8_portfolio --report-id task8_portfolio
+python scripts/generate_portfolio_summary.py \
+  --benchmark-dir results/benchmark_packs/task8_full_demo \
+  --output-dir results/reports/task8_portfolio \
+  --report-id task8_portfolio
 ```
 
-Generated benchmark packs are ignored under `results/benchmark_packs/`, and generated reports are ignored under `results/reports/`. The sample outputs are synthetic and illustrative, not paper-ready benchmarks, financial advice, or procurement advice. Architecture and demo notes live under `docs/`.
+Generated benchmark packs are ignored under `results/benchmark_packs/`, and
+generated reports are ignored under `results/reports/`. The sample outputs are
+synthetic and illustrative, not paper-ready benchmarks, financial advice, or
+procurement advice. Architecture and demo notes live under `docs/`.
