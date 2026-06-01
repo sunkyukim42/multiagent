@@ -26,7 +26,7 @@ def test_research_report_contains_required_sections_and_disclaimers():
     assert "## Motivation" in report
     assert "## Architecture Summary" in report
     assert "## Metrics" in report
-    assert "not paper-ready benchmarks" in report
+    assert "not paper-ready" in report
     assert "not financial advice" in report
     assert "not semantic entailment" in report
     assert "full evidence text" not in report.lower()

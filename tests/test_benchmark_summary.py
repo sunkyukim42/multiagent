@@ -46,6 +46,6 @@ def test_benchmark_summary_aggregates_and_writes_outputs(tmp_path):
     assert summary.aggregate_metrics["mean_citation_coverage"] == 1.0
     assert outputs["benchmark_summary"].exists()
     assert outputs["run_summaries"].exists()
-    assert "not paper-ready benchmarks" in outputs["benchmark_markdown"].read_text(encoding="utf-8")
+    assert "not paper-ready" in outputs["benchmark_markdown"].read_text(encoding="utf-8")
     payload = json.loads(outputs["benchmark_summary"].read_text(encoding="utf-8"))
     assert payload["warnings"] == ["optional missing"]

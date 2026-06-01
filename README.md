@@ -71,6 +71,7 @@ Generated artifacts are ignored by git under `results/` and `data/indexes/`.
 | Task 7 | Added optional offline Reliability Workflow. |
 | Task 7.1 | Cleaned workflow config semantics and runtime behavior. |
 | Task 8 | Added benchmark/report/portfolio packaging. |
+| Task 9 | Added offline research-evaluation tables and aggregation scaffolds. |
 
 ## Safety Boundaries
 
@@ -78,7 +79,7 @@ Generated artifacts are ignored by git under `results/` and `data/indexes/`.
 - `.env` is ignored by git and should contain local secrets only.
 - Generated outputs are ignored under `results/` and `data/indexes/`.
 - `python main.py` is the separate live TradingAgents demo path.
-- Sample outputs are synthetic and illustrative, not paper-ready benchmarks.
+- Sample outputs are synthetic and illustrative, not paper-ready.
 - Reports are not financial, procurement, or legal advice.
 - Heuristic groundedness is not semantic entailment.
 
@@ -88,7 +89,37 @@ Generated artifacts are ignored by git under `results/` and `data/indexes/`.
 - [Research Plan](docs/research_plan.md)
 - [Portfolio Demo](docs/portfolio_demo.md)
 - [Evaluation Metrics](docs/evaluation_metrics.md)
+- [Research Evaluation Pack](docs/research_evaluation_pack.md)
 - [Release Checklist](docs/release_checklist.md)
+
+## Task 9: Research Evaluation Pack
+
+Task 9 packages the Task 8 benchmark outputs into an offline research-evaluation
+scaffold with method metadata, synthetic case-set metadata, ablation
+definitions, descriptive bootstrap intervals, and KCI-style Markdown tables.
+
+Run the offline research evaluation:
+
+```bash
+python scripts/run_research_evaluation.py \
+  --config configs/research/task9_research_eval.yaml \
+  --output-dir results/research_eval/task9_demo \
+  --evaluation-id task9_demo \
+  --run-benchmarks
+```
+
+Generate KCI-style tables:
+
+```bash
+python scripts/generate_kci_tables.py \
+  --evaluation-dir results/research_eval/task9_demo \
+  --output-dir results/research_tables/task9_demo \
+  --table-id task9_demo
+```
+
+These outputs are synthetic and illustrative. They are not paper-ready, not
+statistically conclusive, not financial/procurement/legal advice, and heuristic
+groundedness is not semantic entailment.
 
 ## Legacy TradingAgents Notes
 
@@ -540,5 +571,5 @@ python scripts/generate_portfolio_summary.py \
 
 Generated benchmark packs are ignored under `results/benchmark_packs/`, and
 generated reports are ignored under `results/reports/`. The sample outputs are
-synthetic and illustrative, not paper-ready benchmarks, financial advice, or
+synthetic and illustrative, not paper-ready, financial advice, or
 procurement advice. Architecture and demo notes live under `docs/`.

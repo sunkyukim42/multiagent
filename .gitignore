@@ -6,6 +6,8 @@ results/reliability/*
 results/workflows/*
 results/benchmark_packs/*
 results/reports/*
+results/research_eval/*
+results/research_tables/*
 data/indexes/*
 !data/indexes/.gitkeep
 rag_query_outputs/*

@@ -1,0 +1,48 @@
+case_sets:
+  - case_set_id: oil_sample_cases
+    display_name: Oil Synthetic Sample Cases
+    description: Synthetic oil decision examples for infrastructure testing.
+    domain: oil
+    task_type: investment
+    case_ids:
+      - XOM_2020_11_19
+    source_paths:
+      - data/cases/energy_decision_cases_sample.csv
+      - data/ledger_samples/mock_oil_agent_claims.jsonl
+    synthetic: true
+    paper_ready: false
+    notes:
+      - Illustrative sample only; not paper-ready.
+
+  - case_set_id: procurement_sample_cases
+    display_name: Procurement Synthetic Sample Cases
+    description: Synthetic supplier-risk examples for offline workflow checks.
+    domain: procurement
+    task_type: procurement
+    case_ids:
+      - PROCUREMENT_SAMPLE
+    source_paths:
+      - data/cases/procurement_decision_cases_sample.csv
+      - data/ledger_samples/mock_procurement_agent_claims.jsonl
+    synthetic: true
+    paper_ready: false
+    notes:
+      - Illustrative sample only; not procurement, legal, or approval advice.
+
+  - case_set_id: full_demo_sample_cases
+    display_name: Full Demo Synthetic Sample Cases
+    description: Combined oil and procurement sample set for Task 8 and Task 9 demos.
+    domain: multi_domain
+    task_type: mixed
+    case_ids:
+      - XOM_2020_11_19
+      - PROCUREMENT_SAMPLE
+    source_paths:
+      - data/cases/energy_decision_cases_sample.csv
+      - data/cases/procurement_decision_cases_sample.csv
+      - data/ledger_samples/mock_oil_agent_claims.jsonl
+      - data/ledger_samples/mock_procurement_agent_claims.jsonl
+    synthetic: true
+    paper_ready: false
+    notes:
+      - Illustrative sample only; not statistically conclusive.

@@ -1,0 +1,71 @@
+methods:
+  - method_id: mock_baseline
+    display_name: Mock Baseline
+    description: Deterministic API-free experiment baseline from Task 3.
+    domain_enabled: false
+    rag_enabled: false
+    ledger_enabled: false
+    guardrails_enabled: false
+    workflow_enabled: false
+    live_enabled: false
+    placeholder: false
+    config_refs:
+      experiment_method: configs/experiments/mock_baseline.yaml
+    notes:
+      - Dry-run baseline; no live TradingAgents execution.
+
+  - method_id: domain_rag_only
+    display_name: Domain Registry plus RAG
+    description: Placeholder metadata for domain-aware local retrieval without ledger checks.
+    domain_enabled: true
+    rag_enabled: true
+    ledger_enabled: false
+    guardrails_enabled: false
+    workflow_enabled: false
+    live_enabled: false
+    placeholder: true
+    notes:
+      - Placeholder method metadata only; no implemented live method is claimed.
+
+  - method_id: rag_ledger
+    display_name: RAG plus Evidence Ledger
+    description: Placeholder metadata for retrieval with deterministic evidence records.
+    domain_enabled: true
+    rag_enabled: true
+    ledger_enabled: true
+    guardrails_enabled: false
+    workflow_enabled: false
+    live_enabled: false
+    placeholder: true
+    notes:
+      - Placeholder method metadata only; no benchmark significance is claimed.
+
+  - method_id: rag_ledger_guardrails
+    display_name: RAG plus Ledger plus Guardrails
+    description: Placeholder metadata for ledger outputs evaluated by guardrails.
+    domain_enabled: true
+    rag_enabled: true
+    ledger_enabled: true
+    guardrails_enabled: true
+    workflow_enabled: false
+    live_enabled: false
+    placeholder: true
+    notes:
+      - Placeholder method metadata only; descriptive comparisons may be missing.
+
+  - method_id: full_reliability_workflow
+    display_name: Full Reliability Workflow
+    description: Offline Task 7.1 workflow using local RAG, ledger, and guardrails.
+    domain_enabled: true
+    rag_enabled: true
+    ledger_enabled: true
+    guardrails_enabled: true
+    workflow_enabled: true
+    live_enabled: false
+    placeholder: false
+    config_refs:
+      benchmark_method_ids:
+        - mock_reliability_workflow_oil
+        - mock_reliability_workflow_procurement
+    notes:
+      - Implemented only for synthetic offline workflow packs.

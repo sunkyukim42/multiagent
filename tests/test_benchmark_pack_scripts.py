@@ -59,7 +59,7 @@ def test_benchmark_pack_and_reports_scripts_work_offline(tmp_path):
     )
     assert research.returncode == 0, research.stderr
     assert FAKE_SECRET not in research.stdout + research.stderr
-    assert "not paper-ready benchmarks" in (research_dir / "research_report.md").read_text(encoding="utf-8")
+    assert "not paper-ready" in (research_dir / "research_report.md").read_text(encoding="utf-8")
 
     portfolio = subprocess.run(
         [

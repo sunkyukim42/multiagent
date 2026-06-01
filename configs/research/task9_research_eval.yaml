@@ -1,0 +1,17 @@
+evaluation_id: task9_research_eval
+benchmark_configs:
+  - path: configs/benchmarks/task8_full_demo.yaml
+    output_dir: results/benchmark_packs/task9_research_eval_full_demo
+    pack_id: task9_research_eval_full_demo
+    rebuild_index: true
+method_matrix_path: configs/research/method_matrix.yaml
+case_sets_path: configs/research/case_sets.yaml
+ablation_matrix_path: configs/research/ablation_matrix.yaml
+seeds: [1, 2]
+output_dir: results/research_eval/task9_demo
+max_runs:
+fail_fast: false
+notes:
+  - Synthetic infrastructure fixture only.
+  - Not paper-ready and not statistically conclusive.
+  - No financial, procurement, or legal advice.

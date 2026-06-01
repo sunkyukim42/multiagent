@@ -1,0 +1,45 @@
+comparisons:
+  - comparison_id: no_domain_vs_domain
+    display_name: No Domain Metadata vs Domain Metadata
+    component_changed: domain_registry
+    baseline_method_id: mock_baseline
+    treatment_method_id: domain_rag_only
+    metric: overall_score
+    notes:
+      - Descriptive scaffold only; paired benchmark data may be unavailable.
+
+  - comparison_id: rag_vs_no_rag
+    display_name: RAG vs No RAG
+    component_changed: retrieval
+    baseline_method_id: mock_baseline
+    treatment_method_id: domain_rag_only
+    metric: overall_score
+    notes:
+      - Illustrative component comparison; not statistically conclusive.
+
+  - comparison_id: ledger_effect
+    display_name: Evidence Ledger Effect
+    component_changed: evidence_ledger
+    baseline_method_id: domain_rag_only
+    treatment_method_id: rag_ledger
+    metric: citation_coverage
+    notes:
+      - Ledger comparison is metadata-only until matching benchmark runs exist.
+
+  - comparison_id: guardrails_effect
+    display_name: Guardrails Effect
+    component_changed: reliability_guardrails
+    baseline_method_id: rag_ledger
+    treatment_method_id: rag_ledger_guardrails
+    metric: unsupported_claim_rate
+    notes:
+      - Guardrail comparison is descriptive and sample-bound.
+
+  - comparison_id: workflow_effect
+    display_name: Workflow Routing Effect
+    component_changed: reliability_workflow
+    baseline_method_id: rag_ledger_guardrails
+    treatment_method_id: full_reliability_workflow
+    metric: overall_score
+    notes:
+      - Full workflow comparison uses synthetic offline workflow outputs only.
