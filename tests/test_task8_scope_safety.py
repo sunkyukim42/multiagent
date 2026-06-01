@@ -85,6 +85,7 @@ RAW_LINE_MINIMUMS = {
 
 EXPECTED_GITATTRIBUTES_LINES = {
     "* text=auto",
+    ".gitattributes text eol=lf",
     "README.md text eol=lf",
     "*.py text eol=lf",
     "*.md text eol=lf",
