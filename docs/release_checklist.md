@@ -26,7 +26,7 @@ Use this checklist before publishing or presenting the repository.
 ## Presentation Checks
 
 - Confirm reports state that sample outputs are synthetic and illustrative.
-- Confirm reports do not claim paper-ready benchmark quality.
+- Confirm reports do not claim paper-ready quality.
 - Confirm reports do not provide financial, procurement, or legal advice.
 - Confirm heuristic groundedness is described as lexical/heuristic, not semantic entailment.
 - Confirm live `python main.py` remains separate from the offline demo.

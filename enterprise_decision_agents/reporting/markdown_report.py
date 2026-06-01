@@ -5,7 +5,7 @@ from enterprise_decision_agents.reporting.report_schema import BenchmarkPackSumm
 
 
 DISCLAIMER = (
-    "Sample outputs are synthetic and illustrative. They are not paper-ready benchmarks, "
+    "Sample outputs are synthetic and illustrative. They are not paper-ready, "
     "not financial advice, and not procurement advice. Heuristic groundedness is not semantic entailment."
 )
 

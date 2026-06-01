@@ -109,7 +109,7 @@ def render_benchmark_markdown(summary: BenchmarkPackSummary) -> str:
         "",
         (
             "Synthetic illustrative outputs only. These results are not "
-            "paper-ready benchmarks and are not financial or procurement advice."
+            "paper-ready and are not financial or procurement advice."
         ),
         "",
         "## Aggregate Metrics",

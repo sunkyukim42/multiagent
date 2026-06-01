@@ -37,7 +37,7 @@ collected.
 
 ## Limitations
 
-Sample outputs are synthetic and not paper-ready benchmarks. Heuristic
+Sample outputs are synthetic and not paper-ready. Heuristic
 groundedness is lexical overlap, not semantic entailment.
 
 Reports are not investment advice, procurement advice, legal advice, or
