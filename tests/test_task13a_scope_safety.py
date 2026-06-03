@@ -53,17 +53,16 @@ def test_task13a_adds_no_runtime_calls_or_heavy_dependencies():
     assert "pptx" not in source_text
 
 
-def test_task13a_does_not_add_future_runner_or_prompt_files():
+def test_task13a_does_not_add_future_runner_or_batch_files():
     forbidden_paths = [
         Path("enterprise_decision_agents/live/openai_runner.py"),
-        Path("enterprise_decision_agents/live/prompt_builder.py"),
         Path("scripts/run_live_research_evaluation.py"),
         Path("scripts/summarize_live_experiment.py"),
         Path("multiagent"),
     ]
 
     for path in forbidden_paths:
-        assert not path.exists(), f"{path} should not exist in Task 13A"
+        assert not path.exists(), f"{path} should not exist before Task 13C/13D"
 
 
 def test_task13a_docs_and_ignore_rules_keep_boundaries():

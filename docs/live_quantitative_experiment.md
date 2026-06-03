@@ -10,7 +10,8 @@ graph.
 - Task 11: build live case sets and collect or plan external data snapshots.
 - Task 12: label forward outcomes from cached label-only data.
 - Task 13A: define LLM output schemas, cache helpers, parsers, and cost estimates.
-- Task 13B-13D: build prompts, add explicit OpenAI execution, and run controlled LLM decision experiments.
+- Task 13B: build offline prompt contexts from controlled method variants and cached metadata.
+- Task 13C-13D: add explicit OpenAI execution and run controlled LLM decision experiments.
 - Task 14: run statistical evaluation and write paper-facing analysis.
 
 ## API Keys
@@ -88,11 +89,44 @@ perform statistical testing. Future cached LLM outputs are ignored under
 `results/llm_cache/`, and future live research outputs are ignored under
 `results/live_research_eval/`.
 
+## Task 13B: Offline Prompt Context Preview
+
+Task 13B defines six controlled live-evaluation method variants in
+`configs/live_experiments/live_method_matrix.yaml` and builds deterministic
+prompt contexts from Task 11 cases plus local normalized snapshot metadata. It
+does not call OpenAI, provider APIs, embeddings, TradingAgents, or external
+services.
+
+Prompt contexts use only information available on or before the case decision
+date. Task 12 label fields, future returns, target dates, future prices,
+post-decision rows, and `price_label_window` records are excluded from prompt
+text and messages. Label files may be referenced only to document excluded
+fields.
+
+```bash
+python scripts/preview_live_prompt_context.py \
+  --cases data/cases/live_panel_2020_2024.csv \
+  --case-id XOM_2020_03_31 \
+  --method-matrix configs/live_experiments/live_method_matrix.yaml \
+  --method-id full_reliability_workflow \
+  --snapshot-dir data/live_snapshots/task11_plan \
+  --labeled-cases data/cases/live_panel_2020_2024_labeled.csv \
+  --seed 1 \
+  --output-json results/live_research_eval/task13b_preview/full_prompt.json \
+  --output-md results/live_research_eval/task13b_preview/full_prompt.md \
+  --print-summary
+```
+
+The command prints hashes, warning counts, evidence counts, and output paths by
+default. Full prompt printing is opt-in with `--show-prompt`. Generated previews
+are ignored under `results/live_research_eval/`.
+
 ## Current Limitations
 
 - Task 11 makes no performance claim.
 - Task 12 labels are not a performance claim.
-- Task 11/12 outputs are not paper-ready and not statistically conclusive.
-- Task 11/12 outputs do not provide financial/procurement/legal advice.
+- Task 13B prompt previews are not model results or performance evidence.
+- Task 11/12/13B outputs are not paper-ready and not statistically conclusive.
+- Task 11/12/13B outputs do not provide financial/procurement/legal advice.
 - Provider endpoint behavior may need provider-plan-specific adjustment.
-- Task 13B-13D LLM execution and Task 14 statistical evaluation remain future work.
+- Task 13C-13D LLM execution and Task 14 statistical evaluation remain future work.

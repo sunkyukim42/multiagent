@@ -67,6 +67,7 @@ Generated artifacts are ignored by git under `results/` and `data/indexes/`.
 | `scripts/build_live_case_set.py` | Deterministic Task 11 live case panel builder. |
 | `scripts/collect_live_snapshots.py` | Cache-first Task 11 snapshot planner/collector. |
 | `scripts/label_market_outcomes.py` | Cache-only Task 12 market outcome labeler. |
+| `scripts/preview_live_prompt_context.py` | Offline Task 13B live prompt context previewer. |
 
 ## Task Progression
 
@@ -86,6 +87,7 @@ Generated artifacts are ignored by git under `results/` and `data/indexes/`.
 | Task 11 | Added live case-set and external snapshot collection scaffolding. |
 | Task 12 | Added cache-only market outcome labeling. |
 | Task 13A | Added LLM output schema, cache, parser, and cost-estimation foundation. |
+| Task 13B | Added offline live method matrix and prompt context builder. |
 
 ## Safety Boundaries
 
@@ -252,6 +254,38 @@ evaluation. Generated future LLM caches and live research outputs are ignored
 under `results/llm_cache/` and `results/live_research_eval/`. Task 13B builds
 prompts, Task 13C adds the explicit OpenAI runner, Task 13D adds batch live
 evaluation, and Task 14 remains the statistical evaluation layer.
+
+## Task 13B: Live Method Matrix And Prompt Context Builder
+
+Task 13B adds an offline prompt/input construction layer for controlled future
+LLM experiments. It defines six method variants in
+`configs/live_experiments/live_method_matrix.yaml`, builds deterministic prompt
+contexts from Task 11 cases and local cached snapshot metadata, and writes safe
+previews without calling OpenAI, provider APIs, embeddings, `python main.py`, or
+the live TradingAgents graph.
+
+Preview one prompt context:
+
+```bash
+python scripts/preview_live_prompt_context.py \
+  --cases data/cases/live_panel_2020_2024.csv \
+  --case-id XOM_2020_03_31 \
+  --method-matrix configs/live_experiments/live_method_matrix.yaml \
+  --method-id full_reliability_workflow \
+  --snapshot-dir data/live_snapshots/task11_plan \
+  --labeled-cases data/cases/live_panel_2020_2024_labeled.csv \
+  --seed 1 \
+  --output-json results/live_research_eval/task13b_preview/full_prompt.json \
+  --output-md results/live_research_eval/task13b_preview/full_prompt.md \
+  --print-summary
+```
+
+Task 12 labels and future returns are excluded from prompt text and messages.
+The prompt preview is synthetic/illustrative research scaffolding, not
+paper-ready, not statistically conclusive, not financial/procurement/legal
+advice, and heuristic groundedness is not semantic entailment. Task 13C adds
+the explicit OpenAI runner, Task 13D adds batch live evaluation, and Task 14
+performs statistical evaluation.
 
 ## Legacy TradingAgents Notes
 

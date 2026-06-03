@@ -1,0 +1,87 @@
+matrix_id: task13b_live_method_matrix
+methods:
+  - method_id: baseline_tradingagents_like
+    display_name: Baseline TradingAgents-like
+    domain_enabled: false
+    rag_enabled: false
+    ledger_enabled: false
+    guardrails_enabled: false
+    workflow_enabled: false
+    include_snapshot_summary: true
+    include_domain_context: false
+    include_evidence_context: false
+    include_reliability_context: false
+    live_tradingagents_graph: false
+    notes:
+      - Baseline prompt uses general market/news/fundamental summaries when available.
+      - This is a TradingAgents-like offline prompt proxy, not a live TradingAgents graph run.
+  - method_id: domain_agent_only
+    display_name: Domain Agent Only
+    domain_enabled: true
+    rag_enabled: false
+    ledger_enabled: false
+    guardrails_enabled: false
+    workflow_enabled: false
+    include_snapshot_summary: true
+    include_domain_context: true
+    include_evidence_context: false
+    include_reliability_context: false
+    live_tradingagents_graph: false
+    notes:
+      - Adds compact domain metadata without local RAG, ledger, or guardrail context.
+  - method_id: domain_rag
+    display_name: Domain RAG
+    domain_enabled: true
+    rag_enabled: true
+    ledger_enabled: false
+    guardrails_enabled: false
+    workflow_enabled: false
+    include_snapshot_summary: true
+    include_domain_context: true
+    include_evidence_context: true
+    include_reliability_context: false
+    live_tradingagents_graph: false
+    notes:
+      - Adds domain and local evidence-context placeholders for controlled prompt comparison.
+  - method_id: rag_ledger
+    display_name: RAG + Evidence Ledger
+    domain_enabled: true
+    rag_enabled: true
+    ledger_enabled: true
+    guardrails_enabled: false
+    workflow_enabled: false
+    include_snapshot_summary: true
+    include_domain_context: true
+    include_evidence_context: true
+    include_reliability_context: false
+    live_tradingagents_graph: false
+    notes:
+      - Adds evidence-ledger-oriented context without reliability guardrail scores.
+  - method_id: rag_ledger_guardrails
+    display_name: RAG + Ledger + Guardrails
+    domain_enabled: true
+    rag_enabled: true
+    ledger_enabled: true
+    guardrails_enabled: true
+    workflow_enabled: false
+    include_snapshot_summary: true
+    include_domain_context: true
+    include_evidence_context: true
+    include_reliability_context: true
+    live_tradingagents_graph: false
+    notes:
+      - Adds reliability-context placeholders without workflow routing.
+  - method_id: full_reliability_workflow
+    display_name: Full Reliability Workflow
+    domain_enabled: true
+    rag_enabled: true
+    ledger_enabled: true
+    guardrails_enabled: true
+    workflow_enabled: true
+    include_snapshot_summary: true
+    include_domain_context: true
+    include_evidence_context: true
+    include_reliability_context: true
+    live_tradingagents_graph: false
+    notes:
+      - Represents the full controlled prompt/input variant, not a live workflow execution.
