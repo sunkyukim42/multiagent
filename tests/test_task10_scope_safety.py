@@ -66,13 +66,22 @@ def test_task10_readme_docs_and_configs_keep_required_boundaries():
     readme = Path("README.md").read_text(encoding="utf-8")
     combined = (readme + "\n" + _combined_task10_text()).lower()
 
-    assert "## task 10: final package" in readme.lower()
+    assert "## task 10: final portfolio & graduate research package" in readme.lower()
+    assert "| task 10 | added final portfolio and graduate research package. |" in readme.lower()
+    assert "docs/final/" in readme
+    assert "configs/presentation/" in readme
+    assert "enterprise_decision_agents/presentation/" in readme
+    assert "scripts/generate_final_package.py" in readme
+    assert "--output-dir results/final_packages/task10_final_package" in readme
+    assert "--package-id task10_final_package" in readme
     assert "synthetic" in combined
     assert "illustrative" in combined
     assert "not paper-ready" in combined
     assert "not statistically conclusive" in combined
     assert "no financial/procurement/legal advice" in combined
     assert "heuristic groundedness is not semantic entailment" in combined
+    assert "offline demo does not require api keys" in combined
+    assert "python main.py" in readme
     assert "external apis" in combined
     assert "task 11" not in combined
     for phrase in [

@@ -4,9 +4,17 @@ from enterprise_decision_agents.presentation.final_package_schema import FinalPa
 from enterprise_decision_agents.presentation.narrative_templates import DEFAULT_PACKAGE_BOUNDARIES
 
 
-def render_final_package_readme(summary: FinalPackageSummary, source_references: list[str]) -> str:
+def render_final_package_readme(
+    summary: FinalPackageSummary,
+    source_references: list[str],
+    *,
+    output_dir: str,
+) -> str:
     lines = [
         f"# Final Package: {summary.display_name}",
+        "",
+        f"Package ID: `{summary.package_id}`",
+        f"Output directory: `{output_dir}`",
         "",
         *summary.disclaimers,
         "",

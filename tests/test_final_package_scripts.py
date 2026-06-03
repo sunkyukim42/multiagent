@@ -59,7 +59,12 @@ def test_generate_final_package_script_works_offline_with_cli_overrides(tmp_path
     assert manifest["artifacts"][0]["audience"] == "graduate_lab"
     assert manifest["artifacts"][0]["path"].endswith("doc.md")
     assert manifest["artifacts"][0]["generated_at"]
-    assert (output_dir / "README_FINAL_PACKAGE.md").exists()
+    readme = (output_dir / "README_FINAL_PACKAGE.md").read_text(encoding="utf-8")
+    assert "Package ID: `cli_pkg`" in readme
+    assert f"Output directory: `{output_dir}`" in readme
+    assert "--package-id cli_pkg" in readme
+    assert f"--output-dir {output_dir}" in readme
+    assert "config_pkg" not in readme
 
 
 def test_generate_final_package_script_fails_for_missing_source_without_secret_leak(tmp_path):

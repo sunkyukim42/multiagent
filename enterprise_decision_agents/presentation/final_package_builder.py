@@ -62,13 +62,19 @@ def build_final_package(
         resolved_output_dir,
         generated_at=generated_at,
     )
+    demo_commands = _resolved_demo_commands(
+        config.demo_commands,
+        config_path=config_path,
+        output_dir=resolved_output_dir,
+        package_id=resolved_package_id,
+    )
     summary = FinalPackageSummary(
         package_id=resolved_package_id,
         display_name=config.display_name,
         generated_at=generated_at,
         artifacts=output_artifacts,
         audience_profiles=config.audience_profiles,
-        demo_commands=config.demo_commands,
+        demo_commands=demo_commands,
         disclaimers=config.disclaimers,
         source_references=_source_reference_strings(source_docs, source_references, source_configs),
         limitations=config.limitations or DEFAULT_LIMITATIONS,
@@ -76,6 +82,7 @@ def build_final_package(
             "config_path": str(config_path),
             "config_package_id": config.package_id,
             "config_output_dir": config.output_dir,
+            "resolved_output_dir": str(resolved_output_dir),
             "offline_only": True,
             "generated_artifacts_ignored": True,
             "source_config_count": len(source_configs),
@@ -89,7 +96,11 @@ def build_final_package(
         source_configs=source_configs,
         source_references=source_references,
     )
-    readme = render_final_package_readme(summary, summary.source_references)
+    readme = render_final_package_readme(
+        summary,
+        summary.source_references,
+        output_dir=str(resolved_output_dir),
+    )
     _check_text_safe(readme, README_FILE)
     _check_payload_safe(manifest, "artifact_manifest")
 
@@ -234,6 +245,32 @@ def _source_reference_strings(
         seen.add(value)
         references.append(value)
     return references
+
+
+def _resolved_demo_commands(
+    commands: list[str],
+    *,
+    config_path: Path,
+    output_dir: Path,
+    package_id: str,
+) -> list[str]:
+    final_package_command = (
+        "python scripts/generate_final_package.py "
+        f"--config {config_path} "
+        f"--output-dir {output_dir} "
+        f"--package-id {package_id}"
+    )
+    resolved: list[str] = []
+    replaced = False
+    for command in commands:
+        if "scripts/generate_final_package.py" in command:
+            resolved.append(final_package_command)
+            replaced = True
+        else:
+            resolved.append(command)
+    if not replaced:
+        resolved.append(final_package_command)
+    return resolved
 
 
 def _resolve_path(value: str, config_path: Path) -> Path:

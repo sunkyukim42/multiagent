@@ -51,7 +51,12 @@ def test_final_package_builder_copies_docs_and_writes_manifest(tmp_path):
     assert manifest_artifact["audience"] == "graduate_research"
     assert manifest_artifact["path"].endswith("portfolio.md")
     assert manifest_artifact["generated_at"]
-    assert "Synthetic and illustrative sample only." in outputs["readme"].read_text(encoding="utf-8")
+    readme = outputs["readme"].read_text(encoding="utf-8")
+    assert "Package ID: `cli_pkg`" in readme
+    assert f"Output directory: `{output_dir}`" in readme
+    assert "--package-id cli_pkg" in readme
+    assert f"--output-dir {output_dir}" in readme
+    assert "Synthetic and illustrative sample only." in readme
     assert "Full source body should be copied" not in outputs["artifact_manifest"].read_text(encoding="utf-8")
 
     summary_data = json.loads(outputs["summary"].read_text(encoding="utf-8"))
@@ -59,6 +64,7 @@ def test_final_package_builder_copies_docs_and_writes_manifest(tmp_path):
     assert summary_data["artifact_count"] == 1
     assert str(source_reference) in summary_data["source_references"]
     assert "No financial/procurement/legal advice." in summary_data["limitations"]
+    assert "--package-id cli_pkg" in " ".join(summary_data["demo_commands"])
 
 
 def test_final_package_builder_aggregates_missing_sources_before_writing(tmp_path):

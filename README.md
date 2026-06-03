@@ -53,10 +53,14 @@ Generated artifacts are ignored by git under `results/` and `data/indexes/`.
 | `enterprise_decision_agents/guardrails/` | Deterministic Reliability Guardrails. |
 | `enterprise_decision_agents/orchestration/` | Optional offline reliability-aware workflow. |
 | `enterprise_decision_agents/reporting/` | Task 8 benchmark and portfolio reporting. |
+| `enterprise_decision_agents/presentation/` | Task 10 final package schemas and builder. |
 | `configs/` | Domain, RAG, ledger, guardrail, workflow, experiment, and benchmark YAML. |
+| `configs/presentation/` | Final package presentation YAML. |
 | `data/` | Synthetic sample cases, claims, and RAG sample documents. |
 | `docs/` | Architecture, research plan, demo guide, metrics, and release checklist. |
-| `scripts/` | Offline build, validation, benchmark, report, and workflow commands. |
+| `docs/final/` | Final portfolio and graduate research Markdown assets. |
+| `scripts/` | Offline build, validation, benchmark, report, workflow, and final package commands. |
+| `scripts/generate_final_package.py` | Deterministic Task 10 final package generator. |
 
 ## Task Progression
 
@@ -72,7 +76,7 @@ Generated artifacts are ignored by git under `results/` and `data/indexes/`.
 | Task 7.1 | Cleaned workflow config semantics and runtime behavior. |
 | Task 8 | Added benchmark/report/portfolio packaging. |
 | Task 9 | Added offline research-evaluation tables and aggregation scaffolds. |
-| Task 10 | Added final portfolio and graduate research package generation. |
+| Task 10 | Added final portfolio and graduate research package. |
 
 ## Safety Boundaries
 
@@ -123,11 +127,20 @@ These outputs are synthetic and illustrative. They are not paper-ready, not
 statistically conclusive, not financial/procurement/legal advice, and heuristic
 groundedness is not semantic entailment.
 
-## Task 10: Final Package
+## Task 10: Final Portfolio & Graduate Research Package
 
 Task 10 packages tracked final-facing Markdown docs into an ignored offline
 portfolio and graduate research package. It does not call external APIs, run
 LLMs, modify the live TradingAgents graph, or generate PDF/PowerPoint assets.
+The offline demo does not require API keys, and the live `python main.py` path
+remains separate.
+
+Primary Task 10 assets:
+
+- Final docs: `docs/final/`
+- Package config: `configs/presentation/final_portfolio_package.yaml`
+- Builder package: `enterprise_decision_agents/presentation/`
+- CLI script: `scripts/generate_final_package.py`
 
 Generate the final package:
 
