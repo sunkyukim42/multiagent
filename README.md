@@ -72,6 +72,7 @@ Generated artifacts are ignored by git under `results/` and `data/indexes/`.
 | Task 7.1 | Cleaned workflow config semantics and runtime behavior. |
 | Task 8 | Added benchmark/report/portfolio packaging. |
 | Task 9 | Added offline research-evaluation tables and aggregation scaffolds. |
+| Task 10 | Added final portfolio and graduate research package generation. |
 
 ## Safety Boundaries
 
@@ -90,6 +91,7 @@ Generated artifacts are ignored by git under `results/` and `data/indexes/`.
 - [Portfolio Demo](docs/portfolio_demo.md)
 - [Evaluation Metrics](docs/evaluation_metrics.md)
 - [Research Evaluation Pack](docs/research_evaluation_pack.md)
+- [Final Package Docs](docs/final/portfolio_project_summary.md)
 - [Release Checklist](docs/release_checklist.md)
 
 ## Task 9: Research Evaluation Pack
@@ -120,6 +122,27 @@ python scripts/generate_kci_tables.py \
 These outputs are synthetic and illustrative. They are not paper-ready, not
 statistically conclusive, not financial/procurement/legal advice, and heuristic
 groundedness is not semantic entailment.
+
+## Task 10: Final Package
+
+Task 10 packages tracked final-facing Markdown docs into an ignored offline
+portfolio and graduate research package. It does not call external APIs, run
+LLMs, modify the live TradingAgents graph, or generate PDF/PowerPoint assets.
+
+Generate the final package:
+
+```bash
+python scripts/generate_final_package.py \
+  --config configs/presentation/final_portfolio_package.yaml \
+  --output-dir results/final_packages/task10_final_package \
+  --package-id task10_final_package
+```
+
+The generated package includes a summary JSON, artifact manifest, README, and
+copies of the tracked `docs/final/` Markdown sources. The materials remain
+synthetic and illustrative, not paper-ready, not statistically conclusive, not
+financial/procurement/legal advice, and heuristic groundedness is not semantic
+entailment.
 
 ## Legacy TradingAgents Notes
 

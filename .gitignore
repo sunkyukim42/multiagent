@@ -8,6 +8,7 @@ results/benchmark_packs/*
 results/reports/*
 results/research_eval/*
 results/research_tables/*
+results/final_packages/*
 data/indexes/*
 !data/indexes/.gitkeep
 rag_query_outputs/*

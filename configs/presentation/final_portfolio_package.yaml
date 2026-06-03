@@ -1,0 +1,79 @@
+package_id: final_portfolio_package
+display_name: Final Portfolio And Graduate Research Package
+audience_profiles:
+  - graduate_lab
+  - enterprise_recruiter
+  - portfolio_reviewer
+source_docs:
+  - artifact_id: one_page_research_statement
+    source_path: docs/final/one_page_research_statement.md
+    artifact_type: markdown
+    audience_profiles: [graduate_lab]
+    description: One-page graduate research statement.
+  - artifact_id: graduate_lab_contact_summary
+    source_path: docs/final/graduate_lab_contact_summary.md
+    artifact_type: markdown
+    audience_profiles: [graduate_lab]
+    description: Placeholder-only lab contact summary.
+  - artifact_id: portfolio_project_summary
+    source_path: docs/final/portfolio_project_summary.md
+    artifact_type: markdown
+    audience_profiles: [enterprise_recruiter, portfolio_reviewer]
+    description: Portfolio-facing project summary.
+  - artifact_id: interview_story_bank
+    source_path: docs/final/interview_story_bank.md
+    artifact_type: markdown
+    audience_profiles: [enterprise_recruiter]
+    description: STAR interview story bank.
+  - artifact_id: kci_extension_roadmap
+    source_path: docs/final/kci_extension_roadmap.md
+    artifact_type: markdown
+    audience_profiles: [graduate_lab]
+    description: Research extension roadmap for KCI-style work.
+  - artifact_id: final_demo_checklist
+    source_path: docs/final/final_demo_checklist.md
+    artifact_type: markdown
+    audience_profiles: [enterprise_recruiter, portfolio_reviewer]
+    description: Safe final demo checklist.
+  - artifact_id: project_limitations
+    source_path: docs/final/project_limitations.md
+    artifact_type: markdown
+    audience_profiles: [graduate_lab, enterprise_recruiter, portfolio_reviewer]
+    description: Single source of truth for project limitations.
+source_references:
+  - docs/architecture_overview.md
+  - docs/research_plan.md
+  - docs/research_evaluation_pack.md
+  - docs/portfolio_demo.md
+  - docs/evaluation_metrics.md
+source_configs:
+  - configs/benchmarks/task8_full_demo.yaml
+  - configs/research/task9_research_eval.yaml
+  - configs/research/method_matrix.yaml
+  - configs/research/case_sets.yaml
+  - configs/research/ablation_matrix.yaml
+demo_commands:
+  - python scripts/run_benchmark_pack.py --config configs/benchmarks/task8_full_demo.yaml --output-dir results/benchmark_packs/task10_regression_full_demo --pack-id task10_regression_full_demo --rebuild-index
+  - python scripts/run_research_evaluation.py --config configs/research/task9_research_eval.yaml --output-dir results/research_eval/task10_regression_eval --evaluation-id task10_regression_eval --run-benchmarks
+  - python scripts/generate_kci_tables.py --evaluation-dir results/research_eval/task10_regression_eval --output-dir results/research_tables/task10_regression_eval --table-id task10_regression_eval
+  - python scripts/generate_final_package.py --config configs/presentation/final_portfolio_package.yaml --output-dir results/final_packages/task10_final_package --package-id task10_final_package
+output_dir: results/final_packages/final_portfolio_package
+disclaimers:
+  - Synthetic and illustrative sample only.
+  - Not paper-ready.
+  - Not statistically conclusive.
+  - No financial/procurement/legal advice.
+  - Heuristic groundedness is not semantic entailment.
+  - Offline demo does not require API keys.
+limitations:
+  - Synthetic and illustrative sample only.
+  - Not paper-ready.
+  - Not statistically conclusive.
+  - No financial/procurement/legal advice.
+  - Heuristic groundedness is not semantic entailment.
+  - Offline demo does not require API keys.
+metadata:
+  task: task10
+  offline_only: true
+  generated_outputs_ignored: true
+fail_fast: false
