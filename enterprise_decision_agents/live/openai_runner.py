@@ -135,16 +135,16 @@ class OpenAIRunner:
         if not allow_live_openai:
             return _guard_response(request, "refused", "live_openai_disabled", "Live OpenAI calls require explicit allow_live_openai=True.")
 
-        api_key = os.environ.get("OPENAI_API_KEY")
-        if not api_key:
-            return _guard_response(request, "missing_key", "missing_key", "OPENAI_API_KEY is required for explicit live OpenAI calls.")
-
         cost_response = self._cost_guard(request)
         if cost_response is not None:
             return cost_response
 
         if self.openai_calls_made + 1 > self.config.max_openai_calls_per_run:
             return _guard_response(request, "call_cap_exceeded", "call_cap_exceeded", "max_openai_calls_per_run would be exceeded.")
+
+        api_key = os.environ.get("OPENAI_API_KEY")
+        if not api_key:
+            return _guard_response(request, "missing_key", "missing_key", "OPENAI_API_KEY is required for explicit live OpenAI calls.")
 
         try:
             client = self._build_client(api_key)

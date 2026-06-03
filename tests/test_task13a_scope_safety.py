@@ -55,13 +55,14 @@ def test_task13a_adds_no_runtime_calls_or_heavy_dependencies():
 
 def test_task13a_does_not_add_future_runner_or_batch_files():
     forbidden_paths = [
-        Path("scripts/run_live_research_evaluation.py"),
         Path("scripts/summarize_live_experiment.py"),
+        Path("scripts/run_live_statistical_evaluation.py"),
+        Path("enterprise_decision_agents/live/live_statistics.py"),
         Path("multiagent"),
     ]
 
     for path in forbidden_paths:
-        assert not path.exists(), f"{path} should not exist before Task 13C/13D"
+        assert not path.exists(), f"{path} should not exist before Task 14"
 
 
 def test_task13a_docs_and_ignore_rules_keep_boundaries():

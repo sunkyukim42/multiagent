@@ -68,6 +68,7 @@ Generated artifacts are ignored by git under `results/` and `data/indexes/`.
 | `scripts/collect_live_snapshots.py` | Cache-first Task 11 snapshot planner/collector. |
 | `scripts/label_market_outcomes.py` | Cache-only Task 12 market outcome labeler. |
 | `scripts/preview_live_prompt_context.py` | Offline Task 13B live prompt context previewer. |
+| `scripts/run_live_research_evaluation.py` | Task 13D batch live research evaluation runner. |
 
 ## Task Progression
 
@@ -89,6 +90,7 @@ Generated artifacts are ignored by git under `results/` and `data/indexes/`.
 | Task 13A | Added LLM output schema, cache, parser, and cost-estimation foundation. |
 | Task 13B | Added offline live method matrix and prompt context builder. |
 | Task 13C | Added gated OpenAI runner abstraction and deterministic fake runner. |
+| Task 13D | Added batch live research evaluation orchestration. |
 
 ## Safety Boundaries
 
@@ -240,7 +242,8 @@ python scripts/label_market_outcomes.py \
 Task 12 labels are synthetic/illustrative research scaffolding, not paper-ready,
 not statistically conclusive, not financial/procurement/legal advice, and not a
 performance claim. Heuristic groundedness remains separate from semantic
-entailment. Task 13 and Task 14 remain future work.
+entailment. Task 13 builds controlled LLM decision infrastructure, and Task 14
+remains the statistical evaluation layer.
 
 ## Task 13A: LLM Output Schema, Cache, Parser, And Costing
 
@@ -293,14 +296,47 @@ performs statistical evaluation.
 Task 13C adds only the runner abstraction for future LLM experiments:
 request/response schemas, a deterministic fake runner for tests, explicit live
 OpenAI gating, cost and call caps, and conversion into Task 13A
-`LLMDecisionOutput` records. Default behavior refuses live OpenAI calls, and no
-batch case x method x seed runner is included.
+`LLMDecisionOutput` records. Default behavior refuses live OpenAI calls.
 
 The real OpenAI path requires an explicit future live flag and `OPENAI_API_KEY`
 in the local environment. Key values are never printed or stored. Tests use the
-fake runner and guardrail responses, not paid API calls. Task 13D remains the
-batch live evaluation layer, and Task 14 remains the statistical evaluation
+fake runner and guardrail responses, not paid API calls. Task 13D uses this
+runner for batch orchestration, and Task 14 remains the statistical evaluation
 layer. Task 13C makes no performance claim.
+
+## Task 13D: Batch Live Research Evaluation Runner
+
+Task 13D runs controlled `case x method x seed` decision batches using Task
+13B prompt construction, Task 13A cache/output schemas, and Task 13C fake or
+gated OpenAI runners. Defaults remain API-free and cache-only. The fake-runner
+mode is intended for offline validation and writes ignored outputs under
+`results/live_research_eval/` plus cache rows under `results/llm_cache/`.
+
+Run a safe fake-runner batch:
+
+```bash
+python scripts/run_live_research_evaluation.py \
+  --config configs/live_experiments/live_research_eval_default.yaml \
+  --cases data/cases/live_panel_2020_2024.csv \
+  --labeled-cases data/cases/live_panel_2020_2024_labeled.csv \
+  --snapshot-dir data/live_snapshots/task11_plan \
+  --method-matrix configs/live_experiments/live_method_matrix.yaml \
+  --openai-runtime configs/live_experiments/openai_runtime.yaml \
+  --output-dir results/live_research_eval/task13d_fake \
+  --cache-dir results/llm_cache/task13d_fake \
+  --evaluation-id task13d_fake \
+  --fake-runner \
+  --fake-action BUY \
+  --max-cases 2 \
+  --max-methods 2 \
+  --seeds 1 \
+  --print-summary
+```
+
+Task 13D excludes Task 12 labels, returns, target dates, future prices, and
+label statuses from prompt text and messages. Live OpenAI requires the explicit
+`--allow-live-openai` flag plus run caps, and Task 14 is required before any
+statistical evaluation or performance claim.
 
 ## Legacy TradingAgents Notes
 

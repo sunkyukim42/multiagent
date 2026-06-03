@@ -126,9 +126,8 @@ are ignored under `results/live_research_eval/`.
 
 Task 13C adds request/response schemas, a deterministic fake runner, live
 OpenAI gating, call caps, cost caps, and conversion into Task 13A
-`LLMDecisionOutput` records. It does not add a batch runner, does not call
-external provider APIs, does not run TradingAgents, and does not perform
-statistical testing.
+`LLMDecisionOutput` records. It does not call external provider APIs, does not
+run TradingAgents, and does not perform statistical testing.
 
 Default runner behavior refuses live OpenAI calls. A future caller must pass an
 explicit live flag before the runner reads `OPENAI_API_KEY` from the local
@@ -136,13 +135,47 @@ environment, and key values are never printed or stored. Tests use fake outputs
 and guardrail responses only. Pricing remains an estimate from config and must
 be verified before any real live run.
 
+## Task 13D: Batch Live Research Evaluation Runner
+
+Task 13D runs controlled `case x method x seed` decision batches using Task 13B
+prompt construction, Task 13A cache/output schemas, and Task 13C fake or gated
+OpenAI runners. Default config mode is cache-only, and safe validation can use
+`--dry-run` or `--fake-runner` without reading API keys or making paid calls.
+
+```bash
+python scripts/run_live_research_evaluation.py \
+  --config configs/live_experiments/live_research_eval_default.yaml \
+  --cases data/cases/live_panel_2020_2024.csv \
+  --labeled-cases data/cases/live_panel_2020_2024_labeled.csv \
+  --snapshot-dir data/live_snapshots/task11_plan \
+  --method-matrix configs/live_experiments/live_method_matrix.yaml \
+  --openai-runtime configs/live_experiments/openai_runtime.yaml \
+  --output-dir results/live_research_eval/task13d_fake \
+  --cache-dir results/llm_cache/task13d_fake \
+  --evaluation-id task13d_fake \
+  --fake-runner \
+  --fake-action BUY \
+  --max-cases 2 \
+  --max-methods 2 \
+  --seeds 1 \
+  --print-summary
+```
+
+Live OpenAI mode requires `--allow-live-openai` plus explicit case, method,
+call, and cost caps. Task 12 labels, returns, target dates, future prices, and
+label statuses are loaded only after prompt construction and never enter prompt
+text or messages. Task 13D writes ignored outputs under
+`results/live_research_eval/` and `results/llm_cache/`; it makes no performance
+claim.
+
 ## Current Limitations
 
 - Task 11 makes no performance claim.
 - Task 12 labels are not a performance claim.
 - Task 13B prompt previews are not model results or performance evidence.
 - Task 13C runner tests are not live OpenAI experiments.
+- Task 13D batch outputs are not statistical evidence.
 - Task 11/12/13B outputs are not paper-ready and not statistically conclusive.
 - Task 11/12/13B outputs do not provide financial/procurement/legal advice.
 - Provider endpoint behavior may need provider-plan-specific adjustment.
-- Task 13D batch LLM execution and Task 14 statistical evaluation remain future work.
+- Task 14 statistical evaluation remains future work.

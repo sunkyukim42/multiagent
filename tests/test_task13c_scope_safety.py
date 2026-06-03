@@ -30,10 +30,8 @@ def test_task13c_does_not_modify_live_main_or_graph_integration():
 def test_task13c_adds_no_external_provider_calls_or_future_runners():
     source_text = _combined_task13c_text().lower()
     forbidden_paths = [
-        Path("scripts/run_live_research_evaluation.py"),
         Path("scripts/summarize_live_experiment.py"),
         Path("scripts/run_live_statistical_evaluation.py"),
-        Path("enterprise_decision_agents/live/live_method_runner.py"),
         Path("enterprise_decision_agents/live/live_statistics.py"),
         Path("multiagent"),
     ]

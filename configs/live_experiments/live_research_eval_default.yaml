@@ -1,0 +1,19 @@
+evaluation_id: task13d_default
+cases_path: data/cases/live_panel_2020_2024.csv
+labeled_cases_path: data/cases/live_panel_2020_2024_labeled.csv
+snapshot_dir: data/live_snapshots/task11_plan
+method_matrix_path: configs/live_experiments/live_method_matrix.yaml
+openai_runtime_path: configs/live_experiments/openai_runtime.yaml
+output_dir: results/live_research_eval/task13d_default
+cache_dir: results/llm_cache/task13d_default
+seeds:
+  - 1
+max_cases: 2
+max_methods: 2
+require_labels: false
+allow_unknown_labels: true
+default_runner_mode: cache_only
+notes:
+  - Task 13D orchestrates decisions only.
+  - Task 14 performs statistical evaluation.
+  - Default config does not call OpenAI.
