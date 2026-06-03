@@ -1,0 +1,47 @@
+experiment_id: live_panel_2020_2024
+domains:
+  oil:
+    - XOM
+    - CVX
+    - COP
+    - OXY
+    - SLB
+  semiconductor:
+    - NVDA
+    - AMD
+    - INTC
+    - TSM
+    - MU
+decision_dates:
+  - 2020-03-31
+  - 2020-06-30
+  - 2020-09-30
+  - 2020-12-31
+  - 2021-03-31
+  - 2021-06-30
+  - 2021-09-30
+  - 2021-12-31
+  - 2022-03-31
+  - 2022-06-30
+  - 2022-09-30
+  - 2022-12-30
+  - 2023-03-31
+  - 2023-06-30
+  - 2023-09-29
+  - 2023-12-29
+  - 2024-03-28
+  - 2024-06-28
+  - 2024-09-30
+  - 2024-12-31
+task_type: investment
+market: US
+horizons:
+  - 21
+  - 63
+  - 126
+  - 252
+synthetic: false
+paper_ready: false
+notes:
+  - Historical panel scaffold for future live quantitative experiment.
+  - API snapshots are required before performance claims.

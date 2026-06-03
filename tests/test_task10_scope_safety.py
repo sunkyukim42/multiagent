@@ -83,7 +83,7 @@ def test_task10_readme_docs_and_configs_keep_required_boundaries():
     assert "offline demo does not require api keys" in combined
     assert "python main.py" in readme
     assert "external apis" in combined
-    assert "task 11" not in combined
+    assert "task 11" not in _combined_task10_text().lower()
     for phrase in [
         "statistically significant",
         "proves performance",

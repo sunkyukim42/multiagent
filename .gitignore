@@ -9,8 +9,10 @@ results/reports/*
 results/research_eval/*
 results/research_tables/*
 results/final_packages/*
+results/live_collection/*
 data/indexes/*
 !data/indexes/.gitkeep
+data/live_snapshots/*
 rag_query_outputs/*
 env/
 __pycache__/

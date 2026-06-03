@@ -1,0 +1,52 @@
+fred:
+  enabled: true
+  env_var: FRED_API_KEY
+  min_interval_seconds: 0.25
+  max_calls_per_run: 50
+  max_calls_per_minute: 10
+  max_calls_per_day: 200
+  timeout_seconds: 15
+  retry_count: 1
+  retry_backoff_seconds: 1.0
+  cache_ttl_days: 30
+  notes:
+    - Conservative safety defaults only; verify provider plan before large experiments.
+alphavantage:
+  enabled: true
+  env_var: ALPHAVANTAGE_API_KEY
+  min_interval_seconds: 12.0
+  max_calls_per_run: 25
+  max_calls_per_minute: 5
+  max_calls_per_day: 100
+  timeout_seconds: 20
+  retry_count: 1
+  retry_backoff_seconds: 2.0
+  cache_ttl_days: 30
+  notes:
+    - Conservative safety defaults only; verify provider plan before large experiments.
+finnhub:
+  enabled: true
+  env_var: FINNHUB_API_KEY
+  min_interval_seconds: 1.0
+  max_calls_per_run: 50
+  max_calls_per_minute: 30
+  max_calls_per_day: 200
+  timeout_seconds: 15
+  retry_count: 1
+  retry_backoff_seconds: 1.0
+  cache_ttl_days: 30
+  notes:
+    - Conservative safety defaults only; verify provider plan before large experiments.
+thenewsapi:
+  enabled: true
+  env_var: THENEWSAPI_KEY
+  min_interval_seconds: 2.0
+  max_calls_per_run: 30
+  max_calls_per_minute: 10
+  max_calls_per_day: 100
+  timeout_seconds: 20
+  retry_count: 1
+  retry_backoff_seconds: 2.0
+  cache_ttl_days: 14
+  notes:
+    - Conservative safety defaults only; verify provider plan before large experiments.

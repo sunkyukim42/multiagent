@@ -54,13 +54,18 @@ Generated artifacts are ignored by git under `results/` and `data/indexes/`.
 | `enterprise_decision_agents/orchestration/` | Optional offline reliability-aware workflow. |
 | `enterprise_decision_agents/reporting/` | Task 8 benchmark and portfolio reporting. |
 | `enterprise_decision_agents/presentation/` | Task 10 final package schemas and builder. |
-| `configs/` | Domain, RAG, ledger, guardrail, workflow, experiment, and benchmark YAML. |
+| `enterprise_decision_agents/live/` | Task 11 live case-set and snapshot planning scaffolding. |
+| `configs/` | Domain, RAG, ledger, guardrail, workflow, experiment, benchmark, and live YAML. |
 | `configs/presentation/` | Final package presentation YAML. |
+| `configs/live_experiments/` | Live case panel, provider limits, and snapshot collection YAML. |
 | `data/` | Synthetic sample cases, claims, and RAG sample documents. |
 | `docs/` | Architecture, research plan, demo guide, metrics, and release checklist. |
 | `docs/final/` | Final portfolio and graduate research Markdown assets. |
-| `scripts/` | Offline build, validation, benchmark, report, workflow, and final package commands. |
+| `docs/live_quantitative_experiment.md` | Task 11-14 live quantitative experiment roadmap. |
+| `scripts/` | Offline build, validation, benchmark, report, workflow, final package, and live case commands. |
 | `scripts/generate_final_package.py` | Deterministic Task 10 final package generator. |
+| `scripts/build_live_case_set.py` | Deterministic Task 11 live case panel builder. |
+| `scripts/collect_live_snapshots.py` | Cache-first Task 11 snapshot planner/collector. |
 
 ## Task Progression
 
@@ -77,12 +82,13 @@ Generated artifacts are ignored by git under `results/` and `data/indexes/`.
 | Task 8 | Added benchmark/report/portfolio packaging. |
 | Task 9 | Added offline research-evaluation tables and aggregation scaffolds. |
 | Task 10 | Added final portfolio and graduate research package. |
+| Task 11 | Added live case-set and external snapshot collection scaffolding. |
 
 ## Safety Boundaries
 
 - Offline demo commands do not require API keys.
 - `.env` is ignored by git and should contain local secrets only.
-- Generated outputs are ignored under `results/` and `data/indexes/`.
+- Generated outputs are ignored under `results/`, `data/indexes/`, and `data/live_snapshots/`.
 - `python main.py` is the separate live TradingAgents demo path.
 - Sample outputs are synthetic and illustrative, not paper-ready.
 - Reports are not financial, procurement, or legal advice.
@@ -96,6 +102,7 @@ Generated artifacts are ignored by git under `results/` and `data/indexes/`.
 - [Evaluation Metrics](docs/evaluation_metrics.md)
 - [Research Evaluation Pack](docs/research_evaluation_pack.md)
 - [Final Package Docs](docs/final/portfolio_project_summary.md)
+- [Live Quantitative Experiment Roadmap](docs/live_quantitative_experiment.md)
 - [Release Checklist](docs/release_checklist.md)
 
 ## Task 9: Research Evaluation Pack
@@ -156,6 +163,46 @@ copies of the tracked `docs/final/` Markdown sources. The materials remain
 synthetic and illustrative, not paper-ready, not statistically conclusive, not
 financial/procurement/legal advice, and heuristic groundedness is not semantic
 entailment.
+
+## Task 11: Live Case Set & External Snapshot Collector
+
+Task 11 builds the first live-data scaffold for future quantitative experiments.
+It creates a deterministic 10 ticker x 20 date historical case panel and plans
+or collects external provider snapshots into a local cache. It does not call
+OpenAI, run LLM decisions, execute `python main.py`, or modify the live
+TradingAgents graph.
+
+Build the live case panel:
+
+```bash
+python scripts/build_live_case_set.py \
+  --config configs/live_experiments/live_case_panel_2020_2024.yaml \
+  --output-csv data/cases/live_panel_2020_2024.csv \
+  --output-jsonl data/cases/live_panel_2020_2024.jsonl \
+  --manifest data/cases/live_panel_2020_2024_manifest.json \
+  --print-summary
+```
+
+Create a snapshot plan without provider API calls:
+
+```bash
+python scripts/collect_live_snapshots.py \
+  --cases data/cases/live_panel_2020_2024.csv \
+  --config configs/live_experiments/snapshot_collection_default.yaml \
+  --provider-limits configs/live_experiments/provider_limits.yaml \
+  --output-dir data/live_snapshots/task11_plan \
+  --collection-report-dir results/live_collection/task11_plan \
+  --experiment-id task11_plan \
+  --plan-only \
+  --max-cases 3 \
+  --print-summary
+```
+
+Default Task 11 commands do not call APIs. Live provider APIs require explicit
+`--allow-live-api`, and repeated experiments should use cached snapshots under
+ignored `data/live_snapshots/` paths. Task 12 labels outcomes from cached data;
+Task 13 runs OpenAI LLM experiments; Task 14 performs statistical evaluation.
+No performance claim is made until those later tasks are complete.
 
 ## Legacy TradingAgents Notes
 

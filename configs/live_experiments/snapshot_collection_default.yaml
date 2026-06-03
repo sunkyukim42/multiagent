@@ -1,0 +1,35 @@
+experiment_id: live_snapshot_collection_default
+provider_limits_path: configs/live_experiments/provider_limits.yaml
+default_lookback_days: 90
+default_future_horizon_days: 252
+providers:
+  - fred
+  - alphavantage
+  - finnhub
+  - thenewsapi
+endpoints_by_provider:
+  fred:
+    - macro_series
+  alphavantage:
+    - price_history
+    - company_profile
+  finnhub:
+    - company_profile
+  thenewsapi:
+    - news
+macro_series:
+  - FEDFUNDS
+  - UNRATE
+  - CPIAUCSL
+  - GDP
+  - DCOILWTICO
+news_query_templates:
+  - "{ticker} {domain}"
+max_articles_per_request: 10
+use_cache: true
+fail_on_missing_required_provider: false
+allow_post_decision_label_data: true
+notes:
+  - Default commands build plans and dry runs without external API calls.
+  - Use --allow-live-api only for explicit snapshot collection.
+  - Post-decision data is label-only and not usable for agent input.
