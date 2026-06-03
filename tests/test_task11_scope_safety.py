@@ -11,6 +11,9 @@ TASK11_PATHS = [
 
 POST_TASK11_LIVE_FILES = {
     "llm_runner_schema.py",
+    "live_method_runner.py",
+    "live_research_runner.py",
+    "live_run_report.py",
     "openai_runner.py",
 }
 
