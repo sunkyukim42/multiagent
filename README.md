@@ -69,6 +69,7 @@ Generated artifacts are ignored by git under `results/` and `data/indexes/`.
 | `scripts/label_market_outcomes.py` | Cache-only Task 12 market outcome labeler. |
 | `scripts/preview_live_prompt_context.py` | Offline Task 13B live prompt context previewer. |
 | `scripts/run_live_research_evaluation.py` | Task 13D batch live research evaluation runner. |
+| `scripts/summarize_live_experiment.py` | Offline Task 14 live experiment summary and table generator. |
 
 ## Task Progression
 
@@ -91,12 +92,16 @@ Generated artifacts are ignored by git under `results/` and `data/indexes/`.
 | Task 13B | Added offline live method matrix and prompt context builder. |
 | Task 13C | Added gated OpenAI runner abstraction and deterministic fake runner. |
 | Task 13D | Added batch live research evaluation orchestration. |
+| Task 14 | Added offline live experiment summary and statistical evaluation. |
 
 ## Safety Boundaries
 
 - Offline demo commands do not require API keys.
 - `.env` is ignored by git and should contain local secrets only.
-- Generated outputs are ignored under `results/`, `data/indexes/`, `data/live_snapshots/`, `results/live_labels/`, `results/live_research_eval/`, and `results/llm_cache/`.
+- Generated outputs are ignored under `results/`, `data/indexes/`, `data/live_snapshots/`,
+  `results/live_labels/`, `results/live_research_eval/`, `results/llm_cache/`,
+  `results/live_experiment_summary/`, `results/live_statistical_tests/`, and
+  `results/live_kci_tables/`.
 - `python main.py` is the separate live TradingAgents demo path.
 - Sample outputs are synthetic and illustrative, not paper-ready.
 - Reports are not financial, procurement, or legal advice.
@@ -209,8 +214,9 @@ python scripts/collect_live_snapshots.py \
 Default Task 11 commands do not call APIs. Live provider APIs require explicit
 `--allow-live-api`, and repeated experiments should use cached snapshots under
 ignored `data/live_snapshots/` paths. Task 12 labels outcomes from cached data;
-Task 13 runs OpenAI LLM experiments; Task 14 performs statistical evaluation.
-No performance claim is made until those later tasks are complete.
+Task 13 runs controlled LLM decision infrastructure; Task 14 summarizes the
+offline outputs descriptively. No performance claim is made from these scaffold
+artifacts.
 
 ## Task 12: Market Outcome Labeling
 
@@ -337,6 +343,39 @@ Task 13D excludes Task 12 labels, returns, target dates, future prices, and
 label statuses from prompt text and messages. Live OpenAI requires the explicit
 `--allow-live-openai` flag plus run caps, and Task 14 is required before any
 statistical evaluation or performance claim.
+
+## Task 14: Live Experiment Summary & Statistical Evaluation
+
+Task 14 reads Task 13D decision outputs and Task 12 labels offline. It computes
+descriptive method metrics, paired comparisons, bootstrap confidence intervals,
+McNemar/Wilcoxon test artifacts, and KCI-style Markdown/CSV tables. It does not
+call OpenAI, provider APIs, embeddings, `python main.py`, or the live
+TradingAgents graph.
+
+Summarize a safe fake-runner validation batch:
+
+```bash
+python scripts/summarize_live_experiment.py \
+  --config configs/live_experiments/live_summary_default.yaml \
+  --decisions results/live_research_eval/task14_fake_input/decisions.jsonl \
+  --llm-outputs results/llm_cache/task14_fake_input/llm_outputs.jsonl \
+  --labeled-cases data/cases/live_panel_2020_2024_labeled.csv \
+  --output-dir results/live_experiment_summary/task14_fake_summary \
+  --table-dir results/live_kci_tables/task14_fake_summary \
+  --summary-id task14_fake_summary \
+  --baseline-method-id baseline_tradingagents_like \
+  --comparison-method-ids domain_agent_only \
+  --horizons 63,126 \
+  --bootstrap-iterations 200 \
+  --bootstrap-seed 42 \
+  --allow-fake-runner-outputs \
+  --print-summary
+```
+
+Fake-runner outputs are pipeline validation only, UNKNOWN labels may dominate
+until real cached snapshots are collected, and small samples are not paper-ready
+or statistically conclusive. Task 14 tables make no performance claim and do not
+provide financial/procurement/legal advice.
 
 ## Legacy TradingAgents Notes
 

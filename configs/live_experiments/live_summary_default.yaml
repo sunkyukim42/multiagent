@@ -1,0 +1,36 @@
+summary_id: task14_default
+decisions_path: results/live_research_eval/task14_fake_input/decisions.jsonl
+llm_outputs_path: results/llm_cache/task14_fake_input/llm_outputs.jsonl
+labeled_cases_path: data/cases/live_panel_2020_2024_labeled.csv
+output_dir: results/live_experiment_summary/task14_default
+table_dir: results/live_kci_tables/task14_default
+primary_horizons:
+  - 63
+  - 126
+horizons:
+  - 63
+  - 126
+baseline_method_id: baseline_tradingagents_like
+comparison_method_ids:
+  - domain_agent_only
+bootstrap_iterations: 1000
+bootstrap_seed: 42
+minimum_sample_size_warning: 30
+statistical_tests:
+  mcnemar: true
+  wilcoxon_signed_rank: true
+  alpha: 0.05
+enable_mcnemar: true
+enable_wilcoxon: true
+allow_fake_runner_outputs: true
+notes:
+  - Task 14 reads cached Task 13D decisions and Task 12 labels only.
+  - No OpenAI, provider API, embedding, or TradingAgents graph calls are made.
+  - Fake-runner outputs are pipeline validation artifacts, not model performance evidence.
+  - UNKNOWN labels are excluded from accuracy denominators.
+  - Outputs are not paper-ready and not statistically conclusive.
+  - Results provide no financial/procurement/legal advice.
+metadata:
+  task: "14"
+  descriptive_only: true
+  no_performance_claim: true

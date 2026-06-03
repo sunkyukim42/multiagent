@@ -61,7 +61,6 @@ def test_task13d_source_has_no_provider_calls_task14_or_ui_scope():
     source_text = _combined_task13d_text().lower()
     forbidden_paths = [
         Path("scripts/run_live_statistical_evaluation.py"),
-        Path("scripts/summarize_live_experiment.py"),
         Path("enterprise_decision_agents/live/live_statistics.py"),
         Path("multiagent"),
     ]

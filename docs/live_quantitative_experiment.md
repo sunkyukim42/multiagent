@@ -13,7 +13,7 @@ graph.
 - Task 13B: build offline prompt contexts from controlled method variants and cached metadata.
 - Task 13C: add gated OpenAI runner and deterministic fake runner.
 - Task 13D: run controlled batch LLM decision experiments.
-- Task 14: run statistical evaluation and write paper-facing analysis.
+- Task 14: run offline descriptive statistical summaries and write KCI-style tables.
 
 ## API Keys
 
@@ -168,6 +168,44 @@ text or messages. Task 13D writes ignored outputs under
 `results/live_research_eval/` and `results/llm_cache/`; it makes no performance
 claim.
 
+## Task 14: Offline Summary And Statistical Artifacts
+
+Task 14 reads Task 13D decision outputs and Task 12 labels from local files. It
+computes descriptive method metrics, paired method comparisons, bootstrap
+confidence intervals, McNemar/Wilcoxon artifacts, case-level results, and
+KCI-style Markdown/CSV tables. It never calls OpenAI, provider APIs,
+embeddings, TradingAgents, `python main.py`, or external services.
+The default config uses `primary_horizons` and a `statistical_tests` block while
+retaining legacy key compatibility.
+
+```bash
+python scripts/summarize_live_experiment.py \
+  --config configs/live_experiments/live_summary_default.yaml \
+  --decisions results/live_research_eval/task14_fake_input/decisions.jsonl \
+  --llm-outputs results/llm_cache/task14_fake_input/llm_outputs.jsonl \
+  --labeled-cases data/cases/live_panel_2020_2024_labeled.csv \
+  --output-dir results/live_experiment_summary/task14_fake_summary \
+  --table-dir results/live_kci_tables/task14_fake_summary \
+  --summary-id task14_fake_summary \
+  --baseline-method-id baseline_tradingagents_like \
+  --comparison-method-ids domain_agent_only \
+  --horizons 63,126 \
+  --bootstrap-iterations 200 \
+  --bootstrap-seed 42 \
+  --allow-fake-runner-outputs \
+  --print-summary
+```
+
+Generated summaries are ignored under `results/live_experiment_summary/`,
+statistical-test artifacts are ignored under `results/live_statistical_tests/`,
+and live KCI tables are ignored under `results/live_kci_tables/`.
+
+Fake-runner outputs are pipeline validation artifacts, not model performance
+evidence. UNKNOWN labels are excluded from accuracy denominators and surfaced in
+warning rates. Small samples are not paper-ready and not statistically
+conclusive. Task 14 outputs make no performance claim and provide no
+financial/procurement/legal advice.
+
 ## Current Limitations
 
 - Task 11 makes no performance claim.
@@ -175,7 +213,8 @@ claim.
 - Task 13B prompt previews are not model results or performance evidence.
 - Task 13C runner tests are not live OpenAI experiments.
 - Task 13D batch outputs are not statistical evidence.
-- Task 11/12/13B outputs are not paper-ready and not statistically conclusive.
-- Task 11/12/13B outputs do not provide financial/procurement/legal advice.
+- Task 14 fake-runner summaries are validation artifacts only.
+- Task 11/12/13B/14 outputs are not paper-ready and not statistically conclusive.
+- Task 11/12/13B/14 outputs do not provide financial/procurement/legal advice.
 - Provider endpoint behavior may need provider-plan-specific adjustment.
-- Task 14 statistical evaluation remains future work.
+- Real-data performance claims require cached live outputs, sufficient known labels, and independent audit.

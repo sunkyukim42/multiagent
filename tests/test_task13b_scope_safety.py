@@ -47,7 +47,6 @@ def test_task13b_adds_no_dependencies_or_future_task_files():
         + Path("requirements.txt").read_text(encoding="utf-8").lower()
     )
     forbidden_paths = [
-        Path("scripts/summarize_live_experiment.py"),
         Path("scripts/run_live_statistical_evaluation.py"),
         Path("enterprise_decision_agents/live/live_statistics.py"),
         Path("multiagent"),

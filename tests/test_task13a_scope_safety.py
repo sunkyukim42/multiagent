@@ -32,7 +32,7 @@ def test_task13a_adds_no_runtime_calls_or_heavy_dependencies():
         + "\n"
         + Path("requirements.txt").read_text(encoding="utf-8").lower()
     )
-    source_text = _combined_task13a_text().lower()
+    source_text = _combined_task13a_source_text().lower()
 
     assert "statsmodels" not in dependency_text
     assert "scipy" not in dependency_text
@@ -55,14 +55,13 @@ def test_task13a_adds_no_runtime_calls_or_heavy_dependencies():
 
 def test_task13a_does_not_add_future_runner_or_batch_files():
     forbidden_paths = [
-        Path("scripts/summarize_live_experiment.py"),
         Path("scripts/run_live_statistical_evaluation.py"),
         Path("enterprise_decision_agents/live/live_statistics.py"),
         Path("multiagent"),
     ]
 
     for path in forbidden_paths:
-        assert not path.exists(), f"{path} should not exist before Task 14"
+        assert not path.exists(), f"{path} should not exist before Task 15"
 
 
 def test_task13a_docs_and_ignore_rules_keep_boundaries():
@@ -77,7 +76,7 @@ def test_task13a_docs_and_ignore_rules_keep_boundaries():
     assert "task 13a" in combined
     assert "does not build prompts" in combined or "without running them" in combined
     assert "does not call openai" in combined
-    assert "task 14" in combined and "future work" in combined
+    assert "task 14" in combined and "statistical" in combined
 
 
 def test_task13a_sources_are_readable_and_not_minified():
@@ -90,3 +89,8 @@ def test_task13a_sources_are_readable_and_not_minified():
 
 def _combined_task13a_text() -> str:
     return "\n".join(path.read_text(encoding="utf-8", errors="replace") for path in TASK13A_PATHS)
+
+
+def _combined_task13a_source_text() -> str:
+    source_paths = [path for path in TASK13A_PATHS if path.suffix in {".py", ".yaml"}]
+    return "\n".join(path.read_text(encoding="utf-8", errors="replace") for path in source_paths)

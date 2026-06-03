@@ -13,6 +13,9 @@ results/live_collection/*
 results/live_labels/*
 results/live_research_eval/*
 results/llm_cache/*
+results/live_experiment_summary/*
+results/live_statistical_tests/*
+results/live_kci_tables/*
 data/indexes/*
 !data/indexes/.gitkeep
 data/live_snapshots/*

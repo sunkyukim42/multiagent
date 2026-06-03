@@ -38,7 +38,7 @@ def test_task11_adds_no_forbidden_dependencies_or_llm_calls():
         + "\n"
         + Path("requirements.txt").read_text(encoding="utf-8").lower()
     )
-    source_text = _combined_task11_text().lower()
+    source_text = _combined_task11_source_text().lower()
 
     assert "statsmodels" not in dependency_text
     assert "scipy" not in dependency_text
@@ -64,7 +64,7 @@ def test_task11_readme_and_docs_keep_required_boundaries():
     assert "--allow-live-api" in combined
     assert "does not call openai" in combined or "does not call external apis, openai" in combined
     assert "task 12 labels outcomes" in combined
-    assert "task 13 runs openai llm experiments" in combined
+    assert "task 13 runs controlled llm decision infrastructure" in combined
     assert "no performance claim" in combined
 
 
@@ -95,3 +95,8 @@ def _task11_files() -> list[Path]:
 
 def _combined_task11_text() -> str:
     return "\n".join(path.read_text(encoding="utf-8", errors="replace") for path in _task11_files())
+
+
+def _combined_task11_source_text() -> str:
+    source_paths = [path for path in _task11_files() if path.suffix in {".py", ".yaml"}]
+    return "\n".join(path.read_text(encoding="utf-8", errors="replace") for path in source_paths)
