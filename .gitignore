@@ -11,6 +11,8 @@ results/research_tables/*
 results/final_packages/*
 results/live_collection/*
 results/live_labels/*
+results/live_research_eval/*
+results/llm_cache/*
 data/indexes/*
 !data/indexes/.gitkeep
 data/live_snapshots/*

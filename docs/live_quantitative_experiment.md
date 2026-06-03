@@ -9,7 +9,8 @@ graph.
 
 - Task 11: build live case sets and collect or plan external data snapshots.
 - Task 12: label forward outcomes from cached label-only data.
-- Task 13: run controlled LLM decision experiments.
+- Task 13A: define LLM output schemas, cache helpers, parsers, and cost estimates.
+- Task 13B-13D: build prompts, add explicit OpenAI execution, and run controlled LLM decision experiments.
 - Task 14: run statistical evaluation and write paper-facing analysis.
 
 ## API Keys
@@ -74,6 +75,19 @@ python scripts/label_market_outcomes.py \
 Label reports are generated under ignored `results/live_labels/` paths. The
 canonical labeled case files under `data/cases/` are trackable when generated.
 
+## Task 13A: LLM Schema And Cache Foundation
+
+Task 13A prepares future LLM experiments without running them. It defines LLM
+output records, live decision records, live evaluation manifests, deterministic
+cache keys, JSONL cache storage helpers, a deterministic decision parser, and
+configuration-driven cost estimates.
+
+The OpenAI runtime config is a safety estimate only. Task 13A does not call
+OpenAI, build prompts, invoke external data providers, run TradingAgents, or
+perform statistical testing. Future cached LLM outputs are ignored under
+`results/llm_cache/`, and future live research outputs are ignored under
+`results/live_research_eval/`.
+
 ## Current Limitations
 
 - Task 11 makes no performance claim.
@@ -81,4 +95,4 @@ canonical labeled case files under `data/cases/` are trackable when generated.
 - Task 11/12 outputs are not paper-ready and not statistically conclusive.
 - Task 11/12 outputs do not provide financial/procurement/legal advice.
 - Provider endpoint behavior may need provider-plan-specific adjustment.
-- Task 13 LLM decisions and Task 14 statistical evaluation remain future work.
+- Task 13B-13D LLM execution and Task 14 statistical evaluation remain future work.

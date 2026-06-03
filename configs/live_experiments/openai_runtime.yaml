@@ -1,0 +1,19 @@
+runtime_id: task13a_openai_runtime_safety_estimate
+model: gpt-4.1-mini
+temperature: 0.0
+max_output_tokens: 800
+timeout_seconds: 60
+retry_count: 0
+retry_backoff_seconds: 0
+require_explicit_live_flag: true
+cache_first: true
+max_openai_calls_per_run: 0
+max_estimated_cost_usd: 0.0
+cost_per_1m_input_tokens_usd: 0.0
+cost_per_1m_output_tokens_usd: 0.0
+notes:
+  - OpenAI calls are disabled by default.
+  - Use cached outputs for repeated experiments.
+  - Model pricing must be verified by the user before large experiments.
+  - This config is a safety estimate, not authoritative pricing.
+  - A paid OpenAI key may exist in .env, but Task 13A must not use it.

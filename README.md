@@ -85,12 +85,13 @@ Generated artifacts are ignored by git under `results/` and `data/indexes/`.
 | Task 10 | Added final portfolio and graduate research package. |
 | Task 11 | Added live case-set and external snapshot collection scaffolding. |
 | Task 12 | Added cache-only market outcome labeling. |
+| Task 13A | Added LLM output schema, cache, parser, and cost-estimation foundation. |
 
 ## Safety Boundaries
 
 - Offline demo commands do not require API keys.
 - `.env` is ignored by git and should contain local secrets only.
-- Generated outputs are ignored under `results/`, `data/indexes/`, `data/live_snapshots/`, and `results/live_labels/`.
+- Generated outputs are ignored under `results/`, `data/indexes/`, `data/live_snapshots/`, `results/live_labels/`, `results/live_research_eval/`, and `results/llm_cache/`.
 - `python main.py` is the separate live TradingAgents demo path.
 - Sample outputs are synthetic and illustrative, not paper-ready.
 - Reports are not financial, procurement, or legal advice.
@@ -237,6 +238,20 @@ Task 12 labels are synthetic/illustrative research scaffolding, not paper-ready,
 not statistically conclusive, not financial/procurement/legal advice, and not a
 performance claim. Heuristic groundedness remains separate from semantic
 entailment. Task 13 and Task 14 remain future work.
+
+## Task 13A: LLM Output Schema, Cache, Parser, And Costing
+
+Task 13A adds only the foundation for future cached LLM decision experiments:
+LLM output schemas, deterministic cache keys, JSONL cache helpers, a
+BUY/HOLD/SELL/UNKNOWN decision parser, and cost-estimation helpers driven by
+`configs/live_experiments/openai_runtime.yaml`.
+
+It does not call OpenAI, build prompts, run LLMs, execute provider APIs, run
+`python main.py`, modify the live TradingAgents graph, or perform statistical
+evaluation. Generated future LLM caches and live research outputs are ignored
+under `results/llm_cache/` and `results/live_research_eval/`. Task 13B builds
+prompts, Task 13C adds the explicit OpenAI runner, Task 13D adds batch live
+evaluation, and Task 14 remains the statistical evaluation layer.
 
 ## Legacy TradingAgents Notes
 
