@@ -199,3 +199,57 @@ def test_result_tables_include_required_disclaimers_and_no_overclaims():
     ]
     for phrase in unsafe_phrases:
         assert phrase not in lowered
+
+
+def test_method_summary_notes_are_deduplicated_and_preserve_order():
+    duplicate = "Implemented only for synthetic offline workflow packs."
+    methods = {
+        "full": ResearchMethod(
+            method_id="full",
+            display_name="Full Reliability Workflow",
+            notes=[duplicate, "  ", "Method-specific caution."],
+        )
+    }
+    method_summary = [
+        {
+            "method_id": "full",
+            "count": 1,
+            "route_counts": {},
+            "metrics": {},
+            "notes": [duplicate, "Summary warning.", "Method-specific caution."],
+            "warnings": ["Summary warning.", "Final warning."],
+        },
+        {
+            "method_id": "no_notes",
+            "display_name": "No Notes",
+            "count": 1,
+            "route_counts": {},
+            "metrics": {},
+            "notes": [" ", ""],
+            "warnings": [],
+        },
+    ]
+
+    table = render_method_summary_table(method_summary, methods)
+
+    assert (
+        "| Method | Runs | Mean score | Citation coverage | Temporal leakage | "
+        "Grounded claim rate | Unsupported claim rate | Policy compliance | "
+        "Final report routes | Human review routes | Notes |"
+    ) in table
+    assert table.count(duplicate) == 1
+    assert (
+        "Implemented only for synthetic offline workflow packs.; "
+        "Method-specific caution.; Summary warning.; Final warning."
+    ) in table
+    assert "| No Notes | 1 | n/a | n/a | n/a | n/a | n/a | n/a | 0 | 0 | n/a |" in table
+
+    summary = ResearchEvaluationSummary(
+        evaluation_id="eval",
+        method_summaries=method_summary,
+        ablation_summaries=[],
+        case_set_summaries=[],
+        limitations=[],
+    )
+    combined = render_kci_result_tables(summary)
+    assert combined.count(duplicate) == 1

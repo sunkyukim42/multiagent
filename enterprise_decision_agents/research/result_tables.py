@@ -231,7 +231,7 @@ def _fmt_text(value: Any) -> str:
 
 
 def _fmt_notes(values: list[str]) -> str:
-    notes = [_fmt_text(value) for value in values if str(value or "").strip()]
+    notes = [_fmt_text(value) for value in _deduplicate_notes(values)]
     return "; ".join(notes) if notes else "n/a"
 
 
@@ -247,6 +247,18 @@ def _as_list(value: Any) -> list[str]:
     if isinstance(value, list):
         return [str(item) for item in value]
     return [str(value)]
+
+
+def _deduplicate_notes(values: list[str]) -> list[str]:
+    notes = []
+    seen = set()
+    for value in values:
+        note = str(value or "").strip()
+        if not note or note in seen:
+            continue
+        seen.add(note)
+        notes.append(note)
+    return notes
 
 
 def _normalize(value: str) -> str:
