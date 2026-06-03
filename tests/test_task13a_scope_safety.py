@@ -55,7 +55,6 @@ def test_task13a_adds_no_runtime_calls_or_heavy_dependencies():
 
 def test_task13a_does_not_add_future_runner_or_batch_files():
     forbidden_paths = [
-        Path("enterprise_decision_agents/live/openai_runner.py"),
         Path("scripts/run_live_research_evaluation.py"),
         Path("scripts/summarize_live_experiment.py"),
         Path("multiagent"),

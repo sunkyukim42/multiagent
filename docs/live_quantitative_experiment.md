@@ -11,7 +11,8 @@ graph.
 - Task 12: label forward outcomes from cached label-only data.
 - Task 13A: define LLM output schemas, cache helpers, parsers, and cost estimates.
 - Task 13B: build offline prompt contexts from controlled method variants and cached metadata.
-- Task 13C-13D: add explicit OpenAI execution and run controlled LLM decision experiments.
+- Task 13C: add gated OpenAI runner and deterministic fake runner.
+- Task 13D: run controlled batch LLM decision experiments.
 - Task 14: run statistical evaluation and write paper-facing analysis.
 
 ## API Keys
@@ -121,12 +122,27 @@ The command prints hashes, warning counts, evidence counts, and output paths by
 default. Full prompt printing is opt-in with `--show-prompt`. Generated previews
 are ignored under `results/live_research_eval/`.
 
+## Task 13C: Gated OpenAI Runner
+
+Task 13C adds request/response schemas, a deterministic fake runner, live
+OpenAI gating, call caps, cost caps, and conversion into Task 13A
+`LLMDecisionOutput` records. It does not add a batch runner, does not call
+external provider APIs, does not run TradingAgents, and does not perform
+statistical testing.
+
+Default runner behavior refuses live OpenAI calls. A future caller must pass an
+explicit live flag before the runner reads `OPENAI_API_KEY` from the local
+environment, and key values are never printed or stored. Tests use fake outputs
+and guardrail responses only. Pricing remains an estimate from config and must
+be verified before any real live run.
+
 ## Current Limitations
 
 - Task 11 makes no performance claim.
 - Task 12 labels are not a performance claim.
 - Task 13B prompt previews are not model results or performance evidence.
+- Task 13C runner tests are not live OpenAI experiments.
 - Task 11/12/13B outputs are not paper-ready and not statistically conclusive.
 - Task 11/12/13B outputs do not provide financial/procurement/legal advice.
 - Provider endpoint behavior may need provider-plan-specific adjustment.
-- Task 13C-13D LLM execution and Task 14 statistical evaluation remain future work.
+- Task 13D batch LLM execution and Task 14 statistical evaluation remain future work.

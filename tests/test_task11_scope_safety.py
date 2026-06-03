@@ -9,6 +9,11 @@ TASK11_PATHS = [
     Path("docs/live_quantitative_experiment.md"),
 ]
 
+POST_TASK11_LIVE_FILES = {
+    "llm_runner_schema.py",
+    "openai_runner.py",
+}
+
 
 def test_task11_does_not_modify_live_main_or_graph_integration():
     main_text = Path("main.py").read_text(encoding="utf-8")
@@ -75,7 +80,10 @@ def _task11_files() -> list[Path]:
             files.extend(
                 item
                 for item in path.rglob("*")
-                if item.is_file() and "__pycache__" not in item.parts and item.suffix != ".pyc"
+                if item.is_file()
+                and "__pycache__" not in item.parts
+                and item.suffix != ".pyc"
+                and item.name not in POST_TASK11_LIVE_FILES
             )
         else:
             files.append(path)

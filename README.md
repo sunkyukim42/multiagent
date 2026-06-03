@@ -88,6 +88,7 @@ Generated artifacts are ignored by git under `results/` and `data/indexes/`.
 | Task 12 | Added cache-only market outcome labeling. |
 | Task 13A | Added LLM output schema, cache, parser, and cost-estimation foundation. |
 | Task 13B | Added offline live method matrix and prompt context builder. |
+| Task 13C | Added gated OpenAI runner abstraction and deterministic fake runner. |
 
 ## Safety Boundaries
 
@@ -286,6 +287,20 @@ paper-ready, not statistically conclusive, not financial/procurement/legal
 advice, and heuristic groundedness is not semantic entailment. Task 13C adds
 the explicit OpenAI runner, Task 13D adds batch live evaluation, and Task 14
 performs statistical evaluation.
+
+## Task 13C: OpenAI Runner Safety Layer
+
+Task 13C adds only the runner abstraction for future LLM experiments:
+request/response schemas, a deterministic fake runner for tests, explicit live
+OpenAI gating, cost and call caps, and conversion into Task 13A
+`LLMDecisionOutput` records. Default behavior refuses live OpenAI calls, and no
+batch case x method x seed runner is included.
+
+The real OpenAI path requires an explicit future live flag and `OPENAI_API_KEY`
+in the local environment. Key values are never printed or stored. Tests use the
+fake runner and guardrail responses, not paid API calls. Task 13D remains the
+batch live evaluation layer, and Task 14 remains the statistical evaluation
+layer. Task 13C makes no performance claim.
 
 ## Legacy TradingAgents Notes
 
