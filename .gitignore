@@ -10,6 +10,7 @@ results/research_eval/*
 results/research_tables/*
 results/final_packages/*
 results/live_collection/*
+results/live_labels/*
 data/indexes/*
 !data/indexes/.gitkeep
 data/live_snapshots/*

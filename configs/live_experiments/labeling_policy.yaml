@@ -1,0 +1,30 @@
+policy_id: default_market_outcome_labels
+primary_horizons:
+  - 63
+  - 126
+auxiliary_horizons:
+  - 21
+  - 252
+buy_threshold_excess_return: 0.05
+sell_threshold_excess_return: -0.05
+entry_price_policy: next_available_on_or_after_decision_date
+exit_price_policy: next_available_on_or_after_target_date
+benchmark:
+  mode: ticker
+  ticker: SPY
+  required: true
+  missing_behavior: mark_missing
+raw_return_fallback:
+  enabled: false
+  notes: Do not label from raw return when benchmark is required unless explicitly enabled.
+price_sources:
+  preferred_providers:
+    - alphavantage
+    - finnhub
+  endpoint_names:
+    - price_history
+missing_data_behavior: mark_missing
+notes:
+  - Labels are generated from cached local snapshots only.
+  - Future/post-decision prices are label-only and must not be used as agent input.
+  - Current labels are research scaffolding, not investment advice.

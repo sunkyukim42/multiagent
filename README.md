@@ -66,6 +66,7 @@ Generated artifacts are ignored by git under `results/` and `data/indexes/`.
 | `scripts/generate_final_package.py` | Deterministic Task 10 final package generator. |
 | `scripts/build_live_case_set.py` | Deterministic Task 11 live case panel builder. |
 | `scripts/collect_live_snapshots.py` | Cache-first Task 11 snapshot planner/collector. |
+| `scripts/label_market_outcomes.py` | Cache-only Task 12 market outcome labeler. |
 
 ## Task Progression
 
@@ -83,12 +84,13 @@ Generated artifacts are ignored by git under `results/` and `data/indexes/`.
 | Task 9 | Added offline research-evaluation tables and aggregation scaffolds. |
 | Task 10 | Added final portfolio and graduate research package. |
 | Task 11 | Added live case-set and external snapshot collection scaffolding. |
+| Task 12 | Added cache-only market outcome labeling. |
 
 ## Safety Boundaries
 
 - Offline demo commands do not require API keys.
 - `.env` is ignored by git and should contain local secrets only.
-- Generated outputs are ignored under `results/`, `data/indexes/`, and `data/live_snapshots/`.
+- Generated outputs are ignored under `results/`, `data/indexes/`, `data/live_snapshots/`, and `results/live_labels/`.
 - `python main.py` is the separate live TradingAgents demo path.
 - Sample outputs are synthetic and illustrative, not paper-ready.
 - Reports are not financial, procurement, or legal advice.
@@ -203,6 +205,38 @@ Default Task 11 commands do not call APIs. Live provider APIs require explicit
 ignored `data/live_snapshots/` paths. Task 12 labels outcomes from cached data;
 Task 13 runs OpenAI LLM experiments; Task 14 performs statistical evaluation.
 No performance claim is made until those later tasks are complete.
+
+## Task 12: Market Outcome Labeling
+
+Task 12 labels Task 11 cases from locally cached normalized price snapshots
+only. It does not read `.env`, call external APIs, call OpenAI, run LLMs,
+execute `python main.py`, or modify the live TradingAgents graph. Future price
+data is label-only and must not be used as agent input.
+
+By default, labels are benchmark-adjusted against `SPY` using cached price
+records. Missing ticker or benchmark data produces `UNKNOWN` labels unless a
+policy and CLI override explicitly enable raw-return fallback.
+
+Generate cache-only market outcome labels:
+
+```bash
+python scripts/label_market_outcomes.py \
+  --cases data/cases/live_panel_2020_2024.csv \
+  --snapshot-dir data/live_snapshots/task11_plan \
+  --policy configs/live_experiments/labeling_policy.yaml \
+  --output-csv data/cases/live_panel_2020_2024_labeled.csv \
+  --output-jsonl data/cases/live_panel_2020_2024_labeled.jsonl \
+  --manifest data/cases/live_panel_2020_2024_label_manifest.json \
+  --report-dir results/live_labels/live_panel_2020_2024 \
+  --label-run-id live_panel_2020_2024 \
+  --max-cases 5 \
+  --print-summary
+```
+
+Task 12 labels are synthetic/illustrative research scaffolding, not paper-ready,
+not statistically conclusive, not financial/procurement/legal advice, and not a
+performance claim. Heuristic groundedness remains separate from semantic
+entailment. Task 13 and Task 14 remain future work.
 
 ## Legacy TradingAgents Notes
 

@@ -1,0 +1,35 @@
+{
+  "case_count": 5,
+  "created_at": "2026-06-03T15:04:07.427498+00:00",
+  "horizon_counts": {
+    "126": 5,
+    "63": 5
+  },
+  "input_cases_path": "data/cases/live_panel_2020_2024.csv",
+  "label_count": 10,
+  "label_counts": {
+    "UNKNOWN": 10
+  },
+  "label_run_id": "live_panel_2020_2024",
+  "labeled_count": 0,
+  "labeling_policy_path": "configs/live_experiments/labeling_policy.yaml",
+  "metadata": {
+    "benchmark_ticker": "SPY",
+    "external_api_calls": 0,
+    "horizons": [
+      63,
+      126
+    ],
+    "label_only_future_data": true,
+    "policy_id": "default_market_outcome_labels",
+    "raw_return_fallback_used": false
+  },
+  "missing_count": 10,
+  "snapshot_dir": "data/live_snapshots/task11_plan",
+  "status_counts": {
+    "missing_price": 10
+  },
+  "warnings": [
+    "No normalized price snapshots found; generated labels may be UNKNOWN."
+  ]
+}
