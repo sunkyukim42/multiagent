@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 from collections import Counter
+import json
 import os
 from pathlib import Path
 import sys
@@ -99,19 +100,7 @@ def run_collection(args: argparse.Namespace) -> tuple[dict[str, Any], SnapshotMa
     elif mode == "dry_run":
         records = [_record_from_request(request, store, status="dry_run") for request in requests]
     elif mode == "cache_only":
-        for request in requests:
-            if store.has_cache(request):
-                records.append(_record_from_request(request, store, status="cached"))
-            else:
-                records.append(
-                    _record_from_request(
-                        request,
-                        store,
-                        status="missing_cache",
-                        error_type="missing_cache",
-                        error_message="cached snapshot not found",
-                    )
-                )
+        records = _collect_cache_only_requests(requests=requests, store=store)
         if any(record.status == "missing_cache" for record in records):
             warnings.append("Cache-only mode found missing cache entries.")
     else:
@@ -148,6 +137,51 @@ def run_collection(args: argparse.Namespace) -> tuple[dict[str, Any], SnapshotMa
     return {"mode_warning": warnings[0] if warnings and mode == "refuse_live" else ""}, manifest, outputs, exit_code
 
 
+def _collect_cache_only_requests(*, requests: list[ProviderRequest], store: SnapshotStore) -> list[SnapshotRecord]:
+    records: list[SnapshotRecord] = []
+    shared_raws: dict[str, tuple[dict[str, Any], str]] = {}
+    for request in requests:
+        client = get_provider_client(request.provider)
+        shared_key = _request_shared_fetch_key(client, request)
+        if _has_existing_cache(request, store, shared_key=shared_key):
+            records.append(_record_from_existing_cache(request=request, store=store, client=client, shared_raws=shared_raws))
+            continue
+
+        if shared_key:
+            raw_entry = shared_raws.get(shared_key)
+            if raw_entry is None:
+                raw_entry = _find_existing_shared_raw(request=request, store=store, client=client)
+                if raw_entry:
+                    shared_raws[shared_key] = raw_entry
+            if raw_entry:
+                raw, raw_path = raw_entry
+                records.append(
+                    _materialize_record_from_raw(
+                        request=request,
+                        store=store,
+                        client=client,
+                        raw=raw,
+                        raw_path=raw_path,
+                        status="cached",
+                        actual_provider_fetch=False,
+                        materialized_from_shared_fetch=True,
+                    )
+                )
+                continue
+
+        records.append(
+            _record_from_request(
+                request,
+                store,
+                status="missing_cache",
+                error_type="missing_cache",
+                error_message="cached snapshot not found",
+                extra_metadata=_shared_record_metadata(request, actual_provider_fetch=False),
+            )
+        )
+    return records
+
+
 def _collect_live_requests(
     *,
     requests: list[ProviderRequest],
@@ -157,6 +191,8 @@ def _collect_live_requests(
     force_refresh: bool,
 ) -> list[SnapshotRecord]:
     records: list[SnapshotRecord] = []
+    shared_raws: dict[str, tuple[dict[str, Any], str]] = {}
+    shared_failures: dict[str, dict[str, str]] = {}
     for request in requests:
         limit = provider_limits.get(request.provider)
         if not limit.enabled:
@@ -170,8 +206,67 @@ def _collect_live_requests(
                 )
             )
             continue
-        if not force_refresh and store.has_cache(request):
-            records.append(_record_from_request(request, store, status="cached"))
+        client = get_provider_client(request.provider)
+        shared_key = _request_shared_fetch_key(client, request)
+        if not force_refresh and _has_existing_cache(request, store, shared_key=shared_key):
+            records.append(_record_from_existing_cache(request=request, store=store, client=client, shared_raws=shared_raws))
+            continue
+
+        if shared_key and shared_key in shared_failures:
+            diagnostic = shared_failures[shared_key]
+            records.append(
+                _record_from_request(
+                    request,
+                    store,
+                    status="failed",
+                    error_type=diagnostic["error_type"],
+                    error_message=diagnostic["error_message"],
+                    extra_metadata=_shared_record_metadata(
+                        request,
+                        actual_provider_fetch=False,
+                        materialized_from_shared_fetch=True,
+                    ),
+                )
+            )
+            continue
+
+        if shared_key and shared_key in shared_raws:
+            raw, raw_path = shared_raws[shared_key]
+            records.append(
+                _materialize_record_from_raw(
+                    request=request,
+                    store=store,
+                    client=client,
+                    raw=raw,
+                    raw_path=raw_path,
+                    status="success",
+                    actual_provider_fetch=False,
+                    materialized_from_shared_fetch=True,
+                )
+            )
+            continue
+
+        if shared_key and not force_refresh:
+            raw_entry = _find_existing_shared_raw(request=request, store=store, client=client)
+            if raw_entry:
+                shared_raws[shared_key] = raw_entry
+                raw, raw_path = raw_entry
+                records.append(
+                    _materialize_record_from_raw(
+                        request=request,
+                        store=store,
+                        client=client,
+                        raw=raw,
+                        raw_path=raw_path,
+                        status="cached",
+                        actual_provider_fetch=False,
+                        materialized_from_shared_fetch=True,
+                    )
+                )
+                continue
+
+        if not force_refresh and _has_existing_cache(request, store, shared_key=shared_key):
+            records.append(_record_from_existing_cache(request=request, store=store, client=client, shared_raws=shared_raws))
             continue
         api_key = os.environ.get(limit.env_var, "")
         if not api_key:
@@ -188,47 +283,46 @@ def _collect_live_requests(
         try:
             tracker.plan_call(request.provider)
             tracker.throttle(request.provider)
-            client = get_provider_client(request.provider)
             raw = client.fetch(request, api_key=api_key, timeout=limit.timeout_seconds)
-            raw_path = store.write_raw_json(request, raw)
             diagnostic = _diagnose_provider_response(client, raw, request)
             if diagnostic:
+                if shared_key:
+                    shared_failures[shared_key] = diagnostic
                 records.append(
                     _record_from_request(
                         request,
                         store,
                         status="failed",
-                        raw_path=str(raw_path),
                         error_type=diagnostic["error_type"],
                         error_message=diagnostic["error_message"],
-                        extra_metadata={"provider_diagnostic": diagnostic},
+                        extra_metadata={
+                            **_shared_record_metadata(request, actual_provider_fetch=True),
+                            "provider_diagnostic": diagnostic,
+                        },
                     )
                 )
                 continue
-            normalized = client.normalize(raw, request)
-            if _is_price_request(request) and not normalized:
-                records.append(
-                    _record_from_request(
-                        request,
-                        store,
-                        status="failed",
-                        raw_path=str(raw_path),
-                        error_type="empty_price_data",
-                        error_message="price request normalized to zero rows for the requested date window",
-                    )
-                )
-                continue
-            normalized_path = store.write_normalized_jsonl(request, normalized)
+            raw_path = str(store.write_raw_json(request, raw))
+            if shared_key:
+                shared_raws[shared_key] = (raw, raw_path)
             records.append(
-                _record_from_request(
-                    request,
-                    store,
+                _materialize_record_from_raw(
+                    request=request,
+                    store=store,
+                    client=client,
+                    raw=raw,
+                    raw_path=raw_path,
                     status="success",
-                    raw_path=str(raw_path),
-                    normalized_path=str(normalized_path),
+                    actual_provider_fetch=True,
+                    materialized_from_shared_fetch=False,
                 )
             )
         except LiveProviderError as exc:
+            if shared_key:
+                shared_failures[shared_key] = {
+                    "error_type": exc.__class__.__name__,
+                    "error_message": str(exc),
+                }
             records.append(
                 _record_from_request(
                     request,
@@ -236,9 +330,113 @@ def _collect_live_requests(
                     status="failed",
                     error_type=exc.__class__.__name__,
                     error_message=str(exc),
+                    extra_metadata=_shared_record_metadata(request, actual_provider_fetch=True),
                 )
             )
     return records
+
+
+def _record_from_existing_cache(
+    *,
+    request: ProviderRequest,
+    store: SnapshotStore,
+    client: Any,
+    shared_raws: dict[str, tuple[dict[str, Any], str]],
+) -> SnapshotRecord:
+    shared_key = _request_shared_fetch_key(client, request)
+    raw_path = ""
+    extra_metadata = _shared_record_metadata(request, actual_provider_fetch=False)
+    if shared_key:
+        raw_entry = shared_raws.get(shared_key)
+        if raw_entry is None:
+            raw_entry = _find_existing_shared_raw(request=request, store=store, client=client)
+            if raw_entry:
+                shared_raws[shared_key] = raw_entry
+        if raw_entry:
+            _, raw_path = raw_entry
+            extra_metadata = _shared_record_metadata(
+                request,
+                raw_path=raw_path,
+                actual_provider_fetch=False,
+                materialized_from_shared_fetch=True,
+            )
+        else:
+            extra_metadata = _shared_record_metadata(
+                request,
+                actual_provider_fetch=False,
+                raw_provenance_status="missing_raw_for_cached_normalized",
+            )
+    return _record_from_request(
+        request,
+        store,
+        status="cached",
+        raw_path=raw_path if shared_key else None,
+        normalized_path=str(store.normalized_path(request)),
+        extra_metadata=extra_metadata,
+    )
+
+
+def _materialize_record_from_raw(
+    *,
+    request: ProviderRequest,
+    store: SnapshotStore,
+    client: Any,
+    raw: dict[str, Any],
+    raw_path: str,
+    status: str,
+    actual_provider_fetch: bool,
+    materialized_from_shared_fetch: bool,
+) -> SnapshotRecord:
+    diagnostic = _diagnose_provider_response(client, raw, request)
+    if diagnostic:
+        return _record_from_request(
+            request,
+            store,
+            status="failed",
+            raw_path=raw_path,
+            error_type=diagnostic["error_type"],
+            error_message=diagnostic["error_message"],
+            extra_metadata={
+                **_shared_record_metadata(
+                    request,
+                    raw_path=raw_path,
+                    actual_provider_fetch=actual_provider_fetch,
+                    materialized_from_shared_fetch=materialized_from_shared_fetch,
+                ),
+                "provider_diagnostic": diagnostic,
+            },
+        )
+
+    normalized = client.normalize(raw, request)
+    if _is_price_request(request) and not normalized:
+        return _record_from_request(
+            request,
+            store,
+            status="failed",
+            raw_path=raw_path,
+            error_type="empty_price_data",
+            error_message="price request normalized to zero rows for the requested date window",
+            extra_metadata=_shared_record_metadata(
+                request,
+                raw_path=raw_path,
+                actual_provider_fetch=actual_provider_fetch,
+                materialized_from_shared_fetch=materialized_from_shared_fetch,
+            ),
+        )
+    normalized_path = store.write_normalized_jsonl(request, normalized)
+    return _record_from_request(
+        request,
+        store,
+        status=status,
+        raw_path=raw_path,
+        normalized_path=str(normalized_path),
+        extra_metadata=_shared_record_metadata(
+            request,
+            raw_path=raw_path,
+            actual_provider_fetch=actual_provider_fetch,
+            materialized_from_shared_fetch=materialized_from_shared_fetch,
+        ),
+    )
 
 
 def _record_from_request(
@@ -246,8 +444,8 @@ def _record_from_request(
     store: SnapshotStore,
     *,
     status: str,
-    raw_path: str = "",
-    normalized_path: str = "",
+    raw_path: str | None = None,
+    normalized_path: str | None = None,
     error_type: str = "",
     error_message: str = "",
     extra_metadata: dict[str, Any] | None = None,
@@ -258,6 +456,8 @@ def _record_from_request(
         "label_only": bool(request.metadata.get("label_only", False)),
         "request_metadata": request.metadata,
     }
+    if request.metadata.get("shared_fetch_key"):
+        metadata["shared_fetch_key"] = str(request.metadata.get("shared_fetch_key"))
     if extra_metadata:
         metadata.update(extra_metadata)
     return SnapshotRecord(
@@ -268,8 +468,8 @@ def _record_from_request(
         decision_date=request.decision_date,
         request_id=request.request_id,
         cache_key=request.cache_key,
-        raw_path=raw_path or str(store.raw_path(request)),
-        normalized_path=normalized_path or str(store.normalized_path(request)),
+        raw_path=str(store.raw_path(request)) if raw_path is None else raw_path,
+        normalized_path=str(store.normalized_path(request)) if normalized_path is None else normalized_path,
         status=status,
         error_type=error_type,
         error_message=error_message,
@@ -289,6 +489,7 @@ def _build_manifest(
     metadata: dict[str, Any],
 ) -> SnapshotManifest:
     provider_counts = Counter(record.provider for record in records)
+    resolved_warnings = sorted({*warnings, *_raw_provenance_warnings(records)})
     return SnapshotManifest(
         experiment_id=experiment_id,
         case_count=case_count,
@@ -298,7 +499,7 @@ def _build_manifest(
         skipped_count=sum(1 for record in records if record.status in {"dry_run", "skipped", "missing_cache"}),
         failed_count=sum(1 for record in records if record.status == "failed"),
         records=records,
-        warnings=warnings,
+        warnings=resolved_warnings,
         metadata=metadata,
     )
 
@@ -334,6 +535,96 @@ def _diagnose_provider_response(client: Any, raw: dict[str, Any], request: Provi
 
 def _is_price_request(request: ProviderRequest) -> bool:
     return request.endpoint in {"price_history", "price_label_window"}
+
+
+def _request_shared_fetch_key(client: Any, request: ProviderRequest) -> str:
+    metadata_key = str(request.metadata.get("shared_fetch_key") or "").strip()
+    if metadata_key:
+        return metadata_key
+    shared = getattr(client, "shared_fetch_key", None)
+    if not callable(shared):
+        return ""
+    return str(shared(request) or "").strip()
+
+
+def _shared_record_metadata(
+    request: ProviderRequest,
+    *,
+    raw_path: str = "",
+    actual_provider_fetch: bool,
+    materialized_from_shared_fetch: bool = False,
+    raw_provenance_status: str = "",
+) -> dict[str, Any]:
+    shared_key = str(request.metadata.get("shared_fetch_key") or "").strip()
+    if not shared_key:
+        return {}
+    metadata = {
+        "shared_fetch_key": shared_key,
+        "materialized_from_raw_path": raw_path,
+        "source_raw_path": raw_path,
+        "materialized_from_shared_fetch": bool(materialized_from_shared_fetch),
+        "actual_provider_fetch": bool(actual_provider_fetch),
+    }
+    if raw_provenance_status:
+        metadata["raw_provenance_status"] = raw_provenance_status
+    return metadata
+
+
+def _find_existing_shared_raw(
+    *,
+    request: ProviderRequest,
+    store: SnapshotStore,
+    client: Any,
+) -> tuple[dict[str, Any], str] | None:
+    raw_root = store.root_dir / "raw" / request.provider
+    if not raw_root.exists():
+        return None
+    for path in sorted(raw_root.glob("*/*.json")):
+        try:
+            raw = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        if not isinstance(raw, dict):
+            continue
+        if _raw_matches_request(client, raw, request):
+            return raw, str(path)
+    return None
+
+
+def _raw_matches_request(client: Any, raw: dict[str, Any], request: ProviderRequest) -> bool:
+    matcher = getattr(client, "raw_matches_request", None)
+    if callable(matcher):
+        return bool(matcher(raw, request))
+    return _diagnose_provider_response(client, raw, request) is None
+
+
+def _has_existing_cache(request: ProviderRequest, store: SnapshotStore, *, shared_key: str) -> bool:
+    if shared_key:
+        return _has_nonempty_file(store.normalized_path(request))
+    return store.has_cache(request)
+
+
+def _has_nonempty_file(path: Path) -> bool:
+    if not path.exists():
+        return False
+    try:
+        with path.open("r", encoding="utf-8") as handle:
+            return any(line.strip() for line in handle)
+    except OSError:
+        return False
+
+
+def _raw_provenance_warnings(records: list[SnapshotRecord]) -> list[str]:
+    warnings: list[str] = []
+    for record in records:
+        status = str(record.metadata.get("raw_provenance_status") or "").strip()
+        if not status:
+            continue
+        warnings.append(
+            "Raw provenance warning: "
+            f"{record.provider} {record.case_id} {record.endpoint} {record.ticker} {status}"
+        )
+    return warnings
 
 
 if __name__ == "__main__":

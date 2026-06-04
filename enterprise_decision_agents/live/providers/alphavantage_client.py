@@ -37,6 +37,7 @@ class AlphaVantageClient(LiveProviderClient):
             price_tickers = _unique_tickers([case.ticker, *benchmark_tickers])
             if "price_history" in endpoints:
                 for ticker in price_tickers:
+                    params = {**price_params, "symbol": ticker}
                     requests.append(
                         ProviderRequest(
                             provider=self.provider_name,
@@ -46,16 +47,18 @@ class AlphaVantageClient(LiveProviderClient):
                             decision_date=case.decision_date,
                             start_date=add_days(case.decision_date, -lookback_days),
                             end_date=case.decision_date,
-                            params={**price_params, "symbol": ticker},
+                            params=params,
                             metadata={
                                 "usable_for_agent_input": True,
                                 "benchmark_ticker": ticker != case.ticker.upper(),
                                 "alphavantage_price_function": price_params["function"],
+                                "shared_fetch_key": _price_shared_fetch_key(params),
                             },
                         )
                     )
             if future_horizon_days > 0 and config.get("allow_post_decision_label_data", False):
                 for ticker in price_tickers:
+                    params = {**price_params, "symbol": ticker}
                     requests.append(
                         ProviderRequest(
                             provider=self.provider_name,
@@ -65,17 +68,19 @@ class AlphaVantageClient(LiveProviderClient):
                             decision_date=case.decision_date,
                             start_date=add_days(case.decision_date, 1),
                             end_date=add_days(case.decision_date, future_horizon_days),
-                            params={**price_params, "symbol": ticker},
+                            params=params,
                             metadata={
                                 "label_only": True,
                                 "contains_post_decision_data": True,
                                 "usable_for_agent_input": False,
                                 "benchmark_ticker": ticker != case.ticker.upper(),
                                 "alphavantage_price_function": price_params["function"],
+                                "shared_fetch_key": _price_shared_fetch_key(params),
                             },
                         )
                     )
             if "company_profile" in endpoints:
+                params = {"function": "OVERVIEW", "symbol": case.ticker}
                 requests.append(
                     ProviderRequest(
                         provider=self.provider_name,
@@ -85,8 +90,8 @@ class AlphaVantageClient(LiveProviderClient):
                         decision_date=case.decision_date,
                         start_date=case.decision_date,
                         end_date=case.decision_date,
-                        params={"function": "OVERVIEW", "symbol": case.ticker},
-                        metadata={"usable_for_agent_input": True},
+                        params=params,
+                        metadata={"usable_for_agent_input": True, "shared_fetch_key": _overview_shared_fetch_key(params)},
                     )
                 )
         return requests
@@ -110,6 +115,22 @@ class AlphaVantageClient(LiveProviderClient):
                 "error_message": message,
             }
         return None
+
+    def shared_fetch_key(self, request: ProviderRequest) -> str:
+        if request.endpoint in {"price_history", "price_label_window"}:
+            return _price_shared_fetch_key(request.params)
+        if request.endpoint == "company_profile":
+            return _overview_shared_fetch_key(request.params)
+        return ""
+
+    def raw_matches_request(self, raw_response: dict[str, Any], request: ProviderRequest) -> bool:
+        if self.diagnose_response(raw_response, request):
+            return False
+        if request.endpoint in {"price_history", "price_label_window"}:
+            return bool(_series_payload(raw_response)) and _raw_price_symbol(raw_response) == _request_symbol(request)
+        if request.endpoint == "company_profile":
+            return _raw_profile_symbol(raw_response) == _request_symbol(request)
+        return False
 
     def normalize(self, raw_response: dict[str, Any], request: ProviderRequest) -> list[dict[str, Any]]:
         if request.endpoint == "company_profile":
@@ -166,6 +187,36 @@ def _price_params(config: dict[str, Any]) -> dict[str, str]:
     }
 
 
+def _price_shared_fetch_key(params: dict[str, Any]) -> str:
+    function = str(params.get("function") or FREE_PRICE_FUNCTION).strip().upper()
+    outputsize = str(params.get("outputsize") or "compact").strip().lower()
+    symbol = str(params.get("symbol") or "").strip().upper()
+    return f"alphavantage|{function}|{outputsize or 'compact'}|{symbol}"
+
+
+def _overview_shared_fetch_key(params: dict[str, Any]) -> str:
+    symbol = str(params.get("symbol") or "").strip().upper()
+    return f"alphavantage|OVERVIEW|{symbol}"
+
+
+def _request_symbol(request: ProviderRequest) -> str:
+    return str(request.params.get("symbol") or request.ticker or "").strip().upper()
+
+
+def _raw_price_symbol(raw_response: dict[str, Any]) -> str:
+    metadata = raw_response.get("Meta Data")
+    if isinstance(metadata, dict):
+        for key in ["2. Symbol", "Symbol", "symbol"]:
+            value = str(metadata.get(key) or "").strip().upper()
+            if value:
+                return value
+    return ""
+
+
+def _raw_profile_symbol(raw_response: dict[str, Any]) -> str:
+    return str(raw_response.get("Symbol") or raw_response.get("symbol") or "").strip().upper()
+
+
 def _series_payload(raw_response: dict[str, Any]) -> dict[str, Any]:
     for key in PRICE_SERIES_KEYS:
         payload = raw_response.get(key)
@@ -192,6 +243,7 @@ def _message_error_type(key: str, message: str) -> str:
 def _safe_message(value: Any) -> str:
     text = str(value or "").replace("\n", " ").strip()
     text = re.sub(r"(?i)(apikey|api_key|token)=([^&\s]+)", r"\1=<redacted>", text)
+    text = re.sub(r"(?i)(api\s+key\s+as)\s+\S+", r"\1 <redacted>", text)
     if len(text) > 220:
         text = text[:217].rstrip() + "..."
     if contains_secret(text):
