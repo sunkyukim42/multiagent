@@ -15,6 +15,8 @@ graph.
 - Task 13D: run controlled batch LLM decision experiments.
 - Task 14: run offline descriptive statistical summaries and write KCI-style tables.
 - Task 15A: prepare and inspect one real XOM/SPY snapshot micro-pilot.
+- Task 15D/15E: package a capped five-case recent XOM live pilot as
+  descriptive documentation only.
 
 ## API Keys
 
@@ -371,6 +373,19 @@ outputs are not performance evidence, not paper-ready, not statistically
 conclusive, and not financial/procurement/legal advice. Post-decision fixture
 rows are label-only and not usable for agent input.
 
+## Task 15D/15E: Recent API Live Pilot Documentation
+
+Task 15D.2 ran a capped five-case recent `XOM` pilot with two controlled
+methods, one seed, ten approved OpenAI calls, and a `$0.50` estimated cost cap.
+Task 15D.3 audited the result schemas, cache consistency, pairwise summaries,
+cost record, prompt leakage boundaries, and safety disclaimers.
+
+Task 15E records the audited result in
+`docs/live_recent_pilot_results.md`. The document is descriptive only. It is not
+paper-ready, not statistically conclusive, makes no performance claim, and
+provides no financial/procurement/legal advice. Generated live outputs remain
+ignored under `results/`, `results/llm_cache/`, and `data/live_snapshots/`.
+
 ## Current Limitations
 
 - Task 11 makes no performance claim.
@@ -380,6 +395,7 @@ rows are label-only and not usable for agent input.
 - Task 13D batch outputs are not statistical evidence.
 - Task 14 fake-runner summaries are validation artifacts only.
 - Task 15A micro-pilot readiness is not performance evidence.
+- Task 15D/15E recent pilot documentation is descriptive only.
 - Task 11/12/13B/14 outputs are not paper-ready and not statistically conclusive.
 - Task 11/12/13B/14 outputs do not provide financial/procurement/legal advice.
 - Provider endpoint behavior may need provider-plan-specific adjustment.

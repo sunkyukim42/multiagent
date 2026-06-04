@@ -63,6 +63,7 @@ Generated artifacts are ignored by git under `results/` and `data/indexes/`.
 | `docs/` | Architecture, research plan, demo guide, metrics, and release checklist. |
 | `docs/final/` | Final portfolio and graduate research Markdown assets. |
 | `docs/live_quantitative_experiment.md` | Task 11-14 live quantitative experiment roadmap. |
+| `docs/live_recent_pilot_results.md` | Task 15D/15E recent XOM live pilot descriptive audit note. |
 | `scripts/` | Offline build, validation, benchmark, report, workflow, final package, and live case commands. |
 | `scripts/generate_final_package.py` | Deterministic Task 10 final package generator. |
 | `scripts/build_live_case_set.py` | Deterministic Task 11 live case panel builder. |
@@ -119,6 +120,7 @@ Generated artifacts are ignored by git under `results/` and `data/indexes/`.
 - [Research Evaluation Pack](docs/research_evaluation_pack.md)
 - [Final Package Docs](docs/final/portfolio_project_summary.md)
 - [Live Quantitative Experiment Roadmap](docs/live_quantitative_experiment.md)
+- [Recent API Live Pilot Results](docs/live_recent_pilot_results.md)
 - [Release Checklist](docs/release_checklist.md)
 
 ## Task 9: Research Evaluation Pack
