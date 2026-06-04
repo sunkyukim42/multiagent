@@ -34,6 +34,8 @@ class SnapshotStore:
         return self.root_dir / "collection_plan.json"
 
     def has_cache(self, request: ProviderRequest) -> bool:
+        if request.endpoint in {"price_history", "price_label_window"}:
+            return _has_nonempty_jsonl(self.normalized_path(request))
         return self.raw_path(request).exists() or self.normalized_path(request).exists()
 
     def write_raw_json(self, request: ProviderRequest, payload: dict[str, Any]) -> Path:
@@ -72,6 +74,13 @@ def _atomic_write_text(path: Path, text: str) -> None:
     temp_path = path.with_suffix(path.suffix + ".tmp")
     temp_path.write_text(text, encoding="utf-8")
     temp_path.replace(path)
+
+
+def _has_nonempty_jsonl(path: Path) -> bool:
+    if not path.exists():
+        return False
+    with path.open("r", encoding="utf-8") as handle:
+        return any(line.strip() for line in handle)
 
 
 def _normalized_filename(request: ProviderRequest) -> str:

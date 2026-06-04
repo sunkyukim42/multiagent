@@ -214,6 +214,9 @@ benchmarked against `SPY` over 63-day and 126-day horizons. The pilot config is
 `configs/live_experiments/pilot_xom_2020_11_19.yaml`. Default commands are
 plan-only, dry-run, or local inspection; they do not call OpenAI, provider APIs,
 embeddings, TradingAgents, or `python main.py`.
+Alpha Vantage free-key price requests use `TIME_SERIES_DAILY` with compact
+output. `TIME_SERIES_DAILY_ADJUSTED` may require premium access, and provider
+`Information`, `Note`, or `Error Message` responses are not label-ready.
 
 Build the one-case panel:
 

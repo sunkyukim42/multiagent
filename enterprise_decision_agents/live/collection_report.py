@@ -32,6 +32,31 @@ def render_collection_report(manifest: SnapshotManifest, *, plan_path: str = "")
     if manifest.warnings:
         lines.extend(["", "## Warnings"])
         lines.extend(f"- {warning}" for warning in manifest.warnings)
+    failed_records = [record for record in manifest.records if record.status == "failed"]
+    if failed_records:
+        lines.extend(
+            [
+                "",
+                "## Provider Diagnostics",
+                "",
+                "| Provider | Endpoint | Ticker | Error type | Message |",
+                "| --- | --- | --- | --- | --- |",
+            ]
+        )
+        for record in failed_records:
+            lines.append(
+                "| "
+                + " | ".join(
+                    [
+                        _escape(record.provider),
+                        _escape(record.endpoint),
+                        _escape(record.ticker),
+                        _escape(record.error_type or "n/a"),
+                        _escape(record.error_message or "n/a"),
+                    ]
+                )
+                + " |"
+            )
     lines.extend(
         [
             "",
@@ -45,6 +70,10 @@ def render_collection_report(manifest: SnapshotManifest, *, plan_path: str = "")
     if contains_secret(text):
         raise CollectionReportError("collection report must not contain raw secret values")
     return text
+
+
+def _escape(value: Any) -> str:
+    return str(value).replace("|", "\\|").replace("\n", " ").strip()
 
 
 def write_collection_report(path: str | Path, manifest: SnapshotManifest, *, plan_path: str = "") -> Path:

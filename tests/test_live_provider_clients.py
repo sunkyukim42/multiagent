@@ -23,7 +23,7 @@ def test_fred_client_normalizes_fake_response_and_missing_key_is_safe():
 
 def test_alphavantage_client_normalizes_fake_price_response():
     client = AlphaVantageClient()
-    request = _request("alphavantage", "price_history")
+    request = _request("alphavantage", "price_history", params={"function": "TIME_SERIES_DAILY"})
 
     rows = client.normalize(
         {
@@ -45,6 +45,51 @@ def test_alphavantage_client_normalizes_fake_price_response():
     assert len(rows) == 1
     assert rows[0]["ticker"] == "XOM"
     assert rows[0]["close"] == 1.5
+    assert rows[0]["provider"] == "alphavantage"
+    assert rows[0]["endpoint"] == "price_history"
+    assert rows[0]["source_function"] == "TIME_SERIES_DAILY"
+    assert rows[0]["usable_for_agent_input"] is True
+
+
+def test_alphavantage_client_normalizes_adjusted_price_response():
+    client = AlphaVantageClient()
+    request = _request("alphavantage", "price_history", params={"function": "TIME_SERIES_DAILY_ADJUSTED"})
+
+    rows = client.normalize(
+        {
+            "Time Series (Daily Adjusted)": {
+                "2020-03-31": {
+                    "1. open": "1",
+                    "2. high": "2",
+                    "3. low": "0.5",
+                    "4. close": "1.5",
+                    "5. adjusted close": "1.4",
+                    "6. volume": "100",
+                }
+            }
+        },
+        request,
+    )
+
+    assert rows[0]["adjusted_close"] == 1.4
+    assert rows[0]["volume"] == 100
+
+
+@pytest.mark.parametrize(
+    ("payload", "error_type"),
+    [
+        ({"Information": "Thank you for using Alpha Vantage! This is a premium endpoint."}, "premium_endpoint"),
+        ({"Note": "Our standard API call frequency is 5 calls per minute."}, "rate_limit"),
+        ({"Error Message": "Invalid API call."}, "provider_error"),
+    ],
+)
+def test_alphavantage_client_diagnoses_provider_messages(payload, error_type):
+    client = AlphaVantageClient()
+    diagnostic = client.diagnose_response(payload, _request("alphavantage", "price_history"))
+
+    assert diagnostic is not None
+    assert diagnostic["error_type"] == error_type
+    assert "apikey" not in diagnostic["error_message"].lower()
 
 
 def test_price_provider_clients_plan_benchmark_label_windows():
@@ -75,6 +120,36 @@ def test_price_provider_clients_plan_benchmark_label_windows():
         assert all(request.metadata["label_only"] for request in label_requests)
         assert all(request.metadata["contains_post_decision_data"] for request in label_requests)
         assert all(request.metadata["usable_for_agent_input"] is False for request in label_requests)
+    alpha_requests = AlphaVantageClient().build_requests([case], config=config, lookback_days=10, future_horizon_days=5)
+    price_requests = [request for request in alpha_requests if request.endpoint in {"price_history", "price_label_window"}]
+    assert all(request.params["function"] == "TIME_SERIES_DAILY" for request in price_requests)
+    assert all(request.params["outputsize"] == "compact" for request in price_requests)
+
+
+def test_alphavantage_client_allows_explicit_adjusted_price_mode():
+    case = LiveCaseRecord(
+        case_id="XOM_2020_03_31",
+        domain="oil",
+        ticker="XOM",
+        decision_date="2020-03-31",
+        task_type="investment",
+        market="US",
+        horizons=[63],
+        source_config="test",
+    )
+    requests = AlphaVantageClient().build_requests(
+        [case],
+        config={
+            "endpoints_by_provider": {"alphavantage": ["price_history"]},
+            "alphavantage_adjusted_prices": True,
+            "alphavantage_outputsize": "full",
+        },
+        lookback_days=10,
+        future_horizon_days=0,
+    )
+
+    assert requests[0].params["function"] == "TIME_SERIES_DAILY_ADJUSTED"
+    assert requests[0].params["outputsize"] == "full"
 
 
 def test_finnhub_client_normalizes_profile_and_candles():

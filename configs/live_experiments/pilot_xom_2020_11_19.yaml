@@ -41,6 +41,9 @@ notes:
   - Micro-pilot for real snapshot collection only.
   - No OpenAI calls.
   - Default plan-only and dry-run commands do not call external APIs.
+  - Alpha Vantage free-key price requests use TIME_SERIES_DAILY with compact output.
+  - TIME_SERIES_DAILY_ADJUSTED may require premium Alpha Vantage access.
+  - Provider Information, Note, or Error Message responses are not label-ready.
   - Future/post-decision data is label-only and not usable for agent input.
   - Free provider API limits must be respected.
   - Live provider calls require explicit --allow-live-api, provider filters, and user-controlled caps.

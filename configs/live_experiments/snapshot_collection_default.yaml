@@ -9,6 +9,9 @@ providers:
   - thenewsapi
 benchmark_tickers:
   - SPY
+alphavantage_price_function: TIME_SERIES_DAILY
+alphavantage_outputsize: compact
+alphavantage_adjusted_prices: false
 endpoints_by_provider:
   fred:
     - macro_series
@@ -37,3 +40,5 @@ notes:
   - Use --allow-live-api only for explicit snapshot collection.
   - Post-decision data is label-only and not usable for agent input.
   - Benchmark tickers support cache-only benchmark-adjusted outcome labels.
+  - Alpha Vantage free-key price requests default to TIME_SERIES_DAILY with compact output.
+  - TIME_SERIES_DAILY_ADJUSTED may require premium Alpha Vantage access.

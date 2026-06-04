@@ -86,6 +86,45 @@ def test_inspect_live_snapshots_fail_fast_returns_nonzero_for_missing_cache(tmp_
     assert "no_snapshots" in result.stderr
 
 
+def test_inspect_live_snapshots_reports_empty_price_data(tmp_path):
+    cases_path = _cases(tmp_path)
+    snapshot_dir = tmp_path / "snapshots"
+    case_dir = snapshot_dir / "normalized" / "alphavantage" / "XOM_2020_11_19"
+    _write_jsonl(case_dir / "price_history.jsonl", [])
+    output_json = tmp_path / "quality" / "quality.json"
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "scripts/inspect_live_snapshots.py",
+            "--snapshot-dir",
+            str(snapshot_dir),
+            "--cases",
+            str(cases_path),
+            "--ticker",
+            "XOM",
+            "--benchmark-ticker",
+            "SPY",
+            "--decision-date",
+            "2020-11-19",
+            "--horizons",
+            "63,126",
+            "--providers",
+            "alphavantage",
+            "--output-json",
+            str(output_json),
+            "--print-summary",
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert "status=empty_price_data" in result.stdout
+    assert json.loads(output_json.read_text(encoding="utf-8"))["results"][0]["status"] == "empty_price_data"
+
+
 def _cases(tmp_path: Path) -> Path:
     path = tmp_path / "cases.jsonl"
     write_case_jsonl(

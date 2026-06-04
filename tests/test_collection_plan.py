@@ -25,10 +25,16 @@ def test_collection_plan_builds_provider_filtered_requests(tmp_path):
 
     assert config.experiment_id == "live_snapshot_collection_default"
     assert config.benchmark_tickers == ["SPY"]
+    assert config.alphavantage_price_function == "TIME_SERIES_DAILY"
+    assert config.alphavantage_outputsize == "compact"
+    assert config.alphavantage_adjusted_prices is False
     assert len(cases) == 1
     assert {request.provider for request in requests} == {"alphavantage"}
     assert summary["post_decision_request_count"] == 2
     assert {request.ticker for request in requests if request.endpoint == "price_history"} == {"XOM", "SPY"}
+    price_requests = [request for request in requests if request.endpoint in {"price_history", "price_label_window"}]
+    assert all(request.params["function"] == "TIME_SERIES_DAILY" for request in price_requests)
+    assert all(request.params["outputsize"] == "compact" for request in price_requests)
     label_requests = [request for request in requests if request.endpoint == "price_label_window"]
     assert {request.ticker for request in label_requests} == {"XOM", "SPY"}
     for label_request in label_requests:

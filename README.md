@@ -387,6 +387,10 @@ benchmarked against `SPY`. It extends snapshot planning so target and benchmark
 price windows can be cached separately, then inspects local snapshots for label
 readiness. Default commands remain API-free and do not call OpenAI, provider
 APIs, embeddings, `python main.py`, or the live TradingAgents graph.
+For Alpha Vantage free-key pilots, price requests use `TIME_SERIES_DAILY` with
+compact output; `TIME_SERIES_DAILY_ADJUSTED` may require premium access.
+Provider `Information`, `Note`, or `Error Message` responses are treated as not
+label-ready rather than successful price snapshots.
 
 Build the one-case pilot panel:
 

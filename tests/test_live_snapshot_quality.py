@@ -4,6 +4,7 @@ from pathlib import Path
 from enterprise_decision_agents.live.case_schema import LiveCaseRecord
 from enterprise_decision_agents.live.case_set_builder import write_case_jsonl
 from enterprise_decision_agents.live.snapshot_quality import (
+    EMPTY_PRICE_DATA,
     MISSING_BENCHMARK_PRICES,
     MISSING_FUTURE_WINDOW,
     MISSING_TARGET_PRICES,
@@ -13,6 +14,8 @@ from enterprise_decision_agents.live.snapshot_quality import (
     inspect_snapshot_quality,
     render_snapshot_quality_markdown,
 )
+from enterprise_decision_agents.live.snapshot_schema import SnapshotManifest, SnapshotRecord
+from enterprise_decision_agents.live.snapshot_store import SnapshotStore
 
 
 def test_snapshot_quality_ready_for_target_and_benchmark_windows(tmp_path):
@@ -37,6 +40,50 @@ def test_snapshot_quality_reports_missing_snapshot_dir(tmp_path):
 
     assert report.results[0].status == NO_SNAPSHOTS
     assert report.results[0].warnings
+
+
+def test_snapshot_quality_reports_empty_price_data(tmp_path):
+    cases_path = _cases(tmp_path)
+    snapshot_dir = tmp_path / "snapshots"
+    case_dir = snapshot_dir / "normalized" / "alphavantage" / "XOM_2020_11_19"
+    _write_jsonl(case_dir / "price_history.jsonl", [])
+    _write_jsonl(case_dir / "price_history_SPY.jsonl", [])
+
+    report = _inspect(snapshot_dir, cases_path)
+    result = report.results[0]
+
+    assert result.status == EMPTY_PRICE_DATA
+    assert result.metadata["price_file_count"] == 2
+    assert len(result.metadata["empty_price_files"]) == 2
+    assert "empty" in " ".join(result.warnings).lower()
+
+
+def test_snapshot_quality_surfaces_manifest_provider_diagnostics(tmp_path):
+    cases_path = _cases(tmp_path)
+    snapshot_dir = tmp_path / "snapshots"
+    case_dir = snapshot_dir / "normalized" / "alphavantage" / "XOM_2020_11_19"
+    _write_jsonl(case_dir / "price_history.jsonl", [])
+    store = SnapshotStore(snapshot_dir, experiment_id="diagnostic_test")
+    record = SnapshotRecord(
+        provider="alphavantage",
+        endpoint="price_history",
+        case_id="XOM_2020_11_19",
+        ticker="XOM",
+        decision_date="2020-11-19",
+        request_id="request-1",
+        cache_key="cache-1",
+        raw_path="raw/alphavantage/XOM_2020_11_19/request-1.json",
+        normalized_path=str(case_dir / "price_history.jsonl"),
+        status="failed",
+        error_type="premium_endpoint",
+        error_message="provider returned premium endpoint information",
+    )
+    store.write_manifest(SnapshotManifest(experiment_id="diagnostic_test", case_count=1, request_count=1, records=[record]))
+
+    report = _inspect(snapshot_dir, cases_path)
+
+    assert report.results[0].status == EMPTY_PRICE_DATA
+    assert "premium_endpoint" in " ".join(report.results[0].warnings)
 
 
 def test_snapshot_quality_reports_missing_target_prices(tmp_path):

@@ -117,6 +117,9 @@ def test_task15a_docs_and_ignore_rules_keep_boundaries():
     assert "not statistically conclusive" in combined
     assert "financial/procurement/legal advice" in combined
     assert "no performance claim" in combined
+    assert "time_series_daily" in combined
+    assert "time_series_daily_adjusted" in combined
+    assert "not label-ready" in combined
 
 
 def test_task15a_readme_and_docs_expose_micro_pilot_contract():
@@ -138,6 +141,9 @@ def test_task15a_readme_and_docs_expose_micro_pilot_contract():
     assert "--resume" in docs
     assert "free provider api limits may apply" in docs_words
     assert "not part of default validation" in docs_words
+    assert "time_series_daily" in readme
+    assert "time_series_daily_adjusted" in readme
+    assert "provider `information`, `note`, or `error message` responses" in readme
 
 
 def test_task15a_pilot_config_has_strict_safety_keys():
@@ -156,6 +162,10 @@ def test_task15a_pilot_config_has_strict_safety_keys():
     assert config["max_cases"] == 1
     assert config["max_calls_per_run"] == 20
     assert config["allow_live_api_default"] is False
+    snapshot_config = yaml.safe_load(Path("configs/live_experiments/snapshot_collection_default.yaml").read_text(encoding="utf-8"))
+    assert snapshot_config["alphavantage_price_function"] == "TIME_SERIES_DAILY"
+    assert snapshot_config["alphavantage_outputsize"] == "compact"
+    assert snapshot_config["alphavantage_adjusted_prices"] is False
     assert output_paths["cases_csv"] == "data/cases/pilot_xom_2020_11_19.csv"
     assert output_paths["cases_jsonl"] == "data/cases/pilot_xom_2020_11_19.jsonl"
     assert output_paths["case_manifest"] == "data/cases/pilot_xom_2020_11_19_manifest.json"
@@ -166,6 +176,9 @@ def test_task15a_pilot_config_has_strict_safety_keys():
     assert output_paths["quality_md"] == "results/live_snapshot_quality/pilot_xom_2020_11_19_quality/quality.md"
     assert "micro-pilot for real snapshot collection only" in notes
     assert "no openai calls" in notes
+    assert "time_series_daily" in notes
+    assert "time_series_daily_adjusted" in notes
+    assert "not label-ready" in notes
     assert "future/post-decision data is label-only" in notes
     assert "free provider api limits must be respected" in notes
     assert "explicit --allow-live-api" in notes

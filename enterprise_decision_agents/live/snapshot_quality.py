@@ -21,6 +21,7 @@ MISSING_TARGET_PRICES = "missing_target_prices"
 MISSING_BENCHMARK_PRICES = "missing_benchmark_prices"
 MISSING_FUTURE_WINDOW = "missing_future_window"
 UNSAFE_POST_DECISION_AGENT_INPUT = "unsafe_post_decision_agent_input"
+EMPTY_PRICE_DATA = "empty_price_data"
 
 SNAPSHOT_QUALITY_STATUSES = {
     READY_FOR_LABELING,
@@ -29,6 +30,7 @@ SNAPSHOT_QUALITY_STATUSES = {
     MISSING_BENCHMARK_PRICES,
     MISSING_FUTURE_WINDOW,
     UNSAFE_POST_DECISION_AGENT_INPUT,
+    EMPTY_PRICE_DATA,
 }
 
 
@@ -113,7 +115,7 @@ def inspect_snapshot_quality(
     if not resolved_horizons or any(item <= 0 for item in resolved_horizons):
         raise SnapshotQualityError("horizons must contain positive integers")
     manifest_records = _manifest_records(root)
-    rows, warnings = _load_price_rows(root, case.case_id, selected_providers, manifest_records)
+    rows, warnings, price_file_state = _load_price_rows(root, case.case_id, selected_providers, manifest_records)
     result = _inspect_case(
         rows=rows,
         case_id=case.case_id,
@@ -124,6 +126,9 @@ def inspect_snapshot_quality(
         providers=selected_providers,
         snapshot_root=root,
         warnings=warnings,
+        price_file_count=price_file_state["price_file_count"],
+        empty_price_files=price_file_state["empty_price_files"],
+        extra_source_paths=price_file_state["source_paths"],
     )
     status_counts = {status: 0 for status in sorted(SNAPSHOT_QUALITY_STATUSES)}
     status_counts[result.status] = 1
@@ -220,12 +225,14 @@ def _load_price_rows(
     case_id: str,
     providers: list[str],
     manifest_records: dict[tuple[str, str, str, str], SnapshotRecord],
-) -> tuple[list[PriceRow], list[str]]:
+) -> tuple[list[PriceRow], list[str], dict[str, Any]]:
     normalized_dir = root / "normalized"
     if not normalized_dir.exists():
-        return [], [f"No normalized snapshots found under {normalized_dir}."]
+        return [], [f"No normalized snapshots found under {normalized_dir}."], _price_file_state()
     rows: list[PriceRow] = []
     warnings: list[str] = []
+    state = _price_file_state()
+    warnings.extend(_manifest_diagnostic_warnings(manifest_records, case_id=case_id, providers=providers))
     provider_dirs = [normalized_dir / provider for provider in providers] if providers else sorted(normalized_dir.iterdir())
     for provider_dir in provider_dirs:
         if not provider_dir.exists() or not provider_dir.is_dir():
@@ -239,13 +246,49 @@ def _load_price_rows(
             logical_endpoint = _logical_price_endpoint(path.stem)
             if not logical_endpoint:
                 continue
-            for row in _read_jsonl(path):
+            state["price_file_count"] += 1
+            state["source_paths"].append(str(path))
+            payload_rows = _read_jsonl(path)
+            if not payload_rows:
+                state["empty_price_files"].append(str(path))
+            for row in payload_rows:
                 price_row = _price_row(row, path=path, provider=provider_dir.name, endpoint=logical_endpoint, manifest_records=manifest_records)
                 if price_row:
                     rows.append(price_row)
-    if not rows:
+    if state["empty_price_files"]:
+        warnings.append("Normalized price snapshot files are present but empty: " + "; ".join(state["empty_price_files"]))
+    if not rows and not state["price_file_count"]:
         warnings.append(f"No normalized price snapshots found for case {case_id}.")
-    return rows, warnings
+    return rows, warnings, state
+
+
+def _price_file_state() -> dict[str, Any]:
+    return {"price_file_count": 0, "empty_price_files": [], "source_paths": []}
+
+
+def _manifest_diagnostic_warnings(
+    manifest_records: dict[tuple[str, str, str, str], SnapshotRecord],
+    *,
+    case_id: str,
+    providers: list[str],
+) -> list[str]:
+    selected = set(providers)
+    warnings: list[str] = []
+    for record in manifest_records.values():
+        if record.case_id != case_id:
+            continue
+        if selected and record.provider not in selected:
+            continue
+        if record.endpoint not in {"price_history", "price_label_window"}:
+            continue
+        if record.status != "failed" and not record.error_type:
+            continue
+        parts = [record.provider, record.endpoint, record.ticker, record.error_type or "provider_error"]
+        message = str(record.error_message or "").replace("\n", " ").strip()
+        if message:
+            parts.append(message)
+        warnings.append("Provider diagnostic: " + " ".join(parts))
+    return warnings
 
 
 def _inspect_case(
@@ -259,8 +302,12 @@ def _inspect_case(
     providers: list[str],
     snapshot_root: Path,
     warnings: list[str],
+    price_file_count: int,
+    empty_price_files: list[str],
+    extra_source_paths: list[str],
 ) -> SnapshotQualityResult:
-    no_snapshots = not snapshot_root.exists() or not rows
+    no_snapshots = not snapshot_root.exists() or price_file_count == 0
+    empty_price_data = price_file_count > 0 and not rows
     target_rows = _rows_for_ticker(rows, ticker)
     benchmark_rows = _rows_for_ticker(rows, benchmark_ticker)
     target_entry = _select_on_or_after(target_rows, decision_date)
@@ -286,6 +333,8 @@ def _inspect_case(
     unsafe = _unsafe_post_decision_rows(rows, decision_date)
     if no_snapshots:
         status = NO_SNAPSHOTS
+    elif empty_price_data:
+        status = EMPTY_PRICE_DATA
     elif unsafe:
         status = UNSAFE_POST_DECISION_AGENT_INPUT
     elif missing_target:
@@ -299,7 +348,7 @@ def _inspect_case(
     if unsafe:
         warnings.append("Post-decision rows were not safely marked as label-only non-agent input.")
 
-    source_paths = sorted({row.source_path for row in rows})
+    source_paths = sorted({row.source_path for row in rows}.union(extra_source_paths))
     return SnapshotQualityResult(
         case_id=case_id,
         ticker=ticker,
@@ -315,7 +364,12 @@ def _inspect_case(
         unsafe_post_decision_rows=unsafe,
         source_paths=source_paths,
         warnings=sorted(set(warnings)),
-        metadata={"external_api_calls": 0, "snapshot_quality_only": True},
+        metadata={
+            "external_api_calls": 0,
+            "snapshot_quality_only": True,
+            "price_file_count": price_file_count,
+            "empty_price_files": empty_price_files,
+        },
     )
 
 

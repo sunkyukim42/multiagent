@@ -85,6 +85,27 @@ def test_snapshot_store_uses_ticker_specific_price_paths_for_benchmark(tmp_path)
     assert store.normalized_path(benchmark_window).name == "price_label_window_SPY.jsonl"
 
 
+def test_snapshot_store_empty_price_jsonl_is_not_usable_cache(tmp_path):
+    request = ProviderRequest(
+        provider="alphavantage",
+        endpoint="price_history",
+        case_id="XOM_2020_03_31",
+        ticker="XOM",
+        decision_date="2020-03-31",
+        start_date="2020-01-01",
+        end_date="2020-03-31",
+    )
+    store = SnapshotStore(tmp_path, experiment_id="task15a3_test")
+    store.write_raw_json(request, {"Information": "premium endpoint"})
+    store.write_normalized_jsonl(request, [])
+
+    assert store.has_cache(request) is False
+
+    store.write_normalized_jsonl(request, [{"case_id": request.case_id, "ticker": "XOM", "date": "2020-03-31", "close": 1.0}])
+
+    assert store.has_cache(request) is True
+
+
 def test_snapshot_store_rejects_secret_payload(tmp_path):
     request = ProviderRequest(
         provider="fred",

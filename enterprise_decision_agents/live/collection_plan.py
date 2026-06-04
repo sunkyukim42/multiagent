@@ -24,6 +24,9 @@ class SnapshotCollectionConfig:
     providers: list[str]
     endpoints_by_provider: dict[str, list[str]] = field(default_factory=dict)
     benchmark_tickers: list[str] = field(default_factory=list)
+    alphavantage_price_function: str = "TIME_SERIES_DAILY"
+    alphavantage_outputsize: str = "compact"
+    alphavantage_adjusted_prices: bool = False
     macro_series: list[str] = field(default_factory=list)
     news_query_templates: list[str] = field(default_factory=list)
     max_articles_per_request: int = 10
@@ -53,6 +56,9 @@ class SnapshotCollectionConfig:
             "providers": self.providers,
             "endpoints_by_provider": self.endpoints_by_provider,
             "benchmark_tickers": self.benchmark_tickers,
+            "alphavantage_price_function": self.alphavantage_price_function,
+            "alphavantage_outputsize": self.alphavantage_outputsize,
+            "alphavantage_adjusted_prices": self.alphavantage_adjusted_prices,
             "macro_series": self.macro_series,
             "news_query_templates": self.news_query_templates,
             "max_articles_per_request": self.max_articles_per_request,
@@ -75,6 +81,9 @@ class SnapshotCollectionConfig:
                 for provider, endpoints in dict(data.get("endpoints_by_provider") or {}).items()
             },
             benchmark_tickers=[str(item).upper() for item in data.get("benchmark_tickers", [])],
+            alphavantage_price_function=str(data.get("alphavantage_price_function") or "TIME_SERIES_DAILY"),
+            alphavantage_outputsize=str(data.get("alphavantage_outputsize") or "compact"),
+            alphavantage_adjusted_prices=bool(data.get("alphavantage_adjusted_prices", False)),
             macro_series=[str(item) for item in data.get("macro_series", [])],
             news_query_templates=[str(item) for item in data.get("news_query_templates", [])],
             max_articles_per_request=int(data.get("max_articles_per_request", 10)),

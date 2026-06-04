@@ -191,7 +191,33 @@ def _collect_live_requests(
             client = get_provider_client(request.provider)
             raw = client.fetch(request, api_key=api_key, timeout=limit.timeout_seconds)
             raw_path = store.write_raw_json(request, raw)
+            diagnostic = _diagnose_provider_response(client, raw, request)
+            if diagnostic:
+                records.append(
+                    _record_from_request(
+                        request,
+                        store,
+                        status="failed",
+                        raw_path=str(raw_path),
+                        error_type=diagnostic["error_type"],
+                        error_message=diagnostic["error_message"],
+                        extra_metadata={"provider_diagnostic": diagnostic},
+                    )
+                )
+                continue
             normalized = client.normalize(raw, request)
+            if _is_price_request(request) and not normalized:
+                records.append(
+                    _record_from_request(
+                        request,
+                        store,
+                        status="failed",
+                        raw_path=str(raw_path),
+                        error_type="empty_price_data",
+                        error_message="price request normalized to zero rows for the requested date window",
+                    )
+                )
+                continue
             normalized_path = store.write_normalized_jsonl(request, normalized)
             records.append(
                 _record_from_request(
@@ -224,9 +250,16 @@ def _record_from_request(
     normalized_path: str = "",
     error_type: str = "",
     error_message: str = "",
+    extra_metadata: dict[str, Any] | None = None,
 ) -> SnapshotRecord:
     contains_post = bool(request.metadata.get("contains_post_decision_data"))
     usable = bool(request.metadata.get("usable_for_agent_input", not contains_post))
+    metadata = {
+        "label_only": bool(request.metadata.get("label_only", False)),
+        "request_metadata": request.metadata,
+    }
+    if extra_metadata:
+        metadata.update(extra_metadata)
     return SnapshotRecord(
         provider=request.provider,
         endpoint=request.endpoint,
@@ -243,10 +276,7 @@ def _record_from_request(
         input_cutoff_date=request.decision_date,
         contains_post_decision_data=contains_post,
         usable_for_agent_input=usable,
-        metadata={
-            "label_only": bool(request.metadata.get("label_only", False)),
-            "request_metadata": request.metadata,
-        },
+        metadata=metadata,
     )
 
 
@@ -287,6 +317,23 @@ def _resolve_mode(args: argparse.Namespace) -> str:
 
 def _split_csv(value: str) -> list[str]:
     return [item.strip() for item in str(value or "").split(",") if item.strip()]
+
+
+def _diagnose_provider_response(client: Any, raw: dict[str, Any], request: ProviderRequest) -> dict[str, str] | None:
+    diagnose = getattr(client, "diagnose_response", None)
+    if not callable(diagnose):
+        return None
+    diagnostic = diagnose(raw, request)
+    if not diagnostic:
+        return None
+    return {
+        "error_type": str(diagnostic.get("error_type") or "provider_information"),
+        "error_message": str(diagnostic.get("error_message") or "provider returned an informational message"),
+    }
+
+
+def _is_price_request(request: ProviderRequest) -> bool:
+    return request.endpoint in {"price_history", "price_label_window"}
 
 
 if __name__ == "__main__":
