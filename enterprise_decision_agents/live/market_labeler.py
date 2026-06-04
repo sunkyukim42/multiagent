@@ -498,7 +498,9 @@ def _select_series(
 
 
 def _logical_price_endpoint(endpoint: str, allowed_endpoints: set[str]) -> str:
-    if endpoint == "price_label_window" and "price_history" in allowed_endpoints:
+    if endpoint.startswith("price_label_window") and "price_history" in allowed_endpoints:
+        return "price_history"
+    if endpoint.startswith("price_history") and "price_history" in allowed_endpoints:
         return "price_history"
     if endpoint in allowed_endpoints:
         return endpoint

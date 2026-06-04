@@ -5,7 +5,7 @@ adds deterministic market outcome labels from local cached snapshots only. These
 layers do not call OpenAI, run LLM decisions, or execute the live TradingAgents
 graph.
 
-## Task 11-14 Roadmap
+## Task 11-15A Roadmap
 
 - Task 11: build live case sets and collect or plan external data snapshots.
 - Task 12: label forward outcomes from cached label-only data.
@@ -14,6 +14,7 @@ graph.
 - Task 13C: add gated OpenAI runner and deterministic fake runner.
 - Task 13D: run controlled batch LLM decision experiments.
 - Task 14: run offline descriptive statistical summaries and write KCI-style tables.
+- Task 15A: prepare and inspect one real XOM/SPY snapshot micro-pilot.
 
 ## API Keys
 
@@ -206,6 +207,65 @@ warning rates. Small samples are not paper-ready and not statistically
 conclusive. Task 14 outputs make no performance claim and provide no
 financial/procurement/legal advice.
 
+## Task 15A: XOM/SPY Snapshot Micro-Pilot Preparation
+
+Task 15A prepares one real historical micro-pilot case: `XOM` on `2020-11-19`,
+benchmarked against `SPY` over 63-day and 126-day horizons. The pilot config is
+`configs/live_experiments/pilot_xom_2020_11_19.yaml`. Default commands are
+plan-only, dry-run, or local inspection; they do not call OpenAI, provider APIs,
+embeddings, TradingAgents, or `python main.py`.
+
+Build the one-case panel:
+
+```bash
+python scripts/build_live_case_set.py \
+  --config configs/live_experiments/live_case_panel_2020_2024.yaml \
+  --output-csv data/cases/pilot_xom_2020_11_19.csv \
+  --output-jsonl data/cases/pilot_xom_2020_11_19.jsonl \
+  --manifest data/cases/pilot_xom_2020_11_19_manifest.json \
+  --tickers XOM \
+  --dates 2020-11-19 \
+  --print-summary
+```
+
+Plan or dry-run target and benchmark snapshot requests:
+
+```bash
+python scripts/collect_live_snapshots.py \
+  --cases data/cases/pilot_xom_2020_11_19.csv \
+  --config configs/live_experiments/snapshot_collection_default.yaml \
+  --provider-limits configs/live_experiments/provider_limits.yaml \
+  --output-dir data/live_snapshots/pilot_xom_2020_11_19_plan \
+  --collection-report-dir results/live_collection/pilot_xom_2020_11_19_plan \
+  --experiment-id pilot_xom_2020_11_19_plan \
+  --plan-only \
+  --providers alphavantage,finnhub \
+  --max-cases 1 \
+  --print-summary
+```
+
+Inspect local readiness before labeling:
+
+```bash
+python scripts/inspect_live_snapshots.py \
+  --snapshot-dir data/live_snapshots/pilot_xom_2020_11_19_dry_run \
+  --cases data/cases/pilot_xom_2020_11_19.csv \
+  --ticker XOM \
+  --benchmark-ticker SPY \
+  --decision-date 2020-11-19 \
+  --horizons 63,126 \
+  --providers alphavantage,finnhub \
+  --output-json results/live_snapshot_quality/pilot_xom_2020_11_19_dry_run/quality.json \
+  --output-md results/live_snapshot_quality/pilot_xom_2020_11_19_dry_run/quality.md \
+  --print-summary
+```
+
+Optional live provider collection must be user-controlled with
+`--allow-live-api`, provider filters, and explicit call caps. Snapshot quality
+reports are ignored under `results/live_snapshot_quality/`. The micro-pilot is
+not paper-ready, not statistically conclusive, makes no performance claim, and
+provides no financial/procurement/legal advice.
+
 ## Current Limitations
 
 - Task 11 makes no performance claim.
@@ -214,6 +274,7 @@ financial/procurement/legal advice.
 - Task 13C runner tests are not live OpenAI experiments.
 - Task 13D batch outputs are not statistical evidence.
 - Task 14 fake-runner summaries are validation artifacts only.
+- Task 15A micro-pilot readiness is not performance evidence.
 - Task 11/12/13B/14 outputs are not paper-ready and not statistically conclusive.
 - Task 11/12/13B/14 outputs do not provide financial/procurement/legal advice.
 - Provider endpoint behavior may need provider-plan-specific adjustment.

@@ -63,7 +63,7 @@ def load_snapshot_context(
             continue
         for path in sorted(case_dir.glob("*.jsonl")):
             files_found = True
-            endpoint = path.stem
+            endpoint = _logical_endpoint(path.stem)
             provider = provider_dir.name
             if endpoint not in SUPPORTED_ENDPOINTS:
                 continue
@@ -214,3 +214,11 @@ def _source_counts(evidence_items: list[PromptEvidenceItem]) -> dict[str, int]:
 def _evidence_id(provider: str, endpoint: str, path: Path, index: int) -> str:
     payload = f"{provider}|{endpoint}|{path.as_posix()}|{index}"
     return sha256(payload.encode("utf-8")).hexdigest()[:24]
+
+
+def _logical_endpoint(value: str) -> str:
+    if value.startswith("price_history"):
+        return "price_history"
+    if value.startswith("price_label_window"):
+        return "price_label_window"
+    return value

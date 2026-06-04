@@ -108,7 +108,10 @@ def build_live_case_records(
     config = load_live_case_panel_config(config_path)
     selected_domains = {item.strip().lower() for item in domains or [] if item.strip()}
     selected_tickers = {item.strip().upper() for item in tickers or [] if item.strip()}
-    selected_dates = {item.strip() for item in dates or [] if item.strip()}
+    selected_dates_list = list(dict.fromkeys(item.strip() for item in dates or [] if item.strip()))
+    selected_dates = set(selected_dates_list)
+    for selected_date in selected_dates:
+        _validate_iso_date(selected_date)
     if max_cases is not None and max_cases <= 0:
         raise LiveCaseError("max_cases must be positive")
 
@@ -119,9 +122,8 @@ def build_live_case_records(
         for ticker in domain_tickers:
             if selected_tickers and ticker not in selected_tickers:
                 continue
-            for decision_date in config.decision_dates:
-                if selected_dates and decision_date not in selected_dates:
-                    continue
+            date_candidates = selected_dates_list if selected_dates else config.decision_dates
+            for decision_date in date_candidates:
                 case_id = f"{ticker}_{decision_date.replace('-', '_')}"
                 records.append(
                     LiveCaseRecord(

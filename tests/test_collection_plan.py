@@ -24,12 +24,17 @@ def test_collection_plan_builds_provider_filtered_requests(tmp_path):
     summary = summarize_requests(requests)
 
     assert config.experiment_id == "live_snapshot_collection_default"
+    assert config.benchmark_tickers == ["SPY"]
     assert len(cases) == 1
     assert {request.provider for request in requests} == {"alphavantage"}
-    assert summary["post_decision_request_count"] == 1
-    label_request = [request for request in requests if request.endpoint == "price_label_window"][0]
-    assert label_request.metadata["label_only"] is True
-    assert label_request.metadata["usable_for_agent_input"] is False
+    assert summary["post_decision_request_count"] == 2
+    assert {request.ticker for request in requests if request.endpoint == "price_history"} == {"XOM", "SPY"}
+    label_requests = [request for request in requests if request.endpoint == "price_label_window"]
+    assert {request.ticker for request in label_requests} == {"XOM", "SPY"}
+    for label_request in label_requests:
+        assert label_request.metadata["label_only"] is True
+        assert label_request.metadata["usable_for_agent_input"] is False
+        assert label_request.metadata["contains_post_decision_data"] is True
 
 
 def test_collection_plan_deduplicates_repeated_provider_config(tmp_path):

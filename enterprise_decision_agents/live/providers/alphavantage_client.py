@@ -20,40 +20,48 @@ class AlphaVantageClient(LiveProviderClient):
         future_horizon_days: int,
     ) -> list[ProviderRequest]:
         endpoints = set(config.get("endpoints_by_provider", {}).get(self.provider_name, ["price_history"]))
+        benchmark_tickers = [str(item).upper() for item in config.get("benchmark_tickers", [])]
         requests: list[ProviderRequest] = []
         for case in cases:
+            price_tickers = _unique_tickers([case.ticker, *benchmark_tickers])
             if "price_history" in endpoints:
-                requests.append(
-                    ProviderRequest(
-                        provider=self.provider_name,
-                        endpoint="price_history",
-                        case_id=case.case_id,
-                        ticker=case.ticker,
-                        decision_date=case.decision_date,
-                        start_date=add_days(case.decision_date, -lookback_days),
-                        end_date=case.decision_date,
-                        params={"function": "TIME_SERIES_DAILY_ADJUSTED", "symbol": case.ticker, "outputsize": "full"},
-                        metadata={"usable_for_agent_input": True},
+                for ticker in price_tickers:
+                    requests.append(
+                        ProviderRequest(
+                            provider=self.provider_name,
+                            endpoint="price_history",
+                            case_id=case.case_id,
+                            ticker=ticker,
+                            decision_date=case.decision_date,
+                            start_date=add_days(case.decision_date, -lookback_days),
+                            end_date=case.decision_date,
+                            params={"function": "TIME_SERIES_DAILY_ADJUSTED", "symbol": ticker, "outputsize": "full"},
+                            metadata={
+                                "usable_for_agent_input": True,
+                                "benchmark_ticker": ticker != case.ticker.upper(),
+                            },
+                        )
                     )
-                )
             if future_horizon_days > 0 and config.get("allow_post_decision_label_data", False):
-                requests.append(
-                    ProviderRequest(
-                        provider=self.provider_name,
-                        endpoint="price_label_window",
-                        case_id=case.case_id,
-                        ticker=case.ticker,
-                        decision_date=case.decision_date,
-                        start_date=add_days(case.decision_date, 1),
-                        end_date=add_days(case.decision_date, future_horizon_days),
-                        params={"function": "TIME_SERIES_DAILY_ADJUSTED", "symbol": case.ticker, "outputsize": "full"},
-                        metadata={
-                            "label_only": True,
-                            "contains_post_decision_data": True,
-                            "usable_for_agent_input": False,
-                        },
+                for ticker in price_tickers:
+                    requests.append(
+                        ProviderRequest(
+                            provider=self.provider_name,
+                            endpoint="price_label_window",
+                            case_id=case.case_id,
+                            ticker=ticker,
+                            decision_date=case.decision_date,
+                            start_date=add_days(case.decision_date, 1),
+                            end_date=add_days(case.decision_date, future_horizon_days),
+                            params={"function": "TIME_SERIES_DAILY_ADJUSTED", "symbol": ticker, "outputsize": "full"},
+                            metadata={
+                                "label_only": True,
+                                "contains_post_decision_data": True,
+                                "usable_for_agent_input": False,
+                                "benchmark_ticker": ticker != case.ticker.upper(),
+                            },
+                        )
                     )
-                )
             if "company_profile" in endpoints:
                 requests.append(
                     ProviderRequest(
@@ -108,3 +116,15 @@ class AlphaVantageClient(LiveProviderClient):
                 }
             )
         return rows
+
+
+def _unique_tickers(values: list[str]) -> list[str]:
+    seen: set[str] = set()
+    tickers: list[str] = []
+    for value in values:
+        ticker = str(value or "").strip().upper()
+        if not ticker or ticker in seen:
+            continue
+        seen.add(ticker)
+        tickers.append(ticker)
+    return tickers

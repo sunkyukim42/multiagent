@@ -7,6 +7,8 @@ providers:
   - alphavantage
   - finnhub
   - thenewsapi
+benchmark_tickers:
+  - SPY
 endpoints_by_provider:
   fred:
     - macro_series
@@ -15,6 +17,7 @@ endpoints_by_provider:
     - company_profile
   finnhub:
     - company_profile
+    - price_history
   thenewsapi:
     - news
 macro_series:
@@ -33,3 +36,4 @@ notes:
   - Default commands build plans and dry runs without external API calls.
   - Use --allow-live-api only for explicit snapshot collection.
   - Post-decision data is label-only and not usable for agent input.
+  - Benchmark tickers support cache-only benchmark-adjusted outcome labels.

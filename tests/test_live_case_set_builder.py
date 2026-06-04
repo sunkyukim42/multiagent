@@ -49,3 +49,12 @@ def test_case_builder_filters_and_writes_outputs(tmp_path):
     assert load_live_cases(jsonl_path) == records
     assert manifest["metadata"]["external_api_calls"] == 0
     assert "sk-" not in json.dumps(manifest).lower()
+
+
+def test_case_builder_accepts_explicit_pilot_date_override():
+    records = build_live_case_records(CONFIG, tickers=["XOM"], dates=["2020-11-19"])
+
+    assert len(records) == 1
+    assert records[0].case_id == "XOM_2020_11_19"
+    assert records[0].decision_date == "2020-11-19"
+    assert records[0].ticker == "XOM"

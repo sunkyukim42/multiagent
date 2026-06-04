@@ -70,6 +70,7 @@ Generated artifacts are ignored by git under `results/` and `data/indexes/`.
 | `scripts/preview_live_prompt_context.py` | Offline Task 13B live prompt context previewer. |
 | `scripts/run_live_research_evaluation.py` | Task 13D batch live research evaluation runner. |
 | `scripts/summarize_live_experiment.py` | Offline Task 14 live experiment summary and table generator. |
+| `scripts/inspect_live_snapshots.py` | Local Task 15A snapshot readiness inspector. |
 
 ## Task Progression
 
@@ -93,6 +94,7 @@ Generated artifacts are ignored by git under `results/` and `data/indexes/`.
 | Task 13C | Added gated OpenAI runner abstraction and deterministic fake runner. |
 | Task 13D | Added batch live research evaluation orchestration. |
 | Task 14 | Added offline live experiment summary and statistical evaluation. |
+| Task 15A | Added XOM/SPY real snapshot micro-pilot preparation. |
 
 ## Safety Boundaries
 
@@ -101,7 +103,7 @@ Generated artifacts are ignored by git under `results/` and `data/indexes/`.
 - Generated outputs are ignored under `results/`, `data/indexes/`, `data/live_snapshots/`,
   `results/live_labels/`, `results/live_research_eval/`, `results/llm_cache/`,
   `results/live_experiment_summary/`, `results/live_statistical_tests/`, and
-  `results/live_kci_tables/`.
+  `results/live_kci_tables/`, plus `results/live_snapshot_quality/`.
 - `python main.py` is the separate live TradingAgents demo path.
 - Sample outputs are synthetic and illustrative, not paper-ready.
 - Reports are not financial, procurement, or legal advice.
@@ -376,6 +378,64 @@ Fake-runner outputs are pipeline validation only, UNKNOWN labels may dominate
 until real cached snapshots are collected, and small samples are not paper-ready
 or statistically conclusive. Task 14 tables make no performance claim and do not
 provide financial/procurement/legal advice.
+
+## Task 15A: Real Snapshot Micro-Pilot Preparation
+
+Task 15A prepares one real historical micro-pilot case, `XOM` on `2020-11-19`,
+benchmarked against `SPY`. It extends snapshot planning so target and benchmark
+price windows can be cached separately, then inspects local snapshots for label
+readiness. Default commands remain API-free and do not call OpenAI, provider
+APIs, embeddings, `python main.py`, or the live TradingAgents graph.
+
+Build the one-case pilot panel:
+
+```bash
+python scripts/build_live_case_set.py \
+  --config configs/live_experiments/live_case_panel_2020_2024.yaml \
+  --output-csv data/cases/pilot_xom_2020_11_19.csv \
+  --output-jsonl data/cases/pilot_xom_2020_11_19.jsonl \
+  --manifest data/cases/pilot_xom_2020_11_19_manifest.json \
+  --tickers XOM \
+  --dates 2020-11-19 \
+  --print-summary
+```
+
+Plan and dry-run snapshot collection without provider API calls:
+
+```bash
+python scripts/collect_live_snapshots.py \
+  --cases data/cases/pilot_xom_2020_11_19.csv \
+  --config configs/live_experiments/snapshot_collection_default.yaml \
+  --provider-limits configs/live_experiments/provider_limits.yaml \
+  --output-dir data/live_snapshots/pilot_xom_2020_11_19_dry_run \
+  --collection-report-dir results/live_collection/pilot_xom_2020_11_19_dry_run \
+  --experiment-id pilot_xom_2020_11_19_dry_run \
+  --dry-run \
+  --providers alphavantage,finnhub \
+  --max-cases 1 \
+  --print-summary
+```
+
+Inspect local snapshot readiness:
+
+```bash
+python scripts/inspect_live_snapshots.py \
+  --snapshot-dir data/live_snapshots/pilot_xom_2020_11_19_dry_run \
+  --cases data/cases/pilot_xom_2020_11_19.csv \
+  --ticker XOM \
+  --benchmark-ticker SPY \
+  --decision-date 2020-11-19 \
+  --horizons 63,126 \
+  --providers alphavantage,finnhub \
+  --output-json results/live_snapshot_quality/pilot_xom_2020_11_19_dry_run/quality.json \
+  --output-md results/live_snapshot_quality/pilot_xom_2020_11_19_dry_run/quality.md \
+  --print-summary
+```
+
+Optional live provider collection requires explicit `--allow-live-api`, provider
+filters, user-controlled call caps, and local provider keys. Task 15A is pilot
+preparation only: it is not paper-ready, not statistically conclusive, makes no
+performance claim, and provides no financial/procurement/legal advice.
 
 ## Legacy TradingAgents Notes
 

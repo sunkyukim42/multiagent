@@ -1,4 +1,4 @@
-"""Task 11-14 live case-set, snapshot, label, prompt, LLM-output, and summary scaffolding."""
+"""Task 11-15A live case-set, snapshot, label, prompt, LLM-output, summary, and pilot scaffolding."""
 
 from .case_schema import LiveCaseError, LiveCaseRecord
 from .label_schema import LabelManifest, MarketOutcomeLabel
@@ -27,6 +27,13 @@ from .method_matrix import LiveMethodMatrix, LiveMethodMatrixError, LiveMethodSp
 from .openai_runner import FakeLLMRunner, OpenAIRunner, OpenAIRunnerConfig, OpenAIRunnerError
 from .prompt_context_schema import PromptBuildInput, PromptBuildResult, PromptContextSchemaError, PromptEvidenceItem
 from .snapshot_schema import ProviderRequest, SnapshotManifest, SnapshotRecord, SnapshotSchemaError
+from .snapshot_quality import (
+    SnapshotQualityError,
+    SnapshotQualityReport,
+    SnapshotQualityResult,
+    inspect_snapshot_quality,
+    render_snapshot_quality_markdown,
+)
 
 __all__ = [
     "LabelManifest",
@@ -62,6 +69,9 @@ __all__ = [
     "PromptEvidenceItem",
     "ProviderRequest",
     "SnapshotManifest",
+    "SnapshotQualityError",
+    "SnapshotQualityReport",
+    "SnapshotQualityResult",
     "SnapshotRecord",
     "SnapshotSchemaError",
     "bootstrap_mean_ci",
@@ -69,6 +79,8 @@ __all__ = [
     "load_live_summary_config",
     "load_live_research_evaluation_config",
     "mcnemar_test",
+    "inspect_snapshot_quality",
+    "render_snapshot_quality_markdown",
     "render_live_result_tables",
     "render_live_run_report",
     "run_live_method",

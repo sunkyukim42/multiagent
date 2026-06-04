@@ -16,6 +16,7 @@ results/llm_cache/*
 results/live_experiment_summary/*
 results/live_statistical_tests/*
 results/live_kci_tables/*
+results/live_snapshot_quality/*
 data/indexes/*
 !data/indexes/.gitkeep
 data/live_snapshots/*

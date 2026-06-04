@@ -31,6 +31,8 @@ def test_snapshot_context_loader_includes_only_pre_decision_case_rows(tmp_path):
     )
     _write_jsonl(case_dir / "company_profile.jsonl", [{"case_id": "XOM_2020_03_31", "ticker": "XOM", "name": "Example Energy"}])
     _write_jsonl(case_dir / "price_label_window.jsonl", [{"case_id": "XOM_2020_03_31", "ticker": "XOM", "date": "2020-06-30"}])
+    _write_jsonl(case_dir / "price_history_SPY.jsonl", [{"case_id": "XOM_2020_03_31", "ticker": "SPY", "date": "2020-03-30"}])
+    _write_jsonl(case_dir / "price_label_window_SPY.jsonl", [{"case_id": "XOM_2020_03_31", "ticker": "SPY", "date": "2020-06-30"}])
     _write_jsonl(other_case_dir / "price_history.jsonl", [{"case_id": "XOM_2020_06_30", "ticker": "XOM", "date": "2020-03-30"}])
 
     context = load_snapshot_context(
@@ -53,6 +55,7 @@ def test_snapshot_context_loader_includes_only_pre_decision_case_rows(tmp_path):
     assert "Example Energy" in snippets
     assert "post_decision_date" in context.excluded_fields
     assert "price_label_window" in context.excluded_fields
+    assert "ticker_mismatch" in context.excluded_fields
     assert any("undated static profile context" in warning for warning in context.warnings)
     assert load_snapshot_context(
         snapshot_dir=root,

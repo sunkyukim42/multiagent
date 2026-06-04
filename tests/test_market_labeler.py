@@ -60,6 +60,35 @@ def test_labeler_merges_price_history_with_label_only_future_window(tmp_path):
     assert any("price_label_window.jsonl" in path for path in labels[0].source_snapshot_paths)
 
 
+def test_labeler_reads_ticker_suffixed_benchmark_price_files(tmp_path):
+    cases_path = _write_cases(tmp_path, ["XOM"])
+    policy_path = _write_policy(tmp_path)
+    snapshot_dir = tmp_path / "snapshots"
+    case_dir = snapshot_dir / "normalized" / "alphavantage" / "XOM_2020_01_01"
+    _write_jsonl(case_dir / "price_history.jsonl", [{"case_id": "XOM_2020_01_01", "ticker": "XOM", "date": "2020-01-01", "close": 100}])
+    _write_jsonl(
+        case_dir / "price_label_window.jsonl",
+        [{"case_id": "XOM_2020_01_01", "ticker": "XOM", "date": "2020-03-04", "close": 120}],
+    )
+    _write_jsonl(case_dir / "price_history_SPY.jsonl", [{"case_id": "XOM_2020_01_01", "ticker": "SPY", "date": "2020-01-01", "close": 100}])
+    _write_jsonl(
+        case_dir / "price_label_window_SPY.jsonl",
+        [{"case_id": "XOM_2020_01_01", "ticker": "SPY", "date": "2020-03-04", "close": 105}],
+    )
+
+    labels, _ = label_market_outcomes(
+        cases_path=cases_path,
+        snapshot_dir=snapshot_dir,
+        policy_path=policy_path,
+        label_run_id="run",
+        horizons=[63],
+    )
+
+    assert labels[0].label_status == "labeled"
+    assert labels[0].outcome_label == "BUY"
+    assert any("price_history_SPY.jsonl" in path for path in labels[0].source_snapshot_paths)
+
+
 def test_labeler_marks_missing_ticker_and_benchmark_unknown(tmp_path):
     cases_path = _write_cases(tmp_path, ["XOM", "CVX"])
     policy_path = _write_policy(tmp_path)
@@ -212,4 +241,10 @@ def _write_prices(snapshot_dir: Path, ticker: str, rows: list[tuple[str, float]]
         "".join(json.dumps({"ticker": ticker, "date": date_value, "close": close}) + "\n" for date_value, close in rows),
         encoding="utf-8",
     )
+    return path
+
+
+def _write_jsonl(path: Path, rows: list[dict]) -> Path:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("".join(json.dumps(row, sort_keys=True) + "\n" for row in rows), encoding="utf-8")
     return path

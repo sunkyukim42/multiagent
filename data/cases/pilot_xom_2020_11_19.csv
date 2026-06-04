@@ -1,0 +1,2 @@
+case_id,domain,ticker,decision_date,task_type,market,horizons,source_config,synthetic,paper_ready,metadata
+XOM_2020_11_19,oil,XOM,2020-11-19,investment,US,"[21, 63, 126, 252]",configs/live_experiments/live_case_panel_2020_2024.yaml,False,False,"{""experiment_id"": ""live_panel_2020_2024"", ""notes"": [""Historical panel scaffold for future live quantitative experiment."", ""API snapshots are required before performance claims.""]}"

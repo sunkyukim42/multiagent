@@ -1,0 +1,27 @@
+{
+  "case_count": 1,
+  "created_at": "2026-06-04T04:02:31.978724+00:00",
+  "decision_date_count": 1,
+  "decision_dates": [
+    "2020-11-19"
+  ],
+  "domain_counts": {
+    "oil": 1
+  },
+  "experiment_id": "live_panel_2020_2024",
+  "metadata": {
+    "external_api_calls": 0,
+    "offline_only": true,
+    "performance_claim_ready": false
+  },
+  "outputs": {
+    "csv": "data/cases/pilot_xom_2020_11_19.csv",
+    "jsonl": "data/cases/pilot_xom_2020_11_19.jsonl"
+  },
+  "paper_ready": false,
+  "source_config": "configs/live_experiments/live_case_panel_2020_2024.yaml",
+  "synthetic": false,
+  "ticker_counts": {
+    "XOM": 1
+  }
+}

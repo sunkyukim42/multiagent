@@ -22,7 +22,8 @@ class SnapshotStore:
         return self.root_dir / "raw" / request.provider / request.case_id / f"{request.request_id}.json"
 
     def normalized_path(self, request: ProviderRequest) -> Path:
-        return self.root_dir / "normalized" / request.provider / request.case_id / f"{request.endpoint}.jsonl"
+        filename = _normalized_filename(request)
+        return self.root_dir / "normalized" / request.provider / request.case_id / filename
 
     @property
     def manifest_path(self) -> Path:
@@ -71,3 +72,16 @@ def _atomic_write_text(path: Path, text: str) -> None:
     temp_path = path.with_suffix(path.suffix + ".tmp")
     temp_path.write_text(text, encoding="utf-8")
     temp_path.replace(path)
+
+
+def _normalized_filename(request: ProviderRequest) -> str:
+    if request.endpoint in {"price_history", "price_label_window"}:
+        case_ticker = request.case_id.split("_", 1)[0].upper()
+        request_ticker = request.ticker.upper()
+        if request_ticker and request_ticker != case_ticker:
+            return f"{request.endpoint}_{_safe_ticker(request_ticker)}.jsonl"
+    return f"{request.endpoint}.jsonl"
+
+
+def _safe_ticker(value: str) -> str:
+    return "".join(character if character.isalnum() else "_" for character in value.upper()).strip("_") or "TICKER"

@@ -49,6 +49,42 @@ def test_snapshot_store_writes_raw_normalized_manifest_and_cache(tmp_path):
     assert json.loads(manifest_path.read_text(encoding="utf-8"))["experiment_id"] == "task11_test"
 
 
+def test_snapshot_store_uses_ticker_specific_price_paths_for_benchmark(tmp_path):
+    target = ProviderRequest(
+        provider="alphavantage",
+        endpoint="price_history",
+        case_id="XOM_2020_03_31",
+        ticker="XOM",
+        decision_date="2020-03-31",
+        start_date="2020-01-01",
+        end_date="2020-03-31",
+    )
+    benchmark = ProviderRequest(
+        provider="alphavantage",
+        endpoint="price_history",
+        case_id="XOM_2020_03_31",
+        ticker="SPY",
+        decision_date="2020-03-31",
+        start_date="2020-01-01",
+        end_date="2020-03-31",
+    )
+    benchmark_window = ProviderRequest(
+        provider="alphavantage",
+        endpoint="price_label_window",
+        case_id="XOM_2020_03_31",
+        ticker="SPY",
+        decision_date="2020-03-31",
+        start_date="2020-04-01",
+        end_date="2020-06-30",
+        metadata={"label_only": True, "contains_post_decision_data": True, "usable_for_agent_input": False},
+    )
+    store = SnapshotStore(tmp_path, experiment_id="task15a_test")
+
+    assert store.normalized_path(target).name == "price_history.jsonl"
+    assert store.normalized_path(benchmark).name == "price_history_SPY.jsonl"
+    assert store.normalized_path(benchmark_window).name == "price_label_window_SPY.jsonl"
+
+
 def test_snapshot_store_rejects_secret_payload(tmp_path):
     request = ProviderRequest(
         provider="fred",

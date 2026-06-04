@@ -21,8 +21,10 @@ class FinnhubClient(LiveProviderClient):
         future_horizon_days: int,
     ) -> list[ProviderRequest]:
         endpoints = set(config.get("endpoints_by_provider", {}).get(self.provider_name, ["company_profile"]))
+        benchmark_tickers = [str(item).upper() for item in config.get("benchmark_tickers", [])]
         requests: list[ProviderRequest] = []
         for case in cases:
+            price_tickers = _unique_tickers([case.ticker, *benchmark_tickers])
             if "company_profile" in endpoints:
                 requests.append(
                     ProviderRequest(
@@ -38,19 +40,43 @@ class FinnhubClient(LiveProviderClient):
                     )
                 )
             if "price_history" in endpoints:
-                requests.append(
-                    ProviderRequest(
-                        provider=self.provider_name,
-                        endpoint="price_history",
-                        case_id=case.case_id,
-                        ticker=case.ticker,
-                        decision_date=case.decision_date,
-                        start_date=add_days(case.decision_date, -lookback_days),
-                        end_date=case.decision_date,
-                        params={"symbol": case.ticker, "resolution": "D"},
-                        metadata={"usable_for_agent_input": True},
+                for ticker in price_tickers:
+                    requests.append(
+                        ProviderRequest(
+                            provider=self.provider_name,
+                            endpoint="price_history",
+                            case_id=case.case_id,
+                            ticker=ticker,
+                            decision_date=case.decision_date,
+                            start_date=add_days(case.decision_date, -lookback_days),
+                            end_date=case.decision_date,
+                            params={"symbol": ticker, "resolution": "D"},
+                            metadata={
+                                "usable_for_agent_input": True,
+                                "benchmark_ticker": ticker != case.ticker.upper(),
+                            },
+                        )
                     )
-                )
+            if "price_history" in endpoints and future_horizon_days > 0 and config.get("allow_post_decision_label_data", False):
+                for ticker in price_tickers:
+                    requests.append(
+                        ProviderRequest(
+                            provider=self.provider_name,
+                            endpoint="price_label_window",
+                            case_id=case.case_id,
+                            ticker=ticker,
+                            decision_date=case.decision_date,
+                            start_date=add_days(case.decision_date, 1),
+                            end_date=add_days(case.decision_date, future_horizon_days),
+                            params={"symbol": ticker, "resolution": "D"},
+                            metadata={
+                                "label_only": True,
+                                "contains_post_decision_data": True,
+                                "usable_for_agent_input": False,
+                                "benchmark_ticker": ticker != case.ticker.upper(),
+                            },
+                        )
+                    )
         return requests
 
     def fetch(self, request: ProviderRequest, api_key: str, timeout: float) -> dict[str, Any]:
@@ -107,3 +133,15 @@ def _list_value(values: Any, index: int) -> Any:
     if isinstance(values, list) and index < len(values):
         return values[index]
     return None
+
+
+def _unique_tickers(values: list[str]) -> list[str]:
+    seen: set[str] = set()
+    tickers: list[str] = []
+    for value in values:
+        ticker = str(value or "").strip().upper()
+        if not ticker or ticker in seen:
+            continue
+        seen.add(ticker)
+        tickers.append(ticker)
+    return tickers

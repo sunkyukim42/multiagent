@@ -1,6 +1,7 @@
 import pytest
 
 from enterprise_decision_agents.live.provider_errors import ProviderMissingKeyError
+from enterprise_decision_agents.live.case_schema import LiveCaseRecord
 from enterprise_decision_agents.live.providers.alphavantage_client import AlphaVantageClient
 from enterprise_decision_agents.live.providers.finnhub_client import FinnhubClient
 from enterprise_decision_agents.live.providers.fred_client import FredClient
@@ -44,6 +45,36 @@ def test_alphavantage_client_normalizes_fake_price_response():
     assert len(rows) == 1
     assert rows[0]["ticker"] == "XOM"
     assert rows[0]["close"] == 1.5
+
+
+def test_price_provider_clients_plan_benchmark_label_windows():
+    case = LiveCaseRecord(
+        case_id="XOM_2020_03_31",
+        domain="oil",
+        ticker="XOM",
+        decision_date="2020-03-31",
+        task_type="investment",
+        market="US",
+        horizons=[63],
+        source_config="test",
+    )
+    config = {
+        "endpoints_by_provider": {
+            "alphavantage": ["price_history"],
+            "finnhub": ["price_history"],
+        },
+        "benchmark_tickers": ["SPY"],
+        "allow_post_decision_label_data": True,
+    }
+
+    for client in [AlphaVantageClient(), FinnhubClient()]:
+        requests = client.build_requests([case], config=config, lookback_days=10, future_horizon_days=5)
+        assert {request.ticker for request in requests if request.endpoint == "price_history"} == {"XOM", "SPY"}
+        label_requests = [request for request in requests if request.endpoint == "price_label_window"]
+        assert {request.ticker for request in label_requests} == {"XOM", "SPY"}
+        assert all(request.metadata["label_only"] for request in label_requests)
+        assert all(request.metadata["contains_post_decision_data"] for request in label_requests)
+        assert all(request.metadata["usable_for_agent_input"] is False for request in label_requests)
 
 
 def test_finnhub_client_normalizes_profile_and_candles():

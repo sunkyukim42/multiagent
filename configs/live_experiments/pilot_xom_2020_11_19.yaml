@@ -1,0 +1,33 @@
+pilot_id: pilot_xom_2020_11_19
+case_id: XOM_2020_11_19
+ticker: XOM
+benchmark_ticker: SPY
+domain: oil
+task_type: investment
+decision_date: "2020-11-19"
+horizons:
+  - 63
+  - 126
+providers:
+  - alphavantage
+  - finnhub
+cases:
+  csv_path: data/cases/pilot_xom_2020_11_19.csv
+  jsonl_path: data/cases/pilot_xom_2020_11_19.jsonl
+  manifest_path: data/cases/pilot_xom_2020_11_19_manifest.json
+snapshots:
+  plan_output_dir: data/live_snapshots/pilot_xom_2020_11_19_plan
+  dry_run_output_dir: data/live_snapshots/pilot_xom_2020_11_19_dry_run
+  collection_report_dir: results/live_collection/pilot_xom_2020_11_19_dry_run
+quality:
+  output_json: results/live_snapshot_quality/pilot_xom_2020_11_19_dry_run/quality.json
+  output_md: results/live_snapshot_quality/pilot_xom_2020_11_19_dry_run/quality.md
+synthetic: false
+paper_ready: false
+pilot_only: true
+notes:
+  - Task 15A prepares one real historical micro-pilot case and does not make performance claims.
+  - Default plan-only and dry-run commands do not call external APIs.
+  - Live provider calls require explicit --allow-live-api, provider filters, and user-controlled caps.
+  - Post-decision data is label-only and not usable for agent input.
+  - Outputs are not paper-ready, not statistically conclusive, and not financial/procurement/legal advice.

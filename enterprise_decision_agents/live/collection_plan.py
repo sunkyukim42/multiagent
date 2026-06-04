@@ -23,6 +23,7 @@ class SnapshotCollectionConfig:
     default_future_horizon_days: int
     providers: list[str]
     endpoints_by_provider: dict[str, list[str]] = field(default_factory=dict)
+    benchmark_tickers: list[str] = field(default_factory=list)
     macro_series: list[str] = field(default_factory=list)
     news_query_templates: list[str] = field(default_factory=list)
     max_articles_per_request: int = 10
@@ -51,6 +52,7 @@ class SnapshotCollectionConfig:
             "default_future_horizon_days": self.default_future_horizon_days,
             "providers": self.providers,
             "endpoints_by_provider": self.endpoints_by_provider,
+            "benchmark_tickers": self.benchmark_tickers,
             "macro_series": self.macro_series,
             "news_query_templates": self.news_query_templates,
             "max_articles_per_request": self.max_articles_per_request,
@@ -72,6 +74,7 @@ class SnapshotCollectionConfig:
                 str(provider).lower(): [str(endpoint) for endpoint in endpoints]
                 for provider, endpoints in dict(data.get("endpoints_by_provider") or {}).items()
             },
+            benchmark_tickers=[str(item).upper() for item in data.get("benchmark_tickers", [])],
             macro_series=[str(item) for item in data.get("macro_series", [])],
             news_query_templates=[str(item) for item in data.get("news_query_templates", [])],
             max_articles_per_request=int(data.get("max_articles_per_request", 10)),
