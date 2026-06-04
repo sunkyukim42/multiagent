@@ -25,6 +25,16 @@ from .llm_output_schema import LLMDecisionOutput, LiveDecisionRecord, LiveEvalua
 from .llm_runner_schema import LLMRunnerRequest, LLMRunnerResponse, LLMRunnerSchemaError
 from .method_matrix import LiveMethodMatrix, LiveMethodMatrixError, LiveMethodSpec
 from .openai_runner import FakeLLMRunner, OpenAIRunner, OpenAIRunnerConfig, OpenAIRunnerError
+from .price_fixture import (
+    LOCAL_PRICE_FIXTURE_PROVIDER,
+    PriceFixtureConfig,
+    PriceFixtureError,
+    PriceFixtureIngestSummary,
+    PriceFixtureRow,
+    PriceFixtureSource,
+    ingest_price_fixture,
+    load_price_fixture_config,
+)
 from .prompt_context_schema import PromptBuildInput, PromptBuildResult, PromptContextSchemaError, PromptEvidenceItem
 from .snapshot_schema import ProviderRequest, SnapshotManifest, SnapshotRecord, SnapshotSchemaError
 from .snapshot_quality import (
@@ -63,6 +73,12 @@ __all__ = [
     "OpenAIRunner",
     "OpenAIRunnerConfig",
     "OpenAIRunnerError",
+    "LOCAL_PRICE_FIXTURE_PROVIDER",
+    "PriceFixtureConfig",
+    "PriceFixtureError",
+    "PriceFixtureIngestSummary",
+    "PriceFixtureRow",
+    "PriceFixtureSource",
     "PromptBuildInput",
     "PromptBuildResult",
     "PromptContextSchemaError",
@@ -76,6 +92,8 @@ __all__ = [
     "SnapshotSchemaError",
     "bootstrap_mean_ci",
     "compute_method_metrics",
+    "ingest_price_fixture",
+    "load_price_fixture_config",
     "load_live_summary_config",
     "load_live_research_evaluation_config",
     "mcnemar_test",

@@ -20,6 +20,7 @@ results/live_snapshot_quality/*
 data/indexes/*
 !data/indexes/.gitkeep
 data/live_snapshots/*
+data/local_price_fixtures/*
 rag_query_outputs/*
 env/
 __pycache__/
@@ -27,6 +28,9 @@ __pycache__/
 *.csv
 !data/cases/*.csv
 !data/raw/rag_samples/documents_manifest.csv
+!tests/fixtures/
+!tests/fixtures/price_fixture/
+!tests/fixtures/price_fixture/*
 !data/ledger_samples/*.jsonl
 src/
 eval_results/

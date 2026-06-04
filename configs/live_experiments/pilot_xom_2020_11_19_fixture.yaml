@@ -1,0 +1,30 @@
+fixture_id: pilot_xom_2020_11_19_fixture
+case_id: XOM_2020_11_19
+domain: oil
+ticker: XOM
+benchmark_ticker: SPY
+decision_date: "2020-11-19"
+horizons:
+  - 63
+  - 126
+history_start_date: "2020-08-21"
+label_window_end_date: "2021-07-29"
+input_paths:
+  target_csv: data/local_price_fixtures/pilot_xom_2020_11_19/XOM.csv
+  benchmark_csv: data/local_price_fixtures/pilot_xom_2020_11_19/SPY.csv
+  source_manifest: data/local_price_fixtures/pilot_xom_2020_11_19/source_manifest.json
+output_paths:
+  snapshot_dir: data/live_snapshots/pilot_xom_2020_11_19_fixture
+  report_dir: results/live_snapshot_quality/pilot_xom_2020_11_19_fixture_ingest
+  quality_json: results/live_snapshot_quality/pilot_xom_2020_11_19_fixture_quality/quality.json
+  quality_md: results/live_snapshot_quality/pilot_xom_2020_11_19_fixture_quality/quality.md
+  label_report_dir: results/live_labels/pilot_xom_2020_11_19_fixture
+notes:
+  - Local historical price fixture only.
+  - No OpenAI calls.
+  - No live provider API calls.
+  - Source files must be manually supplied and cited.
+  - Future/post-decision rows are label-only and not usable for agent input.
+  - Fixture outputs are not performance evidence until labels and model decisions are audited.
+  - Source manifest fields are required for audited use; missing-manifest mode is local debugging only.
+  - Not financial advice.

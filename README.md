@@ -461,6 +461,71 @@ default validation. Task 15A is pilot preparation only: it is not paper-ready,
 not statistically conclusive, makes no performance claim, and provides no
 financial/procurement/legal advice.
 
+### Audited Historical Price Fixture Fallback
+
+If free live provider keys cannot return the historical XOM/SPY 2020 rows, use
+the local audited fixture path. The CSV files and `source_manifest.json` must be
+manually supplied under `data/local_price_fixtures/pilot_xom_2020_11_19/`; the
+ingest command does not fetch data, call OpenAI, or call provider APIs.
+That directory is ignored by git so real local CSVs and source manifests are not
+staged accidentally. Synthetic test fixtures live under
+`tests/fixtures/price_fixture/` and are not real market data.
+
+`scripts/ingest_price_fixture.py` supports CLI overrides for target CSV,
+benchmark CSV, source manifest, cases file, case metadata, horizons, output
+directory, and report directory. The source manifest must include
+`fixture_id`, `created_by`, `created_at`, `source_name`,
+`source_url_or_description`, `download_date`, `tickers`, `date_range`,
+`license_or_terms_note`, and `notes`. `--allow-missing-source-manifest` is for
+local debugging only and should not be used for publication or audit claims.
+
+```bash
+python scripts/ingest_price_fixture.py \
+  --config configs/live_experiments/pilot_xom_2020_11_19_fixture.yaml \
+  --print-summary
+```
+
+The CLI writes `price_fixture_ingestion_report.md` alongside the configured
+report output.
+
+Inspect fixture readiness:
+
+```bash
+python scripts/inspect_live_snapshots.py \
+  --snapshot-dir data/live_snapshots/pilot_xom_2020_11_19_fixture \
+  --cases data/cases/pilot_xom_2020_11_19.csv \
+  --ticker XOM \
+  --benchmark-ticker SPY \
+  --decision-date 2020-11-19 \
+  --horizons 63,126 \
+  --providers local_price_fixture \
+  --output-json results/live_snapshot_quality/pilot_xom_2020_11_19_fixture_quality/quality.json \
+  --output-md results/live_snapshot_quality/pilot_xom_2020_11_19_fixture_quality/quality.md \
+  --print-summary
+```
+
+Generate fixture-based labels only after inspecting the local snapshot:
+
+```bash
+python scripts/label_market_outcomes.py \
+  --cases data/cases/pilot_xom_2020_11_19.csv \
+  --snapshot-dir data/live_snapshots/pilot_xom_2020_11_19_fixture \
+  --policy configs/live_experiments/labeling_policy_fixture.yaml \
+  --output-csv results/live_labels/pilot_xom_2020_11_19_fixture/labeled.csv \
+  --output-jsonl results/live_labels/pilot_xom_2020_11_19_fixture/labeled.jsonl \
+  --manifest results/live_labels/pilot_xom_2020_11_19_fixture/label_manifest.json \
+  --report-dir results/live_labels/pilot_xom_2020_11_19_fixture \
+  --label-run-id pilot_xom_2020_11_19_fixture \
+  --horizons 63,126 \
+  --benchmark-ticker SPY \
+  --print-summary
+```
+
+Fixture labels are local-data scaffolding, not performance evidence, not
+paper-ready, not statistically conclusive, and not financial/procurement/legal
+advice. Future/post-decision fixture rows are label-only and not usable for
+agent input.
+
 ## Legacy TradingAgents Notes
 
 **<!--실행 파일>**

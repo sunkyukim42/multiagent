@@ -306,6 +306,71 @@ reports are ignored under `results/live_snapshot_quality/`. The micro-pilot is
 not paper-ready, not statistically conclusive, makes no performance claim, and
 provides no financial/procurement/legal advice.
 
+### Audited Historical Price Fixture Fallback
+
+When free live provider keys cannot return historical 2020 XOM/SPY prices, the
+local fixture path can ingest manually supplied CSV files and a cited
+`source_manifest.json`. This path performs no OpenAI calls and no live provider
+API calls.
+Real local fixture inputs belong under ignored `data/local_price_fixtures/`;
+synthetic test fixtures under `tests/fixtures/price_fixture/` are not real
+market data. The ingest CLI supports overrides for CSV paths, source manifest,
+case metadata, horizons, cases file, output directory, and report directory.
+The source manifest must include `fixture_id`, `created_by`, `created_at`,
+`source_name`, `source_url_or_description`, `download_date`, `tickers`,
+`date_range`, `license_or_terms_note`, and `notes`.
+`--allow-missing-source-manifest` is a local debugging escape hatch only and
+should not be used for publication or audit claims.
+
+```bash
+python scripts/ingest_price_fixture.py \
+  --config configs/live_experiments/pilot_xom_2020_11_19_fixture.yaml \
+  --print-summary
+```
+
+The command writes `price_fixture_ingestion_report.md` to the configured report
+directory.
+
+The fixture writes normalized local snapshots under
+`data/live_snapshots/pilot_xom_2020_11_19_fixture` using provider
+`local_price_fixture`. Inspect readiness before labeling:
+
+```bash
+python scripts/inspect_live_snapshots.py \
+  --snapshot-dir data/live_snapshots/pilot_xom_2020_11_19_fixture \
+  --cases data/cases/pilot_xom_2020_11_19.csv \
+  --ticker XOM \
+  --benchmark-ticker SPY \
+  --decision-date 2020-11-19 \
+  --horizons 63,126 \
+  --providers local_price_fixture \
+  --output-json results/live_snapshot_quality/pilot_xom_2020_11_19_fixture_quality/quality.json \
+  --output-md results/live_snapshot_quality/pilot_xom_2020_11_19_fixture_quality/quality.md \
+  --print-summary
+```
+
+Fixture-based labels use the fixture-specific policy:
+
+```bash
+python scripts/label_market_outcomes.py \
+  --cases data/cases/pilot_xom_2020_11_19.csv \
+  --snapshot-dir data/live_snapshots/pilot_xom_2020_11_19_fixture \
+  --policy configs/live_experiments/labeling_policy_fixture.yaml \
+  --output-csv results/live_labels/pilot_xom_2020_11_19_fixture/labeled.csv \
+  --output-jsonl results/live_labels/pilot_xom_2020_11_19_fixture/labeled.jsonl \
+  --manifest results/live_labels/pilot_xom_2020_11_19_fixture/label_manifest.json \
+  --report-dir results/live_labels/pilot_xom_2020_11_19_fixture \
+  --label-run-id pilot_xom_2020_11_19_fixture \
+  --horizons 63,126 \
+  --benchmark-ticker SPY \
+  --print-summary
+```
+
+The CSV fixture and source manifest are manually supplied local inputs. Fixture
+outputs are not performance evidence, not paper-ready, not statistically
+conclusive, and not financial/procurement/legal advice. Post-decision fixture
+rows are label-only and not usable for agent input.
+
 ## Current Limitations
 
 - Task 11 makes no performance claim.

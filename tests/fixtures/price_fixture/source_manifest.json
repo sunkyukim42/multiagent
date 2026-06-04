@@ -1,0 +1,20 @@
+{
+  "fixture_id": "pilot_xom_2020_11_19_fixture",
+  "created_by": "Task 15A.4.1 synthetic test fixture",
+  "created_at": "2026-06-04",
+  "source_name": "Synthetic test-only OHLCV rows",
+  "source_url_or_description": "Small synthetic rows created for repository tests; not real market data.",
+  "download_date": "2026-06-04",
+  "tickers": ["XOM", "SPY"],
+  "date_range": {
+    "start_date": "2020-08-21",
+    "end_date": "2021-07-29"
+  },
+  "license_or_terms_note": "Synthetic test fixture generated locally; no external data license applies.",
+  "notes": [
+    "Synthetic fixture for CLI contract tests only.",
+    "Do not treat these values as historical market prices.",
+    "No API calls were made to produce this fixture."
+  ],
+  "no_secret_no_private_key": true
+}
