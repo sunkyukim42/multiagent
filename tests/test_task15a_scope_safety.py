@@ -1,6 +1,8 @@
 from pathlib import Path
 import subprocess
 
+import yaml
+
 
 TASK15A_PATHS = [
     Path("configs/live_experiments/pilot_xom_2020_11_19.yaml"),
@@ -9,6 +11,24 @@ TASK15A_PATHS = [
     Path("README.md"),
     Path("docs/live_quantitative_experiment.md"),
 ]
+
+TASK15A_RENDER_PATHS = [
+    *TASK15A_PATHS,
+    Path("tests/test_live_snapshot_quality.py"),
+    Path("tests/test_inspect_live_snapshots_script.py"),
+    Path("tests/test_task15a_scope_safety.py"),
+]
+
+MIN_LF_COUNTS = {
+    "README.md": 200,
+    "docs/live_quantitative_experiment.md": 80,
+    "configs/live_experiments/pilot_xom_2020_11_19.yaml": 30,
+    "scripts/inspect_live_snapshots.py": 50,
+    "enterprise_decision_agents/live/snapshot_quality.py": 200,
+    "tests/test_live_snapshot_quality.py": 80,
+    "tests/test_inspect_live_snapshots_script.py": 80,
+    "tests/test_task15a_scope_safety.py": 80,
+}
 
 
 def test_task15a_does_not_modify_live_main_or_graph_integration():
@@ -99,6 +119,62 @@ def test_task15a_docs_and_ignore_rules_keep_boundaries():
     assert "no performance claim" in combined
 
 
+def test_task15a_readme_and_docs_expose_micro_pilot_contract():
+    readme = Path("README.md").read_text(encoding="utf-8").lower()
+    docs = Path("docs/live_quantitative_experiment.md").read_text(encoding="utf-8").lower()
+    readme_words = " ".join(readme.split())
+    docs_words = " ".join(docs.split())
+
+    assert "| task 15a | added xom/spy real snapshot micro-pilot preparation. |" in readme
+    assert "configs/live_experiments/pilot_xom_2020_11_19.yaml" in readme
+    assert "scripts/inspect_live_snapshots.py" in readme
+    assert "## task 15a: real snapshot micro-pilot preparation" in readme
+    assert "--plan-only" in readme
+    assert "--dry-run" in readme
+    assert "optional live provider collection" in readme
+    assert "not part of default validation" in readme_words
+    assert "--allow-live-api" in docs
+    assert "--max-calls 20" in docs
+    assert "--resume" in docs
+    assert "free provider api limits may apply" in docs_words
+    assert "not part of default validation" in docs_words
+
+
+def test_task15a_pilot_config_has_strict_safety_keys():
+    config = yaml.safe_load(Path("configs/live_experiments/pilot_xom_2020_11_19.yaml").read_text(encoding="utf-8"))
+    notes = "\n".join(config.get("notes", [])).lower()
+    output_paths = config.get("output_paths", {})
+
+    assert config["pilot_id"] == "pilot_xom_2020_11_19"
+    assert config["case_id"] == "XOM_2020_11_19"
+    assert config["domain"] == "oil"
+    assert config["ticker"] == "XOM"
+    assert config["benchmark_ticker"] == "SPY"
+    assert config["decision_date"] == "2020-11-19"
+    assert config["task_type"] == "investment"
+    assert config["horizons"] == [63, 126]
+    assert config["max_cases"] == 1
+    assert config["max_calls_per_run"] == 20
+    assert config["allow_live_api_default"] is False
+    assert output_paths["cases_csv"] == "data/cases/pilot_xom_2020_11_19.csv"
+    assert output_paths["cases_jsonl"] == "data/cases/pilot_xom_2020_11_19.jsonl"
+    assert output_paths["case_manifest"] == "data/cases/pilot_xom_2020_11_19_manifest.json"
+    assert output_paths["snapshot_dir"] == "data/live_snapshots/pilot_xom_2020_11_19"
+    assert output_paths["collection_report_dir"] == "results/live_collection/pilot_xom_2020_11_19"
+    assert output_paths["label_report_dir"] == "results/live_labels/pilot_xom_2020_11_19"
+    assert output_paths["quality_json"] == "results/live_snapshot_quality/pilot_xom_2020_11_19_quality/quality.json"
+    assert output_paths["quality_md"] == "results/live_snapshot_quality/pilot_xom_2020_11_19_quality/quality.md"
+    assert "micro-pilot for real snapshot collection only" in notes
+    assert "no openai calls" in notes
+    assert "future/post-decision data is label-only" in notes
+    assert "free provider api limits must be respected" in notes
+    assert "explicit --allow-live-api" in notes
+    assert "not performance evidence" in notes
+    assert "not paper-ready" in notes
+    assert "not statistically conclusive" in notes
+    assert "financial/procurement/legal advice" in notes
+
+
 def test_task15a_generated_output_paths_are_ignored():
     for path in [
         "data/live_snapshots/pilot_xom_2020_11_19/file.json",
@@ -109,11 +185,19 @@ def test_task15a_generated_output_paths_are_ignored():
         assert result.returncode == 0, path
 
 
-def test_task15a_sources_are_readable_and_not_minified():
-    for path in TASK15A_PATHS:
+def test_task15a_files_are_lf_normalized_and_renderable():
+    for path in TASK15A_RENDER_PATHS:
+        data = path.read_bytes()
+        lf_count = data.count(10)
         lines = path.read_text(encoding="utf-8").splitlines()
+
+        assert data.count(13) == 0, f"{path} contains CR bytes"
+        assert lf_count >= MIN_LF_COUNTS[path.as_posix()], f"{path} has too few LF line breaks"
+        assert len(lines) > 1, f"{path} looks like one raw line"
         assert len([line for line in lines if line.strip()]) >= 5, f"{path} looks minified"
         for line_number, line in enumerate(lines, start=1):
+            if "http://" in line or "https://" in line:
+                continue
             assert len(line) <= 240, f"{path}:{line_number} exceeds 240 chars"
 
 

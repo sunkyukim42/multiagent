@@ -11,6 +11,18 @@ horizons:
 providers:
   - alphavantage
   - finnhub
+max_cases: 1
+max_calls_per_run: 20
+allow_live_api_default: false
+output_paths:
+  cases_csv: data/cases/pilot_xom_2020_11_19.csv
+  cases_jsonl: data/cases/pilot_xom_2020_11_19.jsonl
+  case_manifest: data/cases/pilot_xom_2020_11_19_manifest.json
+  snapshot_dir: data/live_snapshots/pilot_xom_2020_11_19
+  collection_report_dir: results/live_collection/pilot_xom_2020_11_19
+  label_report_dir: results/live_labels/pilot_xom_2020_11_19
+  quality_json: results/live_snapshot_quality/pilot_xom_2020_11_19_quality/quality.json
+  quality_md: results/live_snapshot_quality/pilot_xom_2020_11_19_quality/quality.md
 cases:
   csv_path: data/cases/pilot_xom_2020_11_19.csv
   jsonl_path: data/cases/pilot_xom_2020_11_19.jsonl
@@ -26,8 +38,11 @@ synthetic: false
 paper_ready: false
 pilot_only: true
 notes:
-  - Task 15A prepares one real historical micro-pilot case and does not make performance claims.
+  - Micro-pilot for real snapshot collection only.
+  - No OpenAI calls.
   - Default plan-only and dry-run commands do not call external APIs.
+  - Future/post-decision data is label-only and not usable for agent input.
+  - Free provider API limits must be respected.
   - Live provider calls require explicit --allow-live-api, provider filters, and user-controlled caps.
-  - Post-decision data is label-only and not usable for agent input.
+  - Outputs are not performance evidence until labels and decisions are verified.
   - Outputs are not paper-ready, not statistically conclusive, and not financial/procurement/legal advice.

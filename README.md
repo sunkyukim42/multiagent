@@ -58,6 +58,7 @@ Generated artifacts are ignored by git under `results/` and `data/indexes/`.
 | `configs/` | Domain, RAG, ledger, guardrail, workflow, experiment, benchmark, and live YAML. |
 | `configs/presentation/` | Final package presentation YAML. |
 | `configs/live_experiments/` | Live case panel, provider limits, and snapshot collection YAML. |
+| `configs/live_experiments/pilot_xom_2020_11_19.yaml` | Task 15A XOM/SPY micro-pilot safety config. |
 | `data/` | Synthetic sample cases, claims, and RAG sample documents. |
 | `docs/` | Architecture, research plan, demo guide, metrics, and release checklist. |
 | `docs/final/` | Final portfolio and graduate research Markdown assets. |
@@ -400,7 +401,24 @@ python scripts/build_live_case_set.py \
   --print-summary
 ```
 
-Plan and dry-run snapshot collection without provider API calls:
+Create a snapshot collection plan without provider API calls:
+
+```bash
+python scripts/collect_live_snapshots.py \
+  --cases data/cases/pilot_xom_2020_11_19.csv \
+  --config configs/live_experiments/snapshot_collection_default.yaml \
+  --provider-limits configs/live_experiments/provider_limits.yaml \
+  --output-dir data/live_snapshots/pilot_xom_2020_11_19_plan \
+  --collection-report-dir results/live_collection/pilot_xom_2020_11_19_plan \
+  --experiment-id pilot_xom_2020_11_19_plan \
+  --providers alphavantage,fred \
+  --plan-only \
+  --max-cases 1 \
+  --max-calls 20 \
+  --print-summary
+```
+
+Dry-run snapshot collection without provider API calls:
 
 ```bash
 python scripts/collect_live_snapshots.py \
@@ -411,8 +429,9 @@ python scripts/collect_live_snapshots.py \
   --collection-report-dir results/live_collection/pilot_xom_2020_11_19_dry_run \
   --experiment-id pilot_xom_2020_11_19_dry_run \
   --dry-run \
-  --providers alphavantage,finnhub \
+  --providers alphavantage,fred \
   --max-cases 1 \
+  --max-calls 20 \
   --print-summary
 ```
 
@@ -426,16 +445,17 @@ python scripts/inspect_live_snapshots.py \
   --benchmark-ticker SPY \
   --decision-date 2020-11-19 \
   --horizons 63,126 \
-  --providers alphavantage,finnhub \
+  --providers alphavantage,fred \
   --output-json results/live_snapshot_quality/pilot_xom_2020_11_19_dry_run/quality.json \
   --output-md results/live_snapshot_quality/pilot_xom_2020_11_19_dry_run/quality.md \
   --print-summary
 ```
 
 Optional live provider collection requires explicit `--allow-live-api`, provider
-filters, user-controlled call caps, and local provider keys. Task 15A is pilot
-preparation only: it is not paper-ready, not statistically conclusive, makes no
-performance claim, and provides no financial/procurement/legal advice.
+filters, user-controlled call caps, and local provider keys. It is not part of
+default validation. Task 15A is pilot preparation only: it is not paper-ready,
+not statistically conclusive, makes no performance claim, and provides no
+financial/procurement/legal advice.
 
 ## Legacy TradingAgents Notes
 

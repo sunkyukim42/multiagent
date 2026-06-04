@@ -228,7 +228,7 @@ python scripts/build_live_case_set.py \
   --print-summary
 ```
 
-Plan or dry-run target and benchmark snapshot requests:
+Plan target and benchmark snapshot requests without provider API calls:
 
 ```bash
 python scripts/collect_live_snapshots.py \
@@ -238,9 +238,27 @@ python scripts/collect_live_snapshots.py \
   --output-dir data/live_snapshots/pilot_xom_2020_11_19_plan \
   --collection-report-dir results/live_collection/pilot_xom_2020_11_19_plan \
   --experiment-id pilot_xom_2020_11_19_plan \
+  --providers alphavantage,fred \
   --plan-only \
-  --providers alphavantage,finnhub \
   --max-cases 1 \
+  --max-calls 20 \
+  --print-summary
+```
+
+Dry-run target and benchmark snapshot requests without provider API calls:
+
+```bash
+python scripts/collect_live_snapshots.py \
+  --cases data/cases/pilot_xom_2020_11_19.csv \
+  --config configs/live_experiments/snapshot_collection_default.yaml \
+  --provider-limits configs/live_experiments/provider_limits.yaml \
+  --output-dir data/live_snapshots/pilot_xom_2020_11_19_dry_run \
+  --collection-report-dir results/live_collection/pilot_xom_2020_11_19_dry_run \
+  --experiment-id pilot_xom_2020_11_19_dry_run \
+  --providers alphavantage,fred \
+  --dry-run \
+  --max-cases 1 \
+  --max-calls 20 \
   --print-summary
 ```
 
@@ -254,14 +272,33 @@ python scripts/inspect_live_snapshots.py \
   --benchmark-ticker SPY \
   --decision-date 2020-11-19 \
   --horizons 63,126 \
-  --providers alphavantage,finnhub \
+  --providers alphavantage,fred \
   --output-json results/live_snapshot_quality/pilot_xom_2020_11_19_dry_run/quality.json \
   --output-md results/live_snapshot_quality/pilot_xom_2020_11_19_dry_run/quality.md \
   --print-summary
 ```
 
-Optional live provider collection must be user-controlled with
-`--allow-live-api`, provider filters, and explicit call caps. Snapshot quality
+Optional live provider collection is manual and not part of default validation.
+Free provider API limits may apply, so use cache/resume and conservative caps:
+
+```bash
+python scripts/collect_live_snapshots.py \
+  --cases data/cases/pilot_xom_2020_11_19.csv \
+  --config configs/live_experiments/snapshot_collection_default.yaml \
+  --provider-limits configs/live_experiments/provider_limits.yaml \
+  --output-dir data/live_snapshots/pilot_xom_2020_11_19 \
+  --collection-report-dir results/live_collection/pilot_xom_2020_11_19 \
+  --experiment-id pilot_xom_2020_11_19 \
+  --providers alphavantage,fred \
+  --allow-live-api \
+  --max-cases 1 \
+  --max-calls 20 \
+  --resume \
+  --print-summary
+```
+
+The optional live command does not call OpenAI and should be run only by the
+user after verifying provider terms and local key setup. Snapshot quality
 reports are ignored under `results/live_snapshot_quality/`. The micro-pilot is
 not paper-ready, not statistically conclusive, makes no performance claim, and
 provides no financial/procurement/legal advice.
