@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 import subprocess
 
@@ -13,6 +14,23 @@ TASK15A4_PATHS = [
     Path("README.md"),
     Path("docs/live_quantitative_experiment.md"),
 ]
+
+TASK15A4_RENDERABILITY_PATHS = {
+    Path("README.md"): 80,
+    Path("docs/live_quantitative_experiment.md"): 80,
+    Path(".gitignore"): 5,
+    Path("enterprise_decision_agents/live/__init__.py"): 20,
+    Path("enterprise_decision_agents/live/price_fixture.py"): 80,
+    Path("scripts/ingest_price_fixture.py"): 40,
+    Path("configs/live_experiments/pilot_xom_2020_11_19_fixture.yaml"): 30,
+    Path("configs/live_experiments/labeling_policy_fixture.yaml"): 5,
+    Path("tests/test_price_fixture.py"): 30,
+    Path("tests/test_ingest_price_fixture_script.py"): 30,
+    Path("tests/test_task15a_fixture_scope_safety.py"): 30,
+    Path("tests/fixtures/price_fixture/XOM.csv"): 4,
+    Path("tests/fixtures/price_fixture/SPY.csv"): 4,
+    Path("tests/fixtures/price_fixture/source_manifest.json"): 10,
+}
 
 
 def test_task15a4_has_no_protected_path_or_dependency_diffs():
@@ -132,13 +150,44 @@ def test_task15a4_generated_outputs_and_env_are_ignored():
         assert result.returncode != 0, path
 
 
-def test_task15a4_files_are_lf_normalized():
-    for path in TASK15A4_PATHS + [
-        Path("tests/test_price_fixture.py"),
-        Path("tests/test_ingest_price_fixture_script.py"),
-        Path("tests/test_task15a_fixture_scope_safety.py"),
-    ]:
+def test_task15a4_files_are_lf_normalized_and_renderable():
+    for path, minimum_lf in TASK15A4_RENDERABILITY_PATHS.items():
         data = path.read_bytes()
+        lines = data.splitlines()
+        max_line_length = max((len(line) for line in lines), default=0)
 
         assert data.count(13) == 0, f"{path} contains CR bytes"
-        assert data.count(10) >= 5, f"{path} has too few LF line breaks"
+        assert data.count(10) >= minimum_lf, f"{path} has too few LF line breaks"
+        assert len(lines) > 1, f"{path} appears to be one raw line"
+        assert max_line_length <= 320, f"{path} has a renderability-risk line"
+
+
+def test_task15a4_markdown_python_yaml_and_fixture_structure_is_readable():
+    readme_lines = Path("README.md").read_text(encoding="utf-8").splitlines()
+    docs_lines = Path("docs/live_quantitative_experiment.md").read_text(encoding="utf-8").splitlines()
+    ingest_lines = Path("scripts/ingest_price_fixture.py").read_text(encoding="utf-8").splitlines()
+    fixture_lines = Path("enterprise_decision_agents/live/price_fixture.py").read_text(encoding="utf-8").splitlines()
+    config_lines = Path("configs/live_experiments/pilot_xom_2020_11_19_fixture.yaml").read_text(
+        encoding="utf-8"
+    ).splitlines()
+    source_manifest_text = Path("tests/fixtures/price_fixture/source_manifest.json").read_text(encoding="utf-8")
+
+    assert "### Audited Historical Price Fixture Fallback" in readme_lines
+    assert "### Audited Historical Price Fixture Fallback" in docs_lines
+    assert any(line.startswith("def build_parser") for line in ingest_lines)
+    assert any(line.startswith("def main") for line in ingest_lines)
+    assert any(line.startswith("def ingest_price_fixture") for line in fixture_lines)
+    assert any(line.startswith("@dataclass") for line in fixture_lines)
+    assert "fixture_id: pilot_xom_2020_11_19_fixture" in config_lines
+    assert "input_paths:" in config_lines
+    assert "output_paths:" in config_lines
+    assert source_manifest_text.startswith("{\n")
+    assert "\n  \"fixture_id\"" in source_manifest_text
+    assert json.loads(source_manifest_text)["source_name"] == "Synthetic test-only OHLCV rows"
+
+    for csv_path in [Path("tests/fixtures/price_fixture/XOM.csv"), Path("tests/fixtures/price_fixture/SPY.csv")]:
+        rows = csv_path.read_text(encoding="utf-8").splitlines()
+
+        assert len(rows) >= 5
+        assert rows[0] == "Date,Symbol,Open,High,Low,Close,Adj Close,Volume"
+        assert all(row.count(",") == 7 for row in rows)
