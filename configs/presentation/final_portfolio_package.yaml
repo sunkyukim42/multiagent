@@ -52,6 +52,7 @@ source_references:
   - docs/portfolio_demo.md
   - docs/evaluation_metrics.md
   - docs/live_recent_pilot_results.md
+  - docs/live_10case_pilot_results.md
   - docs/live_quantitative_experiment.md
 source_configs:
   - configs/benchmarks/task8_full_demo.yaml

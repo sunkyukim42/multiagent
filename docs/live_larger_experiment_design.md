@@ -4,12 +4,13 @@
 
 Task 16A is a planning-only design for a larger recent API experiment. It does
 not call OpenAI, provider APIs, embeddings, live TradingAgents, or `python
-main.py`. It is not the original 2020 `XOM` reproduction, not paper-ready, not
-statistically conclusive, makes no performance claim, and provides no
+main.py`. It is not the original 2020 `XOM` reproduction, not an official
+TradingAgents baseline reproduction, not paper-ready, not statistically
+conclusive, makes no performance claim, and provides no
 financial/procurement/legal advice.
 
-A future Task 16B live run requires a separate preflight, fresh cache/readiness
-checks, and this exact approval phrase before any live OpenAI call:
+The Task 16B live run later completed only after a separate preflight, fresh
+cache/readiness checks, and this exact approval phrase before live OpenAI:
 
 `I approve up to 20 OpenAI calls and a $1.00 estimated cap for Task 16B`
 
@@ -60,6 +61,39 @@ not billing proof. `domain_agent_only` appears higher at 3M, while
 performance claim, not statistically conclusive, not paper-ready, and not
 financial/procurement/legal advice.
 
+## Task 16B Ten-Case Pilot Result
+
+Task 16B completed the default 10-case tier as a capped descriptive pilot. The
+audited result is documented in `docs/live_10case_pilot_results.md`.
+
+| Task 16B Fact | Value |
+| --- | --- |
+| Cases | `10` |
+| Methods | `2` |
+| Seeds | `1` |
+| OpenAI calls | `20` |
+| Failed rows | `0` |
+| Labels | `20` |
+| Missing labels | `0` |
+| UNKNOWN labels | `0` |
+| BUY labels | `14` |
+| HOLD labels | `6` |
+| Total tokens | `30,755` |
+| Estimated cost | `$0.0168728` |
+
+| Prompt variant | Method ID | 3M accuracy | 126D accuracy |
+| --- | --- | ---: | ---: |
+| Baseline TradingAgents-like prompt proxy | `baseline_tradingagents_like` | `0.8` | `0.2` |
+| Domain-context prompt variant | `domain_agent_only` | `0.8` | `0.2` |
+
+The pairwise differences were `0.0` at both 63d and 126d. These values are
+descriptive only. `baseline_tradingagents_like` is an offline prompt proxy and
+does not execute the official TauricResearch/TradingAgents graph, CLI, or
+upstream codebase. `domain_agent_only` is a controlled prompt/input variant,
+not a live modified TradingAgents graph execution. Task 16B is not an official
+TradingAgents baseline reproduction and not the original 2020 `XOM`
+reproduction.
+
 ## Candidate Design
 
 - Base ticker: `XOM`.
@@ -78,14 +112,14 @@ where possible.
 
 ## Methods
 
-Task 16B should start with the same two controlled method IDs used in the
-recent pilot:
+Task 16B used the same two controlled method IDs from the recent pilot:
 
 - `baseline_tradingagents_like`
 - `domain_agent_only`
 
 Potential later methods are `domain_rag` and `rag_ledger`, but those should not
-be added until the two-method 10-case path is stable.
+be added until the prompt-proxy boundary is preserved and a larger design is
+separately approved.
 
 ## Run And Cost Plan
 

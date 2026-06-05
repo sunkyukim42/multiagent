@@ -398,6 +398,27 @@ Task 16A does not call OpenAI, provider APIs, embeddings, TradingAgents, or
 readiness, deterministic labels with no missing or UNKNOWN outcomes, a dry run
 with zero OpenAI calls, and explicit user approval.
 
+## Task 16B/16C: Ten-Case Recent API Live Pilot Results
+
+Task 16B completed the default 10-case, two-method, one-seed recent `XOM`
+pilot under the approved 20-call and `$1.00` estimated cost cap. The run
+produced 20 live decisions with zero failed rows, zero provider calls, 30,755
+total tokens, and a `$0.0168728` estimated cost. Task 16B.3 audited the
+schemas, cache consistency, prompt boundary, cost arithmetic, Task 14 summary,
+and KCI-style tables.
+
+Task 16C documents the audited result in `docs/live_10case_pilot_results.md`.
+The two method IDs are prompt/input variants, not official upstream graph
+executions. `baseline_tradingagents_like` is an offline TradingAgents-like
+prompt proxy and does not execute the official TauricResearch/TradingAgents
+graph, CLI, or upstream codebase. `domain_agent_only` is a controlled
+domain-context prompt variant, not a live modified TradingAgents graph run.
+
+The documented result is descriptive only. It is not the original 2020 `XOM`
+reproduction, not an official TradingAgents baseline reproduction, not
+paper-ready, not statistically conclusive, makes no performance claim, and
+provides no financial/procurement/legal advice.
+
 ## Current Limitations
 
 - Task 11 makes no performance claim.
@@ -409,6 +430,8 @@ with zero OpenAI calls, and explicit user approval.
 - Task 15A micro-pilot readiness is not performance evidence.
 - Task 15D/15E recent pilot documentation is descriptive only.
 - Task 16A larger recent API design is planning only.
+- Task 16B/16C ten-case pilot documentation is descriptive only and uses
+  prompt proxies, not official upstream TradingAgents executions.
 - Task 11/12/13B/14 outputs are not paper-ready and not statistically conclusive.
 - Task 11/12/13B/14 outputs do not provide financial/procurement/legal advice.
 - Provider endpoint behavior may need provider-plan-specific adjustment.

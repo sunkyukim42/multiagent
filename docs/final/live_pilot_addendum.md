@@ -11,6 +11,7 @@ provides no financial/procurement/legal advice.
 Primary references:
 
 - `docs/live_recent_pilot_results.md`
+- `docs/live_10case_pilot_results.md`
 - `docs/live_quantitative_experiment.md`
 
 ## Validated Path
@@ -65,7 +66,7 @@ statistical conclusion.
 ## Safety
 
 - Full prompts are not included.
-- Raw model responses are not included.
+- Full model-response text is not included.
 - API keys are not included.
 - Generated outputs are not committed.
 - This addendum provides no advice.
@@ -80,3 +81,20 @@ statistical conclusion.
 `docs/live_larger_experiment_design.md` records the Task 16A plan for a larger
 recent `XOM`/`SPY` experiment. That document is planning only and does not
 authorize OpenAI calls, provider calls, or performance claims.
+
+## Ten-Case Prompt-Proxy Pilot
+
+`docs/live_10case_pilot_results.md` records the completed Task 16B and Task
+16B.3 ten-case recent `XOM` live pilot. The result is descriptive only and
+does not change the limitations above.
+
+The documented methods are prompt/input variants. `baseline_tradingagents_like`
+is an offline TradingAgents-like prompt proxy and does not execute the official
+TauricResearch/TradingAgents graph, CLI, or upstream codebase. It is not the
+official TradingAgents baseline result. `domain_agent_only` is a controlled
+domain-context prompt variant, not a live modified TradingAgents graph run.
+
+The ten-case result is not the original 2020 `XOM` reproduction and not an
+official TradingAgents baseline reproduction. Official upstream reproduction
+remains future work requiring pinned upstream code, fixed model/config,
+deterministic data policy, explicit call and cost caps, and separate audit.
