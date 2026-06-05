@@ -19,6 +19,8 @@ The implemented package separates the live TradingAgents path from an offline
 research scaffold. It adds a Domain Registry, local RAG retrieval, Evidence
 Ledger records, deterministic Reliability Guardrails, workflow routing,
 benchmark reports, KCI-style tables, and final presentation documents.
+The final package also includes a descriptive live-pilot addendum that records
+an audited recent XOM pilot without making a performance claim.
 
 ## Next Questions
 

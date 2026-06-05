@@ -40,12 +40,19 @@ source_docs:
     artifact_type: markdown
     audience_profiles: [graduate_lab, enterprise_recruiter, portfolio_reviewer]
     description: Single source of truth for project limitations.
+  - artifact_id: live_pilot_addendum
+    source_path: docs/final/live_pilot_addendum.md
+    artifact_type: markdown
+    audience_profiles: [graduate_lab, enterprise_recruiter, portfolio_reviewer]
+    description: Descriptive addendum for the capped recent XOM live pilot.
 source_references:
   - docs/architecture_overview.md
   - docs/research_plan.md
   - docs/research_evaluation_pack.md
   - docs/portfolio_demo.md
   - docs/evaluation_metrics.md
+  - docs/live_recent_pilot_results.md
+  - docs/live_quantitative_experiment.md
 source_configs:
   - configs/benchmarks/task8_full_demo.yaml
   - configs/research/task9_research_eval.yaml

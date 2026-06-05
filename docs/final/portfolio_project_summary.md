@@ -28,6 +28,8 @@ separate path for configured API-backed use.
 - Guardrails compute lexical and policy-oriented reliability metrics.
 - Workflow routing records final report and human review decisions.
 - Benchmark, research, and final-package commands regenerate ignored outputs.
+- `docs/final/live_pilot_addendum.md` records the recent live pilot as a
+  descriptive addendum only.
 
 ## Demo Commands
 

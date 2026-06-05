@@ -33,6 +33,7 @@ python scripts/generate_final_package.py --config configs/presentation/final_por
 - No raw secret-like patterns appear in generated artifacts.
 - No generated outputs are staged.
 - Do not overclaim results during narration.
+- Recent live pilot documentation is reviewed as a descriptive addendum only.
 
 ## Boundaries
 
