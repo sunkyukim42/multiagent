@@ -94,6 +94,15 @@ not a live modified TradingAgents graph execution. Task 16B is not an official
 TradingAgents baseline reproduction and not the original 2020 `XOM`
 reproduction.
 
+## Task 17A Official Baseline Design
+
+`docs/official_tradingagents_baseline_reproduction_design.md` records the Task
+17A plan for a future official TauricResearch/TradingAgents baseline
+reproduction. It keeps the Task 16B prompt-proxy pilot separate from both the
+future upstream baseline and the original 2020 `XOM` reproduction target. Task
+17A is design only and does not authorize cloning upstream code, live OpenAI
+calls, provider calls, or performance claims.
+
 ## Candidate Design
 
 - Base ticker: `XOM`.

@@ -115,6 +115,14 @@ Task 16B uses recent 2026 cached API data and controlled prompt variants. The
 original 2020 `XOM` reproduction and official upstream TradingAgents baseline
 reproduction remain future work.
 
+## Future Official Baseline Design
+
+`docs/official_tradingagents_baseline_reproduction_design.md` records the Task
+17A plan for a future official TauricResearch/TradingAgents baseline
+reproduction. That design is planning only. It does not clone or run upstream
+code, does not call OpenAI or providers, and does not change the prompt-proxy
+status of this Task 16B pilot.
+
 ## Safety
 
 - Full prompt text is not included.

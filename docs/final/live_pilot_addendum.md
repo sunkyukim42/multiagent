@@ -98,3 +98,11 @@ The ten-case result is not the original 2020 `XOM` reproduction and not an
 official TradingAgents baseline reproduction. Official upstream reproduction
 remains future work requiring pinned upstream code, fixed model/config,
 deterministic data policy, explicit call and cost caps, and separate audit.
+
+## Official Baseline Future Work
+
+`docs/official_tradingagents_baseline_reproduction_design.md` records the Task
+17A design for a future official TauricResearch/TradingAgents baseline
+reproduction. That design is separate from the completed prompt-proxy pilots
+and does not claim that the official upstream baseline or original 2020 `XOM`
+target has been reproduced.
