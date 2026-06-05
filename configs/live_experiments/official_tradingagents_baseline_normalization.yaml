@@ -1,0 +1,31 @@
+experiment_id: official_tradingagents_baseline_normalization
+task: Task 17B fake-output normalization only
+live_openai_default: false
+live_provider_default: false
+clone_upstream_default: false
+run_upstream_default: false
+
+source_kind_default: fake_fixture
+upstream_repository_url: https://github.com/TauricResearch/TradingAgents.git
+upstream_commit: TBD
+upstream_tag: TBD
+
+raw_outputs_ignored: true
+store_full_raw_output_in_normalized_record: false
+normalizer_version: task17b_v1
+allowed_actions:
+  - BUY
+  - HOLD
+  - SELL
+  - UNKNOWN
+
+approval_phrase_future_task17c: I approve up to 10 OpenAI calls and a $1.00 estimated cap for Task 17C official TradingAgents baseline single-case run
+
+disclaimers:
+  - fake_fixture_only
+  - not_completed_reproduction
+  - no_performance_claim
+  - not_statistically_conclusive
+  - no_financial_advice
+  - no_procurement_advice
+  - no_legal_advice

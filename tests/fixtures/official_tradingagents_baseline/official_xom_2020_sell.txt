@@ -1,0 +1,9 @@
+FAKE FIXTURE - synthetic official-style output for Task 17B only.
+This is not official TauricResearch/TradingAgents output.
+Ticker: XOM
+Decision date: 2020-11-19
+Final decision: SELL
+Confidence: 0.62
+Rationale: Synthetic risk controls outweigh the fake upside case for this fixture.
+- Fake claim: Downside risk is emphasized for normalization testing.
+- Fake claim: The output is a local fixture and not a completed reproduction.

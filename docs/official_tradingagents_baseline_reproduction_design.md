@@ -99,6 +99,20 @@ not be printed.
 Each run should write a manifest with model, config, upstream commit, output
 hashes, cost estimate, call count, and normalization status.
 
+## Task 17B Fake-Output Normalization Preflight
+
+Task 17B adds a local fake-fixture schema, parser, normalizer, and CLI for
+testing how future official TauricResearch/TradingAgents output could be
+accepted into local audit artifacts. It uses clearly synthetic fixture files
+only and stores normalized records with raw output path and hash metadata, not
+full raw output text.
+
+Task 17B does not clone, install, or run upstream code. It does not call
+OpenAI, provider APIs, live TradingAgents, `python main.py`, or
+`collect_live_snapshots.py`. It is not a completed official TradingAgents
+baseline reproduction, not the original 2020 `XOM` reproduction, makes no
+performance claim, and provides no financial/procurement/legal advice.
+
 ## Cost And Call Safety
 
 Task 17B preflight should use dry-run, fixture, or mock output where possible.

@@ -1,0 +1,5 @@
+FAKE FIXTURE - synthetic ambiguous output for Task 17B only.
+This is not official TauricResearch/TradingAgents output.
+The bull case mentions BUY as a scenario.
+The risk case mentions SELL as a scenario.
+No final decision is issued in this fixture.

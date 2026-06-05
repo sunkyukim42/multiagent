@@ -1,0 +1,13 @@
+{
+  "fixture_kind": "fake_official_tradingagents_style",
+  "synthetic": true,
+  "ticker": "XOM",
+  "decision_date": "2020-11-19",
+  "action": "BUY",
+  "confidence": 0.71,
+  "rationale_summary": "Synthetic valuation and momentum signals support a fake buy fixture.",
+  "claims": [
+    "Fake claim: valuation screen is supportive.",
+    "Fake claim: this is not official upstream output."
+  ]
+}

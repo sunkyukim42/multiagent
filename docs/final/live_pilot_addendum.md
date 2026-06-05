@@ -106,3 +106,7 @@ deterministic data policy, explicit call and cost caps, and separate audit.
 reproduction. That design is separate from the completed prompt-proxy pilots
 and does not claim that the official upstream baseline or original 2020 `XOM`
 target has been reproduced.
+
+Task 17B adds local fake-output normalization preflight support for future
+official baseline artifacts. It uses synthetic fixtures only, does not clone or
+run upstream code, and remains separate from any official baseline reproduction.
