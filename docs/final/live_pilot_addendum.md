@@ -74,3 +74,9 @@ statistical conclusion.
 - Not statistically conclusive.
 - No financial/procurement/legal advice.
 - Heuristic groundedness is not semantic entailment.
+
+## Next Planned Experiment
+
+`docs/live_larger_experiment_design.md` records the Task 16A plan for a larger
+recent `XOM`/`SPY` experiment. That document is planning only and does not
+authorize OpenAI calls, provider calls, or performance claims.

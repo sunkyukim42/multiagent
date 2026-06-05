@@ -1,0 +1,46 @@
+experiment_id: recent_api_larger_experiment_design
+task: Task 16A design only
+live_openai_default: false
+live_provider_default: false
+base_ticker: XOM
+benchmark_ticker: SPY
+horizons: [63, 126]
+default_tier:
+  name: ten_case_two_method
+  cases: 10
+  methods: 2
+  seeds: [1]
+  max_openai_calls: 20
+  max_estimated_cost_usd: 1.00
+future_tier:
+  name: twenty_case_two_method
+  cases: 20
+  methods: 2
+  seeds: [1]
+  max_openai_calls: 40
+  requires_separate_approval: true
+method_ids:
+  - baseline_tradingagents_like
+  - domain_agent_only
+optional_future_method_ids:
+  - domain_rag
+  - rag_ledger
+provider_strategy:
+  alphavantage_shared_raw_materialization: true
+  cache_first: true
+  no_provider_calls_in_task16a: true
+required_gates:
+  - snapshot_ready_for_labeling_all_cases
+  - labels_missing_zero
+  - labels_unknown_zero
+  - dry_run_openai_calls_zero
+  - explicit_user_approval
+approval_phrase: I approve up to 20 OpenAI calls and a $1.00 estimated cap for Task 16B
+disclaimers:
+  - descriptive_only
+  - not_paper_ready
+  - not_statistically_conclusive
+  - no_performance_claim
+  - no_financial_advice
+  - no_procurement_advice
+  - no_legal_advice

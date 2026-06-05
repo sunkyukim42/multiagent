@@ -386,6 +386,18 @@ paper-ready, not statistically conclusive, makes no performance claim, and
 provides no financial/procurement/legal advice. Generated live outputs remain
 ignored under `results/`, `results/llm_cache/`, and `data/live_snapshots/`.
 
+## Task 16A: Larger Recent API Experiment Design
+
+Task 16A adds `docs/live_larger_experiment_design.md` as a planning-only design
+for a larger recent `XOM`/`SPY` experiment. It proposes a default 10-case,
+two-method, one-seed future run capped at 20 OpenAI calls and a `$1.00`
+estimated cost cap, plus a separate future 20-case tier.
+
+Task 16A does not call OpenAI, provider APIs, embeddings, TradingAgents, or
+`python main.py`. Any future Task 16B live run requires fresh snapshot
+readiness, deterministic labels with no missing or UNKNOWN outcomes, a dry run
+with zero OpenAI calls, and explicit user approval.
+
 ## Current Limitations
 
 - Task 11 makes no performance claim.
@@ -396,6 +408,7 @@ ignored under `results/`, `results/llm_cache/`, and `data/live_snapshots/`.
 - Task 14 fake-runner summaries are validation artifacts only.
 - Task 15A micro-pilot readiness is not performance evidence.
 - Task 15D/15E recent pilot documentation is descriptive only.
+- Task 16A larger recent API design is planning only.
 - Task 11/12/13B/14 outputs are not paper-ready and not statistically conclusive.
 - Task 11/12/13B/14 outputs do not provide financial/procurement/legal advice.
 - Provider endpoint behavior may need provider-plan-specific adjustment.
