@@ -121,3 +121,20 @@ Task 17C upstream package execution artifact for `XOM` on `2020-11-19`. The
 artifact normalized to `BUY`, while the original paper/presentation reported
 the existing TradingAgents model as `SELL`; therefore it is not a completed
 original baseline reproduction and not performance evidence.
+
+## Task 17C Constrained Upstream Result Boundary
+
+The Task 17C result is a constrained upstream execution artifact for `XOM` on
+`2020-11-19`, not a completed reproduction of the original paper baseline. It
+used `selected_analysts=[market]`, a market-only analyst subset, and is not
+full upstream default baseline. The normalized action was `BUY`, while the
+original paper/presentation reported existing-model `SELL` and proposed method
+`BUY`; therefore this artifact is not original existing-model SELL baseline
+reproduction.
+
+Historical 2020-only data freeze not proven, a current/live yfinance cache
+warning was present, and post-decision leakage was not determinable from safe
+metadata. The generated artifacts remain ignored, and the package includes no
+raw prompts, no raw model responses, no API keys, and no full raw upstream
+output. This artifact is descriptive only, not paper-ready, not statistically
+conclusive, no performance claim, and no financial/procurement/legal advice.

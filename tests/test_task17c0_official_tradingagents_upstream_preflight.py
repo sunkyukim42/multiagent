@@ -193,10 +193,10 @@ def test_task17c0_changed_files_do_not_include_unsafe_content_or_false_claims():
         "prompt_" + "text",
         "full_" + "prompt",
         "raw_" + "response",
-        "raw " + "model response",
     ]
     for phrase in absent_phrases:
         assert phrase not in lowered
+    assert not _has_unnegated_phrase(lowered, "raw " + "model response")
 
     assert not re.search(r"\bsk-(?:proj-)?[A-Za-z0-9_-]{20,}\b", combined)
     assert "OPENAI" + "_API_KEY=" not in combined
