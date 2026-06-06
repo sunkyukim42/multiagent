@@ -7,14 +7,38 @@ live_provider_default: false
 
 upstream:
   repository_url: https://github.com/TauricResearch/TradingAgents.git
-  selected_commit: TBD
+  selected_commit: 04f434e86db88e7707bf16db8ed7183f9764fe26
   selected_tag: TBD
-  selection_status: pending
+  selection_status: selected_commit_recorded
   license_review_required: true
-  license_status: pending
+  license_status: reviewed_metadata_only
+  license_file_detected: LICENSE
+  license_identifier_detected: Apache License
   isolated_checkout_required: true
   vendor_into_repo_default: false
   ignored_checkout_path: results/external_baselines/tradingagents_upstream
+  checkout_path: results/external_baselines/tradingagents_upstream
+  checkout_ignored: true
+  checkout_date: 2026-06-06
+  checkout_branch: main
+  upstream_run_status: not_run
+  upstream_install_status: not_installed
+  official_reproduction_status: not_completed
+  readme_file_detected: README.md
+  dependency_files_detected:
+    - pyproject.toml
+    - requirements.txt
+    - uv.lock
+  available_tag_count: 8
+  available_tags_sample:
+    - v0.1.0
+    - v0.1.1
+    - v0.2.0
+    - v0.2.1
+    - v0.2.2
+    - v0.2.3
+    - v0.2.4
+    - v0.2.5
 
 target:
   ticker: XOM

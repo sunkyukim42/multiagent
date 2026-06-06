@@ -125,6 +125,12 @@ OpenAI, provider APIs, live TradingAgents, `python main.py`, or
 `collect_live_snapshots.py`. Official upstream reproduction remains future
 work, and the original 2020 `XOM` reproduction remains future work.
 
+Task 17C.1 records a metadata-only external checkout under the ignored
+`results/external_baselines/tradingagents_upstream` path. It records upstream
+commit `04f434e86db88e7707bf16db8ed7183f9764fe26` and license metadata status
+`reviewed_metadata_only`; it does not run upstream code, install dependencies,
+call live APIs, or complete the official baseline reproduction.
+
 ## Cost And Call Safety
 
 Task 17B preflight should use dry-run, fixture, or mock output where possible.

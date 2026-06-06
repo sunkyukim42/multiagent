@@ -70,11 +70,11 @@ def test_task17c0_config_exists_and_sets_safe_defaults():
 
     upstream = config["upstream"]
     assert upstream["repository_url"] == "https://github.com/TauricResearch/TradingAgents.git"
-    assert upstream["selected_commit"] == "TBD"
+    assert re.fullmatch(r"[0-9a-f]{40}|TBD", str(upstream["selected_commit"]))
     assert upstream["selected_tag"] == "TBD"
-    assert upstream["selection_status"] == "pending"
+    assert upstream["selection_status"] in {"pending", "selected_commit_recorded"}
     assert upstream["license_review_required"] is True
-    assert upstream["license_status"] == "pending"
+    assert upstream["license_status"] in {"pending", "reviewed_metadata_only"}
     assert upstream["isolated_checkout_required"] is True
     assert upstream["vendor_into_repo_default"] is False
     assert upstream["ignored_checkout_path"] == "results/external_baselines/tradingagents_upstream"
@@ -121,13 +121,13 @@ def test_task17c0_doc_records_selection_license_environment_and_output_policy():
     normalized = _normalized(text)
 
     for phrase in [
-        "selected commit | `tbd`",
+        "selected commit | `",
         "selected tag | `tbd`",
-        "selection status | `pending`",
-        "no fake upstream commit or tag is selected",
+        "selection status | `",
+        "no fake upstream commit",
         "prefer a stable release tag",
         "pin an exact commit hash",
-        "license and terms review is required and remains pending",
+        "license and terms review is required",
         "no upstream source should be committed here",
         "results/external_baselines/tradingagents_upstream/",
         "do not modify dependency files or lockfiles",

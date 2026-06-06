@@ -17,21 +17,22 @@ performance claim, and provides no financial/procurement/legal advice.
 | Field | Value |
 | --- | --- |
 | Repository URL | `https://github.com/TauricResearch/TradingAgents.git` |
-| Selected commit | `TBD` |
+| Selected commit | `04f434e86db88e7707bf16db8ed7183f9764fe26` |
 | Selected tag | `TBD` |
-| Selection status | `pending` |
+| Selection status | `selected_commit_recorded` |
 
-No fake upstream commit or tag is selected in Task 17C.0. A future task should
-prefer a stable release tag if one is selected later; otherwise it must pin an
-exact commit hash. The future task must record clone date, upstream README
-state, and upstream CHANGELOG or release-note state when those materials are
-reviewed.
+Task 17C.1 records the actual checked-out upstream commit. No fake upstream
+commit or tag is selected. `selected_tag` remains `TBD`; a future task may
+prefer a stable release tag if one is selected later, otherwise it must pin an
+exact commit hash. Task 17C.1 records the current exact commit hash as the
+selected reference.
 
 ## License And Terms Review
 
-License and terms review is required and remains pending. A future task must
-record the upstream license file path or source, whether redistribution is
-allowed, and whether vendor-copy use is allowed.
+License and terms review is required. Task 17C.1 reviewed metadata only and
+detected `LICENSE` with an obvious Apache License heading. This is not legal
+approval. A future task must still decide whether redistribution is allowed and
+whether vendor-copy use is allowed.
 
 Task 17C.0 does not vendor upstream source into this repository. No upstream
 source should be committed here without separate approval.
@@ -46,6 +47,36 @@ ignored results path. The recommended ignored path is:
 Do not commit upstream source into this repository. Do not modify dependency
 files or lockfiles in Task 17C.0. A future task must use an isolated
 environment for upstream setup.
+
+## Task 17C.1 Metadata Checkout
+
+Task 17C.1 cloned the public upstream repository into the ignored checkout path
+for metadata inspection only. No upstream code was run, no upstream CLI was
+run, no upstream Python module was imported, no upstream dependency was
+installed, and no OpenAI or provider API call was made.
+
+| Field | Value |
+| --- | --- |
+| Checkout path | `results/external_baselines/tradingagents_upstream` |
+| Checkout ignored | `true` |
+| Checkout date | `2026-06-06` |
+| Branch | `main` |
+| Commit | `04f434e86db88e7707bf16db8ed7183f9764fe26` |
+| Tag selection | `TBD` |
+| Tags detected | `8` tags, from `v0.1.0` through `v0.2.5` |
+| License file detected | `LICENSE` |
+| License metadata status | `reviewed_metadata_only`, not legal approval |
+| README file detected | `README.md` |
+| Dependency files detected | `pyproject.toml`, `requirements.txt`, `uv.lock` |
+| Upstream run status | `not_run` |
+| Upstream install status | `not_installed` |
+| Official reproduction status | `not_completed` |
+
+README metadata indicates installation and usage material is present. README
+metadata also mentions API-key variable names such as `OPENAI_API_KEY`,
+`ANTHROPIC_API_KEY`, `GOOGLE_API_KEY`, and `ALPHA_VANTAGE_API_KEY`; no values
+were inspected or recorded. README metadata appears to reference live data and
+model-temperature or nondeterminism concerns, which remain future audit items.
 
 ## Environment Plan
 
