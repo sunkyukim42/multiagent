@@ -139,6 +139,11 @@ the Task 17B normalizer. It remains planning only and does not install
 dependencies, run upstream code, call OpenAI, call providers, or complete the
 official or original 2020 reproduction.
 
+Task 17C.3 creates an ignored isolated environment and verifies import/help-only
+readiness. It does not instantiate the graph, call `propagate`, run upstream
+analysis, call OpenAI, call providers, or complete the official or original
+2020 reproduction.
+
 ## Cost And Call Safety
 
 Task 17B preflight should use dry-run, fixture, or mock output where possible.

@@ -90,6 +90,24 @@ call providers, or complete the official or original 2020 reproduction.
 The detailed plan is in
 `docs/official_tradingagents_single_case_run_plan.md`.
 
+## Task 17C.3 Environment Import Preflight
+
+Task 17C.3 created an ignored isolated virtual environment at
+`results/external_baselines/tradingagents_venv/`, installed the pinned upstream
+checkout into that environment only, and ran import/help-only readiness checks.
+The import probe used a temporary working directory outside this repository and
+`PYTHON_DOTENV_DISABLED=1` so repo `.env` files were not read.
+
+The probe imported `tradingagents`, imported the `TradingAgentsGraph` symbol,
+and inspected the `propagate` signature without instantiating the graph. It did
+not call `propagate`, did not run `tradingagents analyze`, did not run
+`python -m cli.main analyze`, did not call OpenAI, and did not call any
+provider API. Help-only checks for `tradingagents --help` and
+`python -m cli.main --help` exited successfully and remained help-only.
+
+Official upstream reproduction remains future work. The original 2020 `XOM`
+reproduction remains future work.
+
 ## Environment Plan
 
 Future upstream setup requires a separate virtual environment. Task 17C.0 does

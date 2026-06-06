@@ -87,6 +87,29 @@ current or live market, news, social, fundamental, or macro data even when an
 analysis date is historical. A future run must document any live/current data
 access and must prevent post-decision leakage where possible.
 
+## Task 17C.3 Environment Import Preflight
+
+Task 17C.3 created the ignored isolated environment at
+`results/external_baselines/tradingagents_venv/` and installed the pinned
+upstream checkout into that environment only. The environment is ignored by git
+and must not be staged or committed.
+
+Import probes used the ignored venv Python from a temporary directory outside
+this repository with `PYTHON_DOTENV_DISABLED=1`. The probe imported
+`tradingagents`, imported the `TradingAgentsGraph` symbol, and inspected the
+`propagate` signature:
+
+`(self, company_name, trade_date, asset_type: str = 'stock')`
+
+The graph was not instantiated, `propagate` was not called, and no upstream
+analysis command was run. Help-only probes for `tradingagents --help` and
+`python -m cli.main --help` exited successfully and showed usage text without
+entering analysis mode.
+
+Task 17C.3 made no OpenAI call and no provider API call. It does not complete
+the official TradingAgents baseline reproduction and does not complete the
+original 2020 `XOM` reproduction.
+
 ## Output Capture And Normalization
 
 Raw future official output must be written only under:

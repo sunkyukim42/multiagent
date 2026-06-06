@@ -101,6 +101,38 @@ statuses:
   upstream_install_status: not_installed
   official_reproduction_status: not_completed
 
+task17c3_environment_preflight:
+  isolated_env_path: results/external_baselines/tradingagents_venv
+  isolated_env_ignored: true
+  upstream_install_status: installed
+  upstream_import_status: import_only_passed
+  upstream_run_status: not_run
+  official_reproduction_status: not_completed
+  graph_execution_status: not_executed
+  propagate_called: false
+  cli_analyze_called: false
+  no_openai_calls: true
+  no_provider_calls: true
+  dotenv_disabled_for_import_probe: true
+  sanitized_probe_cwd: temp_directory_outside_repo
+  import_probe:
+    tradingagents_imported: true
+    tradingagents_module_path: results/external_baselines/tradingagents_venv/Lib/site-packages/tradingagents/__init__.py
+    graph_class_module: tradingagents.graph.trading_graph
+    propagate_signature: "(self, company_name, trade_date, asset_type: str = 'stock')"
+    graph_instantiated: false
+  help_only_status:
+    tradingagents_help:
+      command: tradingagents --help
+      exit_code: 0
+      usage_text_observed: true
+      prompt_indicators_observed: false
+    python_module_help:
+      command: python -m cli.main --help
+      exit_code: 0
+      usage_text_observed: true
+      prompt_indicators_observed: false
+
 disclaimers:
   - pre_live_plan_only
   - no_upstream_run
