@@ -1,0 +1,49 @@
+experiment_id: official_tradingagents_upstream_preflight
+task: Task 17C.0 upstream preflight only
+clone_upstream_default: false
+run_upstream_default: false
+live_openai_default: false
+live_provider_default: false
+
+upstream:
+  repository_url: https://github.com/TauricResearch/TradingAgents.git
+  selected_commit: TBD
+  selected_tag: TBD
+  selection_status: pending
+  license_review_required: true
+  license_status: pending
+  isolated_checkout_required: true
+  vendor_into_repo_default: false
+  ignored_checkout_path: results/external_baselines/tradingagents_upstream
+
+target:
+  ticker: XOM
+  decision_date: 2020-11-19
+  purpose: official baseline single-case reproduction preflight
+
+future_caps:
+  max_openai_calls: 10
+  max_estimated_cost_usd: 1.00
+
+required_gates:
+  - upstream_commit_selected
+  - license_terms_reviewed
+  - isolated_checkout_ready
+  - environment_plan_recorded
+  - model_config_pinned
+  - deterministic_data_policy_recorded
+  - output_normalization_ready
+  - explicit_user_approval
+
+approval_phrase: I approve up to 10 OpenAI calls and a $1.00 estimated cap for Task 17C official TradingAgents baseline single-case run
+
+disclaimers:
+  - preflight_only
+  - no_upstream_clone
+  - no_upstream_run
+  - no_completed_reproduction
+  - no_performance_claim
+  - not_statistically_conclusive
+  - no_financial_advice
+  - no_procurement_advice
+  - no_legal_advice

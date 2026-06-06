@@ -113,6 +113,18 @@ OpenAI, provider APIs, live TradingAgents, `python main.py`, or
 baseline reproduction, not the original 2020 `XOM` reproduction, makes no
 performance claim, and provides no financial/procurement/legal advice.
 
+## Task 17C.0 Upstream Preflight
+
+Task 17C.0 records upstream selection, license review, isolated checkout, and
+future live-run gates for a later official TauricResearch/TradingAgents
+baseline reproduction. It keeps upstream commit and tag selection pending and
+does not invent a fake upstream revision.
+
+Task 17C.0 does not clone, install, or run upstream code. It does not call
+OpenAI, provider APIs, live TradingAgents, `python main.py`, or
+`collect_live_snapshots.py`. Official upstream reproduction remains future
+work, and the original 2020 `XOM` reproduction remains future work.
+
 ## Cost And Call Safety
 
 Task 17B preflight should use dry-run, fixture, or mock output where possible.

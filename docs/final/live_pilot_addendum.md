@@ -110,3 +110,8 @@ target has been reproduced.
 Task 17B adds local fake-output normalization preflight support for future
 official baseline artifacts. It uses synthetic fixtures only, does not clone or
 run upstream code, and remains separate from any official baseline reproduction.
+
+`docs/official_tradingagents_upstream_preflight.md` records the Task 17C.0
+upstream selection and license-review preflight. It keeps commit/tag selection
+and license review pending, does not clone or run upstream code, does not call
+live APIs, and does not claim that official baseline reproduction is complete.
