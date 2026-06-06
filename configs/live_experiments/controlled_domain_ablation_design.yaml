@@ -1,0 +1,84 @@
+experiment_id: controlled_domain_ablation_design
+task: Task 18A design only
+live_openai_default: false
+live_provider_default: false
+run_upstream_default: false
+design_only: true
+primary_comparison:
+  baseline_method_id: domain_off_internal_baseline
+  proposed_method_id: domain_on_proposed
+  controlled_difference: domain_specific_oil_context
+arms:
+  official_upstream_reference:
+    role: external_reference
+    primary_claim_source: false
+    status: future
+    caveat: codebase_config_data_source_confounded
+  domain_off_internal_baseline:
+    role: internal_control
+    primary_claim_source: true
+    status: future
+  domain_on_proposed:
+    role: proposed_variant
+    primary_claim_source: true
+    status: future
+tiers:
+  tier1_10case_5repeat:
+    cases: 10
+    methods: 2
+    repeats_per_case_method: 5
+    planned_openai_calls: 100
+    max_estimated_cost_usd: 5.00
+    requires_separate_approval: true
+    purpose: stability_and_effect_direction
+  tier2_20case_5repeat:
+    cases: 20
+    methods: 2
+    repeats_per_case_method: 5
+    planned_openai_calls: 200
+    requires_separate_approval: true
+    purpose: expanded_descriptive_evidence
+labels:
+  horizons: [63, 126]
+  require_missing_zero: true
+  require_unknown_zero_for_primary: true
+  unknown_excluded_from_denominator: true
+metrics:
+  - all_run_accuracy
+  - majority_vote_accuracy
+  - action_stability
+  - action_entropy
+  - decision_change_rate
+  - changed_decision_improvement_count
+  - changed_decision_worsening_count
+  - changed_decision_neutral_count
+  - token_usage
+  - estimated_cost
+aggregation:
+  report_all_runs: true
+  no_cherry_picking: true
+  predeclare_seeds: true
+  majority_vote_by_case_method: true
+  tie_policy: UNKNOWN
+  failed_runs_reported: true
+  cache_hits_reported_separately: true
+gates:
+  - source_tree_clean
+  - snapshots_ready
+  - labels_missing_zero
+  - labels_unknown_zero_for_primary
+  - prompt_leakage_check_passed
+  - dry_run_openai_calls_zero
+  - cost_cap_configured
+  - explicit_user_approval
+approval_phrase_tier1: I approve up to 100 OpenAI calls and a $5.00 estimated cap for Task 18B controlled domain ablation pilot
+disclaimers:
+  - design_only
+  - no_performance_claim
+  - not_statistically_conclusive
+  - no_financial_advice
+  - no_procurement_advice
+  - no_legal_advice
+  - not_original_2020_reproduction
+  - official_upstream_reference_is_caveated
+  - no_cherry_picking

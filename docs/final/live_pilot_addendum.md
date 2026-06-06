@@ -138,3 +138,10 @@ metadata. The generated artifacts remain ignored, and the package includes no
 raw prompts, no raw model responses, no API keys, and no full raw upstream
 output. This artifact is descriptive only, not paper-ready, not statistically
 conclusive, no performance claim, and no financial/procurement/legal advice.
+
+## Task 18 Controlled Ablation Future Work
+
+`docs/controlled_domain_ablation_design.md` records the Task 18A controlled
+domain-on/off ablation design. Any future performance claim would require that
+internal controlled comparison, not the Task 16 prompt-proxy pilot or Task 17C
+constrained upstream artifact.

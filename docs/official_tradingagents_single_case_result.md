@@ -82,6 +82,13 @@ Task 16B was a recent 10-case prompt-proxy pilot. Task 17C is a constrained
 official upstream package single-case execution artifact. The two should not
 be combined as a direct performance comparison, and both require caveats.
 
+## Relationship To Task 18A Controlled Ablation
+
+`docs/controlled_domain_ablation_design.md` records the planned internal
+domain-on/off ablation path. Task 17C remains an external constrained artifact,
+while Task 18A keeps the primary future comparison inside the local controlled
+runner as `domain_on_proposed` versus `domain_off_internal_baseline`.
+
 ## Artifact Paths
 
 Generated artifacts remain ignored and must not be staged:

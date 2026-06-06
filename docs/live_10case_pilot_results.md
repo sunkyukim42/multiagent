@@ -123,6 +123,15 @@ reproduction. That design is planning only. It does not clone or run upstream
 code, does not call OpenAI or providers, and does not change the prompt-proxy
 status of this Task 16B pilot.
 
+## Future Controlled Ablation Design
+
+`docs/controlled_domain_ablation_design.md` records the Task 18A plan for a
+future internal domain-on/off ablation. That controlled path is the planned
+route for stronger exploratory evidence because it holds the local runner,
+cases, labels, snapshots, model, parser, and cost/call caps fixed while
+changing only domain-specific oil context. Task 16B remains descriptive and is
+not performance evidence.
+
 ## Safety
 
 - Full prompt text is not included.

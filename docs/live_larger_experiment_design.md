@@ -103,6 +103,14 @@ future upstream baseline and the original 2020 `XOM` reproduction target. Task
 17A is design only and does not authorize cloning upstream code, live OpenAI
 calls, provider calls, or performance claims.
 
+## Task 18A Controlled Ablation Design
+
+`docs/controlled_domain_ablation_design.md` records the future controlled
+domain-on/off ablation path. That design keeps the primary comparison inside
+the same local runner: `domain_on_proposed` versus
+`domain_off_internal_baseline`. It treats official upstream TradingAgents as a
+caveated external reference, not the primary performance comparison.
+
 ## Candidate Design
 
 - Base ticker: `XOM`.
