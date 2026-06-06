@@ -15,6 +15,7 @@ POST_TASK11_LIVE_FILES = {
     "live_research_runner.py",
     "live_run_report.py",
     "openai_runner.py",
+    "official_tradingagents_single_case_pre_live.yaml",
 }
 
 

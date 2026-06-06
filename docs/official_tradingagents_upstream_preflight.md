@@ -78,6 +78,18 @@ metadata also mentions API-key variable names such as `OPENAI_API_KEY`,
 were inspected or recorded. README metadata appears to reference live data and
 model-temperature or nondeterminism concerns, which remain future audit items.
 
+## Task 17C.2 Single-Case Run Plan
+
+Task 17C.2 adds a tracked pre-live command plan for a future official upstream
+single-case run on `XOM` for `2020-11-19`. It records `TradingAgentsGraph` /
+`propagate` as the primary package-usage candidate and records the installed
+`tradingagents` command plus `python -m cli.main` as secondary untested CLI
+candidates. It does not run upstream code, install dependencies, call OpenAI,
+call providers, or complete the official or original 2020 reproduction.
+
+The detailed plan is in
+`docs/official_tradingagents_single_case_run_plan.md`.
+
 ## Environment Plan
 
 Future upstream setup requires a separate virtual environment. Task 17C.0 does
@@ -124,8 +136,8 @@ tracked docs should not include full raw output text.
 
 | Future task | Purpose | Status |
 | --- | --- | --- |
-| Task 17C.1 | External checkout and dry/mock preflight | Future |
-| Task 17C.2 | Single-case official baseline live preflight | Future |
+| Task 17C.1 | External checkout and dry/mock preflight | Completed metadata-only checkout |
+| Task 17C.2 | Single-case official baseline pre-live command plan | Planned as documentation/config/test gate |
 | Task 17C | Approved official baseline single-case live run | Future |
 
 The future Task 17C run remains blocked until upstream commit/tag selection,

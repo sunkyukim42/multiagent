@@ -1,0 +1,113 @@
+experiment_id: official_tradingagents_single_case_pre_live
+task: Task 17C.2 single-case pre-live plan only
+live_openai_default: false
+live_provider_default: false
+run_upstream_default: false
+install_upstream_default: false
+
+upstream:
+  repository_url: https://github.com/TauricResearch/TradingAgents.git
+  selected_commit: 04f434e86db88e7707bf16db8ed7183f9764fe26
+  selected_tag: TBD
+  checkout_path: results/external_baselines/tradingagents_upstream
+  license_status: reviewed_metadata_only
+
+target:
+  ticker: XOM
+  decision_date: 2020-11-19
+  purpose: future official baseline single-case run
+  status: not_run
+
+upstream_entrypoint_plan:
+  primary_candidate: TradingAgentsGraph.propagate
+  primary_candidate_description: package usage with propagate("XOM", "2020-11-19", asset_type="stock")
+  secondary_candidates:
+    - tradingagents
+    - python -m cli.main
+  command_tested: false
+  observed_metadata_files:
+    - README.md
+    - pyproject.toml
+    - cli/main.py
+    - tradingagents/default_config.py
+  cli_review_required: true
+
+environment:
+  isolated_virtual_environment_required: true
+  install_status: not_installed
+  run_status: not_run
+  install_command_review_required: true
+  run_command_review_required: true
+  dependency_files_detected:
+    - pyproject.toml
+    - requirements.txt
+    - uv.lock
+  required_env_names:
+    - OPENAI_API_KEY
+    - ALPHA_VANTAGE_API_KEY
+  tradingagents_override_env_names:
+    - TRADINGAGENTS_LLM_PROVIDER
+    - TRADINGAGENTS_DEEP_THINK_LLM
+    - TRADINGAGENTS_QUICK_THINK_LLM
+    - TRADINGAGENTS_LLM_BACKEND_URL
+    - TRADINGAGENTS_OUTPUT_LANGUAGE
+    - TRADINGAGENTS_MAX_DEBATE_ROUNDS
+    - TRADINGAGENTS_MAX_RISK_ROUNDS
+    - TRADINGAGENTS_CHECKPOINT_ENABLED
+    - TRADINGAGENTS_BENCHMARK_TICKER
+    - TRADINGAGENTS_TEMPERATURE
+    - TRADINGAGENTS_RESULTS_DIR
+    - TRADINGAGENTS_CACHE_DIR
+    - TRADINGAGENTS_MEMORY_LOG_PATH
+  env_values_recorded: false
+  dependency_or_lockfile_changes_allowed: false
+
+data_policy:
+  prevent_post_decision_leakage: true
+  exact_2020_historical_freezing_may_be_approximate: true
+  upstream_may_fetch_live_or_current_data: true
+  keep_task16_prompt_proxy_results_separate: true
+
+output_policy:
+  raw_output_dir: results/official_tradingagents_baseline/task17c_single_case
+  normalized_output_dir: results/official_baseline_normalization/task17c_single_case
+  raw_outputs_ignored: true
+  store_full_raw_output_in_tracked_docs: false
+  normalizer_cli: scripts/normalize_official_tradingagents_output.py
+
+caps:
+  max_openai_calls: 10
+  max_estimated_cost_usd: 1.00
+  cost_estimate_only_not_billing_proof: true
+
+required_gates:
+  - source_tree_clean
+  - upstream_commit_recorded
+  - license_metadata_recorded
+  - isolated_environment_ready
+  - upstream_install_command_reviewed
+  - required_env_present_without_printing_values
+  - run_command_reviewed
+  - output_dir_ignored
+  - cost_cap_configured
+  - explicit_user_approval
+  - normalization_path_ready
+  - no_generated_outputs_staged
+
+approval_phrase: I approve up to 10 OpenAI calls and a $1.00 estimated cap for Task 17C official TradingAgents baseline single-case run
+
+statuses:
+  upstream_run_status: not_run
+  upstream_install_status: not_installed
+  official_reproduction_status: not_completed
+
+disclaimers:
+  - pre_live_plan_only
+  - no_upstream_run
+  - no_dependency_install
+  - no_completed_reproduction
+  - no_performance_claim
+  - not_statistically_conclusive
+  - no_financial_advice
+  - no_procurement_advice
+  - no_legal_advice

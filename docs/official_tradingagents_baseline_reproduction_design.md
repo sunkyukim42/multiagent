@@ -131,6 +131,14 @@ commit `04f434e86db88e7707bf16db8ed7183f9764fe26` and license metadata status
 `reviewed_metadata_only`; it does not run upstream code, install dependencies,
 call live APIs, or complete the official baseline reproduction.
 
+Task 17C.2 records a pre-live single-case command plan for future `XOM` on
+`2020-11-19` execution. It identifies `TradingAgentsGraph.propagate` as the
+primary package-usage candidate, keeps CLI candidates untested, routes raw
+future output to ignored `results/` paths, and routes normalized output through
+the Task 17B normalizer. It remains planning only and does not install
+dependencies, run upstream code, call OpenAI, call providers, or complete the
+official or original 2020 reproduction.
+
 ## Cost And Call Safety
 
 Task 17B preflight should use dry-run, fixture, or mock output where possible.
