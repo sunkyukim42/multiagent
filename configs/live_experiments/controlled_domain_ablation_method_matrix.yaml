@@ -1,0 +1,49 @@
+matrix_id: task18b_controlled_domain_ablation_method_matrix
+metadata:
+  task: Task 18B controlled domain ablation pre-live gate
+  controlled_difference: domain_specific_oil_context
+  method_boundary_notes:
+    - Both methods are local controlled prompt/input variants.
+    - Neither method executes official TauricResearch/TradingAgents.
+    - The only intended controlled difference is domain-specific oil context.
+    - Official upstream comparison remains external and caveated.
+    - Task 18B makes no performance claim.
+methods:
+  - method_id: domain_off_internal_baseline
+    display_name: Domain-Off Internal Baseline
+    role: internal_control
+    domain_enabled: false
+    rag_enabled: false
+    ledger_enabled: false
+    guardrails_enabled: false
+    workflow_enabled: false
+    include_snapshot_summary: true
+    include_domain_context: false
+    include_evidence_context: false
+    include_reliability_context: false
+    live_tradingagents_graph: false
+    notes:
+      - Internal baseline with domain-specific oil context disabled.
+      - Uses the same local runner, cases, labels, snapshots, model, parser, and cost/call caps as domain_on_proposed.
+      - Does not execute official TauricResearch/TradingAgents.
+    metadata:
+      role: internal_control
+  - method_id: domain_on_proposed
+    display_name: Domain-On Proposed Variant
+    role: proposed_variant
+    domain_enabled: true
+    rag_enabled: false
+    ledger_enabled: false
+    guardrails_enabled: false
+    workflow_enabled: false
+    include_snapshot_summary: true
+    include_domain_context: true
+    include_evidence_context: false
+    include_reliability_context: false
+    live_tradingagents_graph: false
+    notes:
+      - Same runner and evidence budget as domain_off_internal_baseline, with domain-specific oil context enabled.
+      - No RAG, ledger, guardrail, workflow, or live TradingAgents graph execution is enabled.
+      - Does not execute official TauricResearch/TradingAgents.
+    metadata:
+      role: proposed_variant

@@ -145,3 +145,8 @@ conclusive, no performance claim, and no financial/procurement/legal advice.
 domain-on/off ablation design. Any future performance claim would require that
 internal controlled comparison, not the Task 16 prompt-proxy pilot or Task 17C
 constrained upstream artifact.
+
+`docs/controlled_domain_ablation_pre_live.md` records the Task 18B pre-live
+method mapping and dry-run gate. It keeps `domain_off_internal_baseline` and
+`domain_on_proposed` as local controlled prompt/input variants, uses no live
+OpenAI or provider calls, and makes no performance claim.

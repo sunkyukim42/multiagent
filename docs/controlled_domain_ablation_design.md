@@ -155,6 +155,11 @@ Before any live Task 18B run:
 - Cost and call caps must be configured.
 - Explicit user approval must be provided.
 
+`docs/controlled_domain_ablation_pre_live.md` records the Task 18B pre-live
+mapping and dry-run gate. That gate is local-only, requires no live OpenAI or
+provider calls, and maps `domain_off_internal_baseline` against
+`domain_on_proposed` without changing the official-upstream caveat.
+
 ## Interpretation Policy
 
 If `domain_on_proposed` outperforms `domain_off_internal_baseline`, describe it

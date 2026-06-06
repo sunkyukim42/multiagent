@@ -1,0 +1,52 @@
+experiment_id: task18b_controlled_domain_ablation_pre_live
+task: Task 18B pre-live/dry-run gate only
+live_openai_default: false
+live_provider_default: false
+run_upstream_default: false
+dry_run_required: true
+case_set:
+  id: pilot_xom_recent_api_10case
+  cases_csv: results/live_collection/pilot_xom_recent_api_10case/cases.csv
+  cases_jsonl: results/live_collection/pilot_xom_recent_api_10case/cases.jsonl
+  snapshot_dir: data/live_snapshots/pilot_xom_recent_api_10case
+  snapshot_manifest: data/live_snapshots/pilot_xom_recent_api_10case/snapshot_manifest.json
+  quality_dir: results/live_snapshot_quality/pilot_xom_recent_api_10case
+  labeled_csv: results/live_labels/pilot_xom_recent_api_10case/labeled.csv
+  labeled_jsonl: results/live_labels/pilot_xom_recent_api_10case/labeled.jsonl
+  label_manifest: results/live_labels/pilot_xom_recent_api_10case/label_manifest.json
+method_matrix: configs/live_experiments/controlled_domain_ablation_method_matrix.yaml
+methods:
+  - domain_off_internal_baseline
+  - domain_on_proposed
+seeds: [1, 2, 3, 4, 5]
+cases: 10
+planned_openai_calls: 100
+max_estimated_cost_usd: 5.00
+horizons: [63, 126]
+required_gates:
+  - source_tree_clean
+  - cases_exist
+  - snapshots_ready
+  - labels_missing_zero
+  - labels_unknown_zero_for_primary
+  - prompt_leakage_check_passed
+  - dry_run_openai_calls_zero
+  - dry_run_planned_100
+  - cost_cap_configured
+  - explicit_user_approval
+output_dirs:
+  dry_run_output_dir: results/live_research_eval/task18b_controlled_ablation_dry_run
+  dry_run_cache_dir: results/llm_cache/task18b_controlled_ablation_dry_run
+  gate_report_dir: results/live_research_eval/task18b_controlled_ablation_pre_live_gate
+approval_phrase: I approve up to 100 OpenAI calls and a $5.00 estimated cap for Task 18B controlled domain ablation pilot
+disclaimers:
+  - pre_live_gate_only
+  - no_live_openai
+  - no_provider_calls
+  - no_performance_claim
+  - not_statistically_conclusive
+  - no_financial_advice
+  - no_procurement_advice
+  - no_legal_advice
+  - no_cherry_picking
+  - official_upstream_reference_is_caveated
