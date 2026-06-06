@@ -110,6 +110,15 @@ Task 17C.3 made no OpenAI call and no provider API call. It does not complete
 the official TradingAgents baseline reproduction and does not complete the
 original 2020 `XOM` reproduction.
 
+## Task 17C Result Artifact
+
+`docs/official_tradingagents_single_case_result.md` records the later
+constrained upstream package execution artifact for `XOM` on `2020-11-19`.
+That artifact normalized to `BUY` under `selected_analysts=[market]`, not the
+full upstream default analyst set. It remains an execution trace and
+integration checkpoint, not a completed original existing-model `SELL`
+baseline reproduction and not the original 2020 `XOM` reproduction.
+
 ## Output Capture And Normalization
 
 Raw future official output must be written only under:

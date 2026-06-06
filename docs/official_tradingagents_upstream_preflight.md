@@ -108,6 +108,15 @@ provider API. Help-only checks for `tradingagents --help` and
 Official upstream reproduction remains future work. The original 2020 `XOM`
 reproduction remains future work.
 
+## Task 17C Result Artifact
+
+`docs/official_tradingagents_single_case_result.md` records the later
+constrained upstream package execution artifact for `XOM` on `2020-11-19`.
+The artifact used `selected_analysts=[market]`, normalized to `BUY`, and
+records that exact 2020-only data freezing is not proven. It is not the full
+upstream default baseline and not a completed reproduction of the original
+reported existing-model `SELL` baseline.
+
 ## Environment Plan
 
 Future upstream setup requires a separate virtual environment. Task 17C.0 does

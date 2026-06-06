@@ -115,3 +115,9 @@ run upstream code, and remains separate from any official baseline reproduction.
 upstream selection and license-review preflight. It keeps commit/tag selection
 and license review pending, does not clone or run upstream code, does not call
 live APIs, and does not claim that official baseline reproduction is complete.
+
+`docs/official_tradingagents_single_case_result.md` records the constrained
+Task 17C upstream package execution artifact for `XOM` on `2020-11-19`. The
+artifact normalized to `BUY`, while the original paper/presentation reported
+the existing TradingAgents model as `SELL`; therefore it is not a completed
+original baseline reproduction and not performance evidence.

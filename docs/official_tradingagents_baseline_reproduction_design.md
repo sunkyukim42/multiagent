@@ -144,6 +144,13 @@ readiness. It does not instantiate the graph, call `propagate`, run upstream
 analysis, call OpenAI, call providers, or complete the official or original
 2020 reproduction.
 
+Task 17C later produced a constrained upstream package execution artifact,
+documented in `docs/official_tradingagents_single_case_result.md`. The artifact
+normalized to `BUY` for `XOM` on `2020-11-19` under
+`selected_analysts=[market]`. It differs from the original
+paper/presentation's reported existing-model `SELL`, so it is not a completed
+reproduction of that baseline and not the full upstream default baseline.
+
 ## Cost And Call Safety
 
 Task 17B preflight should use dry-run, fixture, or mock output where possible.
