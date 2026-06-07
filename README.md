@@ -119,6 +119,7 @@ Generated artifacts are ignored by git under `results/` and `data/indexes/`.
 - [Evaluation Metrics](docs/evaluation_metrics.md)
 - [Research Evaluation Pack](docs/research_evaluation_pack.md)
 - [Final Package Docs](docs/final/portfolio_project_summary.md)
+- [Final Release Note](docs/final/final_release_note.md)
 - [Live Quantitative Experiment Roadmap](docs/live_quantitative_experiment.md)
 - [Recent API Live Pilot Results](docs/live_recent_pilot_results.md)
 - [Release Checklist](docs/release_checklist.md)
