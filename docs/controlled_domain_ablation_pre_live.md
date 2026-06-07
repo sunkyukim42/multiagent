@@ -96,3 +96,11 @@ significance claims, or advice.
 
 No cherry-picking is allowed. All valid planned runs, dry-run records, warnings,
 and failures must be reported.
+
+## Task 18C Result
+
+`docs/controlled_domain_ablation_live_results.md` records the completed Task
+18C live pilot and Task 18D read-only audit. It keeps the result descriptive,
+documents the segment-continuation provenance warning, records the all-`BUY`
+63d label-base-rate caveat, and does not make a performance, statistical, or
+advice claim.

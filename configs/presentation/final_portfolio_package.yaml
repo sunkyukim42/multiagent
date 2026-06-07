@@ -55,6 +55,7 @@ source_references:
   - docs/live_10case_pilot_results.md
   - docs/live_quantitative_experiment.md
   - docs/official_tradingagents_single_case_result.md
+  - docs/controlled_domain_ablation_live_results.md
 source_configs:
   - configs/benchmarks/task8_full_demo.yaml
   - configs/research/task9_research_eval.yaml

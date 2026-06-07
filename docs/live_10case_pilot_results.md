@@ -132,6 +132,12 @@ cases, labels, snapshots, model, parser, and cost/call caps fixed while
 changing only domain-specific oil context. Task 16B remains descriptive and is
 not performance evidence.
 
+`docs/controlled_domain_ablation_live_results.md` records the completed Task
+18C controlled internal ablation pilot and Task 18D audit. That artifact is the
+stronger internal controlled-ablation record, while this Task 16B document
+remains a descriptive prompt-proxy pilot note. Task 18C is still descriptive
+only, not statistically conclusive, and not advice.
+
 ## Safety
 
 - Full prompt text is not included.

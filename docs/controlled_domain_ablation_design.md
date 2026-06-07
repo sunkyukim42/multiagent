@@ -160,6 +160,13 @@ mapping and dry-run gate. That gate is local-only, requires no live OpenAI or
 provider calls, and maps `domain_off_internal_baseline` against
 `domain_on_proposed` without changing the official-upstream caveat.
 
+`docs/controlled_domain_ablation_live_results.md` records the completed Task
+18C live pilot and Task 18D read-only audit. The result is descriptive only:
+`domain_on_proposed` had higher 63d label-match in that controlled pilot, 126d
+label-match was unchanged, all 63d labels were `BUY`, and a
+segment-continuation provenance warning remains documented. It is not a
+performance claim and not statistically conclusive.
+
 ## Interpretation Policy
 
 If `domain_on_proposed` outperforms `domain_off_internal_baseline`, describe it

@@ -150,3 +150,26 @@ constrained upstream artifact.
 method mapping and dry-run gate. It keeps `domain_off_internal_baseline` and
 `domain_on_proposed` as local controlled prompt/input variants, uses no live
 OpenAI or provider calls, and makes no performance claim.
+
+## Task 18C Controlled Ablation Result
+
+`docs/controlled_domain_ablation_live_results.md` records the completed Task
+18C controlled internal ablation pilot and Task 18D read-only audit. The run
+used `10` cases, `2` methods, `5` seeds, and `100` decision rows. The internal
+control was `domain_off_internal_baseline`, the proposed variant was
+`domain_on_proposed`, and the controlled difference was
+`domain_specific_oil_context`.
+
+In that pilot, `domain_on_proposed` had higher 63d label-match than
+`domain_off_internal_baseline`, while 126d label-match was unchanged. The 63d
+labels were all `BUY`, so the 63d lift may partly reflect stronger `BUY`
+propensity rather than general superiority. The first full `--fail-fast`
+attempt left `6` successful cache rows without a segment manifest, so the
+result carries a segment-continuation provenance warning.
+
+The Task 18C result is descriptive only, not statistically conclusive, no
+performance claim, and no financial/procurement/legal advice. It does not
+complete an official TradingAgents baseline reproduction or the original 2020
+`XOM` reproduction. Generated artifacts remain ignored, and no raw prompts,
+no model-response text, no API keys, and no full raw model outputs are included
+here.
