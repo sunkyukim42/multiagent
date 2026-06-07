@@ -156,20 +156,24 @@ OpenAI or provider calls, and makes no performance claim.
 `docs/controlled_domain_ablation_live_results.md` records the completed Task
 18C controlled internal ablation pilot and Task 18D read-only audit. The run
 used `10` cases, `2` methods, `5` seeds, and `100` decision rows. The internal
-control was `domain_off_internal_baseline`, the proposed variant was
-`domain_on_proposed`, and the controlled difference was
+control was `domain_off_internal_baseline` as the `internal_control`; the
+proposed variant was `domain_on_proposed` as the `proposed_variant`; and the
+controlled difference was
 `domain_specific_oil_context`.
 
 In that pilot, `domain_on_proposed` had higher 63d label-match than
 `domain_off_internal_baseline`, while 126d label-match was unchanged. The 63d
-labels were all `BUY`, so the 63d lift may partly reflect stronger `BUY`
-propensity rather than general superiority. The first full `--fail-fast`
-attempt left `6` successful cache rows without a segment manifest, so the
-result carries a segment-continuation provenance warning.
+labels were all `BUY`, so the 63d lift may partly reflect
+`domain_on_proposed`'s stronger `BUY` propensity or action-bias alignment rather
+than general superiority. The segment-continuation provenance warning remains:
+the first full `--fail-fast` attempt left `6` successful rows in cache but no
+segment manifest, and two later segment manifests document `94` live OpenAI
+calls as `4 + 90`. The final artifact has `100` unique successful decision
+rows.
 
 The Task 18C result is descriptive only, not statistically conclusive, no
 performance claim, and no financial/procurement/legal advice. It does not
-complete an official TradingAgents baseline reproduction or the original 2020
-`XOM` reproduction. Generated artifacts remain ignored, and no raw prompts,
-no model-response text, no API keys, and no full raw model outputs are included
-here.
+complete official TradingAgents reproduction, official TradingAgents baseline
+reproduction, or the original 2020 `XOM` reproduction. Generated artifacts
+remain ignored, and no raw prompts, no raw model responses, no model-response
+text, no API keys, and no full raw model outputs are included here.
